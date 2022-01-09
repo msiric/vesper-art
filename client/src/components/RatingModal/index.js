@@ -5,7 +5,6 @@ import {
 } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { isFormAltered } from "../../../../common/helpers";
 import { reviewValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import Backdrop from "../../domain/Backdrop";
@@ -15,6 +14,7 @@ import Fade from "../../domain/Fade";
 import Modal from "../../domain/Modal";
 import Typography from "../../domain/Typography";
 import RatingForm from "../../forms/RatingForm";
+import { isFormDisabled } from "../../utils/helpers";
 import SyncButton from "../SyncButton/index";
 import ratingModalStyles from "./styles";
 
@@ -48,8 +48,7 @@ const RatingModal = ({
 
   const watchedValues = watch();
 
-  const isDisabled =
-    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
+  const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   const classes = ratingModalStyles();
 

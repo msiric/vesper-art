@@ -7,7 +7,6 @@ import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { featureFlags, payment } from "../../../../common/constants";
-import { isFormAltered } from "../../../../common/helpers";
 import { discountValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import CheckoutCard from "../../components/CheckoutCard/index";
@@ -20,6 +19,7 @@ import Divider from "../../domain/Divider";
 import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
 import DiscountForm from "../../forms/DiscountForm/index";
+import { isFormDisabled } from "../../utils/helpers";
 import checkoutSummaryStyles from "./styles";
 
 const CheckoutSummary = ({
@@ -119,8 +119,7 @@ const CheckoutSummary = ({
 
   const watchedValues = watch();
 
-  const isDisabled =
-    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
+  const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   const onSubmit = async (values) => await handleDiscountChange({ values });
 

@@ -8,7 +8,6 @@ import queryString from "query-string";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
-import { isFormAltered } from "../../../../common/helpers";
 import { commentValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import CommentCard from "../../components/CommentCard/index";
@@ -26,6 +25,7 @@ import Divider from "../../domain/Divider";
 import List from "../../domain/List";
 import CommentForm from "../../forms/CommentForm/index";
 import useVisibleElement from "../../hooks/useVisibleElement";
+import { isFormDisabled } from "../../utils/helpers";
 import commentSectionStyles from "./styles";
 
 const CommentSection = ({
@@ -83,8 +83,7 @@ const CommentSection = ({
 
   const watchedValues = watch();
 
-  const isDisabled =
-    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
+  const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   useEffect(() => {
     if (

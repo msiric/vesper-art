@@ -2,7 +2,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { CheckRounded as SaveIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { isFormAltered } from "../../../../common/helpers";
 import { preferencesValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import { useUserSettings } from "../../contexts/local/userSettings";
@@ -10,6 +9,7 @@ import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import EditPreferencesForm from "../../forms/PreferencesForm/index";
+import { isFormDisabled } from "../../utils/helpers";
 import settingsPreferencesStyles from "./styles";
 
 const SettingsPreferences = () => {
@@ -40,8 +40,7 @@ const SettingsPreferences = () => {
 
   const watchedValues = watch();
 
-  const isDisabled =
-    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
+  const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   const classes = settingsPreferencesStyles();
 

@@ -2,7 +2,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { CheckRounded as SaveIcon } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { isFormAltered } from "../../../../common/helpers";
 import { passwordValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import { useUserSettings } from "../../contexts/local/userSettings";
@@ -10,6 +9,7 @@ import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import EditPasswordForm from "../../forms/PasswordForm/index";
+import { isFormDisabled } from "../../utils/helpers";
 import settingsSecurityStyles from "./styles";
 
 const SettingsSecurity = ({ handleLogout }) => {
@@ -36,8 +36,7 @@ const SettingsSecurity = ({ handleLogout }) => {
 
   const watchedValues = watch();
 
-  const isDisabled =
-    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
+  const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   return (
     <Card>

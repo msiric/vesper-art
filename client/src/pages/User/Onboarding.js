@@ -8,7 +8,6 @@ import {
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { countries } from "../../../../common/constants";
-import { isFormAltered } from "../../../../common/helpers";
 import { originValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import HelpBox from "../../components/HelpBox/index";
@@ -24,6 +23,7 @@ import OnboardingForm from "../../forms/OnboardingForm/index";
 import { postAuthorize } from "../../services/stripe";
 import { patchOrigin } from "../../services/user";
 import globalStyles from "../../styles/global";
+import { isFormDisabled } from "../../utils/helpers";
 
 const useOnboardingStyles = makeStyles((muiTheme) => ({
   content: {
@@ -130,8 +130,7 @@ const Onboarding = () => {
 
   const watchedValues = watch();
 
-  const isDisabled =
-    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
+  const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   return (
     <Container className={globalClasses.gridContainer}>

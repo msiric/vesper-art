@@ -4,7 +4,6 @@ import { CheckRounded as SaveIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
-import { isFormAltered } from "../../../../common/helpers";
 import { emailValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import { useEventsStore } from "../../contexts/global/events";
@@ -12,6 +11,7 @@ import { useUserStore } from "../../contexts/global/user";
 import { useUserSettings } from "../../contexts/local/userSettings";
 import Card from "../../domain/Card";
 import EmailForm from "../../forms/EmailForm/index";
+import { isFormDisabled } from "../../utils/helpers";
 import { socket } from "../Interceptor";
 import settingsAccountStyles from "./styles";
 
@@ -49,8 +49,7 @@ const SettingsAccount = ({ handleLogout }) => {
 
   const watchedValues = watch();
 
-  const isDisabled =
-    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
+  const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   useEffect(() => {
     reset(setDefaultValues());

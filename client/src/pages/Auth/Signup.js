@@ -7,7 +7,6 @@ import {
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
-import { isFormAltered } from "../../../../common/helpers";
 import { signupValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import Avatar from "../../domain/Avatar";
@@ -18,6 +17,7 @@ import Link from "../../domain/Link";
 import Typography from "../../domain/Typography";
 import SignupForm from "../../forms/SignupForm/index";
 import { postSignup } from "../../services/auth";
+import { isFormDisabled } from "../../utils/helpers";
 
 const useStyles = makeStyles((muiTheme) => ({
   wrapper: {
@@ -63,8 +63,7 @@ const Signup = () => {
 
   const watchedValues = watch();
 
-  const isDisabled =
-    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
+  const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   return (
     <Container component="main" maxWidth="xs">

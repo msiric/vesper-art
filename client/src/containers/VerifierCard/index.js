@@ -2,7 +2,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { AssignmentTurnedInOutlined as VerifyIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { isFormAltered } from "../../../../common/helpers";
 import { fingerprintValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import { useLicenseVerifier } from "../../contexts/local/licenseVerifier";
@@ -10,6 +9,7 @@ import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import VerifierForm from "../../forms/VerifierForm/index";
+import { isFormDisabled } from "../../utils/helpers";
 import verifierCardStyles from "./styles";
 
 const VerifierCard = () => {
@@ -42,8 +42,7 @@ const VerifierCard = () => {
 
   const watchedValues = watch();
 
-  const isDisabled =
-    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
+  const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   useEffect(() => {
     reset(setDefaultValues());

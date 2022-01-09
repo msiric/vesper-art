@@ -7,7 +7,6 @@ import {
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
-import { isFormAltered } from "../../../../common/helpers";
 import { resetValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton";
 import Avatar from "../../domain/Avatar";
@@ -16,6 +15,7 @@ import Container from "../../domain/Container";
 import Typography from "../../domain/Typography";
 import ResetPasswordForm from "../../forms/ResetForm";
 import { postReset } from "../../services/auth";
+import { isFormDisabled } from "../../utils/helpers";
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
@@ -74,8 +74,7 @@ const ResetPassword = ({ match }) => {
 
   const watchedValues = watch();
 
-  const isDisabled =
-    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
+  const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   return (
     <Container component="main" maxWidth="xs">

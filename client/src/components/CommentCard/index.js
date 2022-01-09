@@ -8,7 +8,6 @@ import { formatDistance } from "date-fns";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
-import { isFormAltered } from "../../../../common/helpers";
 import { commentValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import SyncButton from "../../components/SyncButton/index";
@@ -23,7 +22,11 @@ import ListItemSecondaryAction from "../../domain/ListItemSecondaryAction";
 import ListItemText from "../../domain/ListItemText";
 import Typography from "../../domain/Typography";
 import CommentForm from "../../forms/CommentForm/index";
-import { renderRedirectLink, renderUserData } from "../../utils/helpers";
+import {
+  isFormDisabled,
+  renderRedirectLink,
+  renderUserData,
+} from "../../utils/helpers";
 import commentCardStyles from "./styles";
 
 const CommentCard = ({
@@ -52,8 +55,8 @@ const CommentCard = ({
 
   const watchedValues = watch();
 
-  const isDisabled =
-    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
+  const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
+
   const isHighlight = queryRef && queryRef === comment.id;
   const shouldBlink = isHighlight && highlightRef.current;
 

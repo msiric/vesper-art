@@ -6,7 +6,6 @@ import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { featureFlags } from "../../../../common/constants";
-import { isFormAltered } from "../../../../common/helpers";
 import { artworkValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import HelpBox from "../../components/HelpBox/index";
@@ -18,6 +17,7 @@ import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import ArtworkForm from "../../forms/ArtworkForm/index";
 import { useArtworkValidator } from "../../hooks/useArtworkValidator";
+import { isFormDisabled } from "../../utils/helpers";
 import artworkModifierClasses from "./styles";
 
 const ArtworkModifier = ({ paramId }) => {
@@ -113,8 +113,7 @@ const ArtworkModifier = ({ paramId }) => {
 
   const watchedValues = watch();
 
-  const isDisabled =
-    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
+  const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   useEffect(() => {
     Promise.all([

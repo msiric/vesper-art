@@ -3,7 +3,6 @@ import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { featureFlags, pricing } from "../../../../common/constants";
-import { isFormAltered } from "../../../../common/helpers";
 import {
   artworkValidation,
   mediaValidation,
@@ -17,6 +16,7 @@ import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import ArtworkForm from "../../forms/ArtworkForm/index";
 import { useArtworkValidator } from "../../hooks/useArtworkValidator";
+import { isFormDisabled } from "../../utils/helpers";
 import artworkCreatorStyles from "./styles";
 
 const ArtworkCreator = () => {
@@ -69,8 +69,7 @@ const ArtworkCreator = () => {
 
   const watchedValues = watch();
 
-  const isDisabled =
-    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
+  const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   const onSubmit = async (values) => {
     await createArtwork({ values });

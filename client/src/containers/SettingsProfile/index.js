@@ -2,7 +2,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { CheckRounded as SaveIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { isFormAltered } from "../../../../common/helpers";
 import {
   avatarValidation,
   profileValidation,
@@ -14,6 +13,7 @@ import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import EditUserForm from "../../forms/UserForm/index";
+import { isFormDisabled } from "../../utils/helpers";
 import settingsProfileStyles from "./styles";
 
 const SettingsProfile = () => {
@@ -52,8 +52,7 @@ const SettingsProfile = () => {
 
   const classes = settingsProfileStyles();
 
-  const isDisabled =
-    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
+  const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   useEffect(() => {
     fetchSettings({ userId });

@@ -1,6 +1,7 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { auth, featureFlags, statusCodes } from "../../../common/constants";
+import { isFormAltered } from "../../../common/helpers";
 import Redirect from "../pages/Home/Redirect";
 import Retry from "../pages/Home/Retry";
 
@@ -91,4 +92,9 @@ export const scrollToHighlight = (highlightRef) => {
       behavior: "smooth",
       block: "center",
     });
+};
+
+export const isFormDisabled = (currentValues, defaultValues, formState) => {
+  const isFormInvalid = formState.isSubmitting || !formState.isValid;
+  return !isFormAltered(currentValues, defaultValues) || isFormInvalid;
 };
