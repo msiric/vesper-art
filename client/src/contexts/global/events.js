@@ -18,6 +18,7 @@ const initialState = {
     loading: true,
     fetching: false,
     initialized: false,
+    connected: false,
     error: {
       refetch: false,
       message: "",
@@ -143,14 +144,19 @@ const initActions = (set, get) => ({
       search: typeof search !== "undefined" ? search : state.search,
     }));
   },
-  toggleMenu: async ({ event, userId, fetching = false }) => {
-    const target = event ? event.currentTarget : null;
+  fetchNotifications: async ({ event, userId, shouldFetch = false }) => {
     const notifications = get().notifications;
-    if (
-      (fetching && !notifications.opened) ||
-      (notifications.items.length < notifications.limit &&
-        !notifications.opened)
-    ) {
+    const target = shouldFetch ? notifications.anchor : event.currentTarget;
+    if (notifications.initialized && !shouldFetch) {
+      set((state) => ({
+        ...state,
+        notifications: {
+          ...state.notifications,
+          opened: true,
+          anchor: target,
+        },
+      }));
+    } else {
       set((state) => ({
         ...state,
         notifications: {
@@ -162,6 +168,14 @@ const initActions = (set, get) => ({
         },
       }));
       try {
+        const notifications = get().notifications;
+        set((state) => ({
+          ...state,
+          notifications: {
+            ...state.notifications,
+            fetching: state.notifications.initialized,
+          },
+        }));
         const { data } = await getNotifications.request({
           userId,
           cursor: notifications.cursor,
@@ -179,7 +193,9 @@ const initActions = (set, get) => ({
             cursor: resolvePaginationId(data.notifications),
             loading: false,
             fetching: false,
+            connected: true,
             initialized: true,
+            error: { ...initialState.notifications.error },
           },
         }));
       } catch (err) {
@@ -190,19 +206,22 @@ const initActions = (set, get) => ({
             ...state.notifications,
             loading: false,
             fetching: false,
+            connected: state.notifications.initialized,
             error: resolveAsyncError(err, true),
           },
         }));
       }
-    } else {
-      set((state) => ({
-        ...state,
-        notifications: {
-          ...state.notifications,
-          anchor: state.notifications.anchor ? null : target,
-        },
-      }));
     }
+  },
+  closeMenu: () => {
+    set((state) => ({
+      ...state,
+      notifications: {
+        ...state.notifications,
+        anchor: null,
+        opened: false,
+      },
+    }));
   },
   readNotification: async ({ event = window.event, id }) => {
     try {
@@ -294,15 +313,13 @@ const initActions = (set, get) => ({
     }
   },
   redirectUser: ({
-    event,
     notification,
     link,
     readNotification,
-    toggleMenu,
-    userId,
+    closeMenu,
     history,
   }) => {
-    toggleMenu({ event, userId });
+    closeMenu();
     history.push(link);
     if (!notification.read) readNotification({ id: notification.id });
   },

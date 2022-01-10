@@ -23,10 +23,11 @@ const InfiniteList = ({
   type,
   customPadding,
   shouldPause = false,
+  overflow = "visible !important",
   children,
   ...props
 }) => {
-  const classes = infiniteListStyles();
+  const classes = infiniteListStyles({ overflow });
 
   return (
     <InfiniteScroll

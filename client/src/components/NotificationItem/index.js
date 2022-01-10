@@ -24,8 +24,7 @@ const NotificationItem = ({
   handleReadClick,
   handleUnreadClick,
   readNotification,
-  toggleMenu,
-  userId,
+  closeMenu,
   isUpdating,
 }) => {
   const classes = notificationItemStyles();
@@ -54,14 +53,12 @@ const NotificationItem = ({
 
   return data.label && data.link ? (
     <ListItem
-      onClick={(e) =>
+      onClick={() =>
         handleRedirectClick({
-          event: e,
           notification,
           link: data.link,
           readNotification,
-          toggleMenu,
-          userId,
+          closeMenu,
           history,
         })
       }

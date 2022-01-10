@@ -82,7 +82,6 @@ const Interceptor = () => {
               cursor:
                 data.user.notifications[data.user.notifications.length - 1] &&
                 data.user.notifications[data.user.notifications.length - 1].id,
-              limit: 10,
             },
           });
           setApp({ loading: false, error: false, theme });

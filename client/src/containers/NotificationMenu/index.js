@@ -1,7 +1,6 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 import InfiniteList from "../../components/InfiniteList/index";
-import LoadingSpinner from "../../components/LoadingSpinner";
 import NotificationItem from "../../components/NotificationItem/index";
 import { useEventsStore } from "../../contexts/global/events";
 import { useUserStore } from "../../contexts/global/user";
@@ -20,7 +19,10 @@ const NotificationsMenu = () => {
   const fetching = useEventsStore((state) => state.notifications.fetching);
   const isUpdating = useEventsStore((state) => state.notifications.isUpdating);
   const error = useEventsStore((state) => state.notifications.error);
-  const toggleMenu = useEventsStore((state) => state.toggleMenu);
+  const fetchNotifications = useEventsStore(
+    (state) => state.fetchNotifications
+  );
+  const closeMenu = useEventsStore((state) => state.closeMenu);
   const redirectUser = useEventsStore((state) => state.redirectUser);
   const readNotification = useEventsStore((state) => state.readNotification);
   const unreadNotification = useEventsStore(
@@ -37,44 +39,42 @@ const NotificationsMenu = () => {
       anchorEl={anchor}
       anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       transformOrigin={{ vertical: "top", horizontal: "center" }}
-      onClose={(e) => toggleMenu({ event: e, userId })}
+      onClose={closeMenu}
       className={classes.menu}
     >
       <InfiniteList
         height={400}
         dataLength={notifications ? notifications.length : 0}
-        next={() => toggleMenu({ userId, fetching: true })}
+        next={(e) =>
+          fetchNotifications({ event: e, userId, shouldFetch: true })
+        }
         hasMore={hasMore}
         loading={loading}
         fetching={fetching}
         error={error.refetch}
         empty="No notifications yet"
         type="list"
+        overflow="hidden"
       >
         <List
           className={`${classes.list} ${loading && classes.spinner}`}
           disablePadding
         >
-          {!loading ? (
-            notifications.map((notification) => (
-              <>
-                <Divider />
-                <NotificationItem
-                  notification={notification}
-                  handleRedirectClick={redirectUser}
-                  handleReadClick={readNotification}
-                  handleUnreadClick={unreadNotification}
-                  isUpdating={isUpdating}
-                  readNotification={readNotification}
-                  toggleMenu={toggleMenu}
-                  userId={userId}
-                />
-                <Divider />
-              </>
-            ))
-          ) : (
-            <LoadingSpinner styles={classes.spinner} />
-          )}
+          {notifications.map((notification) => (
+            <>
+              <Divider />
+              <NotificationItem
+                notification={notification}
+                handleRedirectClick={redirectUser}
+                handleReadClick={readNotification}
+                handleUnreadClick={unreadNotification}
+                isUpdating={isUpdating}
+                readNotification={readNotification}
+                closeMenu={closeMenu}
+              />
+              <Divider />
+            </>
+          ))}
         </List>
       </InfiniteList>
     </Menu>

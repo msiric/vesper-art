@@ -30,7 +30,9 @@ const Header = () => {
   const search = useEventsStore((state) => state.search);
   const count = useEventsStore((state) => state.notifications.count);
   const toggleSearch = useEventsStore((state) => state.toggleSearch);
-  const toggleNotificationsMenu = useEventsStore((state) => state.toggleMenu);
+  const fetchNotifications = useEventsStore(
+    (state) => state.fetchNotifications
+  );
   const searchQuery = useEventsStore((state) => state.searchQuery);
 
   const { handleSubmit, errors, control, setValue, getValues } = useForm({
@@ -84,7 +86,7 @@ const Header = () => {
                   </Badge>
                 </IconButton> */}
                 <IconButton
-                  onClick={(e) => toggleNotificationsMenu({ event: e, userId })}
+                  onClick={(e) => fetchNotifications({ event: e, userId })}
                   aria-label="Show notifications"
                   color="inherit"
                 >
