@@ -18,7 +18,7 @@ const initialState = {
     loading: true,
     fetching: false,
     initialized: false,
-    connected: false,
+    connected: true,
     error: {
       refetch: false,
       message: "",
@@ -213,6 +213,7 @@ const initActions = (set, get) => ({
       }
     }
   },
+  refreshNotifications: () => {},
   closeMenu: () => {
     set((state) => ({
       ...state,
@@ -290,21 +291,36 @@ const initActions = (set, get) => ({
       console.log(err);
     }
   },
-  incrementNotification: ({ notification, cursor }) => {
+  prependNotification: ({
+    notification,
+    cursor,
+    count = 1,
+    playNotification,
+  }) => {
     set((state) => {
       return {
         ...state,
         notifications: {
           ...state.notifications,
-          items: state.notifications.opened
-            ? [notification].concat(state.notifications.items)
-            : state.notifications.items,
-          count: state.notifications.count + 1,
-          // $TODO still not implemented
-          cursor: state.notifications.opened ? cursor : "",
+          items: [notification, ...state.notifications.items],
+          count: state.notifications.count + count,
+          cursor: cursor,
         },
       };
     });
+    playNotification();
+  },
+  incrementCount: ({ playNotification }) => {
+    set((state) => {
+      return {
+        ...state,
+        notifications: {
+          ...state.notifications,
+          count: state.notifications.count + 1,
+        },
+      };
+    });
+    playNotification();
   },
   toggleSearch: () => {
     const search = get().search;

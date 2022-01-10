@@ -29,6 +29,7 @@ const Header = () => {
 
   const search = useEventsStore((state) => state.search);
   const count = useEventsStore((state) => state.notifications.count);
+  const connected = useEventsStore((state) => state.notifications.connected);
   const toggleSearch = useEventsStore((state) => state.toggleSearch);
   const fetchNotifications = useEventsStore(
     (state) => state.fetchNotifications
@@ -86,7 +87,15 @@ const Header = () => {
                   </Badge>
                 </IconButton> */}
                 <IconButton
-                  onClick={(e) => fetchNotifications({ event: e, userId })}
+                  onClick={(e) =>
+                    fetchNotifications({
+                      event: e,
+                      userId,
+                      // refetch notifications if there was an error on initial load
+                      // not good (fetch newest not oldest)
+                      shouldFetch: !connected,
+                    })
+                  }
                   aria-label="Show notifications"
                   color="inherit"
                 >

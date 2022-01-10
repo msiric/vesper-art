@@ -26,14 +26,31 @@ const Interceptor = () => {
   const updateUser = useUserStore((state) => state.updateUser);
   const resetUser = useUserStore((state) => state.resetUser);
 
+  const notificationLoading = useEventsStore(
+    (state) => state.notifications.loading
+  );
+  const notificationFetching = useEventsStore(
+    (state) => state.notifications.fetching
+  );
+  const notificationRefetch = useEventsStore(
+    (state) => state.notifications.error.refetch
+  );
   const notificationCount = useEventsStore(
     (state) => state.notifications.count
   );
+  const notificationConnected = useEventsStore(
+    (state) => state.notifications.connected
+  );
+  const notificationInitialized = useEventsStore(
+    (state) => state.notifications.initialized
+  );
+  const disconnectMenu = useEventsStore((state) => state.disconnectMenu);
   const setEvents = useEventsStore((state) => state.setEvents);
   const updateEvents = useEventsStore((state) => state.updateEvents);
-  const incrementNotification = useEventsStore(
-    (state) => state.incrementNotification
+  const prependNotification = useEventsStore(
+    (state) => state.prependNotification
   );
+  const incrementCount = useEventsStore((state) => state.incrementCount);
 
   const [playNotification] = useSound(notificationSound);
 
@@ -162,8 +179,29 @@ const Interceptor = () => {
 
   const handleSocketNotification = (data) => {
     console.log("INCREMENT NOFIRICATION");
-    incrementNotification({ notification: data, cursor: data.id });
-    playNotification();
+    if (notificationConnected) {
+      if (notificationInitialized) {
+        return prependNotification({
+          notification: data,
+          cursor: data.id,
+          playNotification,
+        });
+      }
+    }
+    return incrementCount({ playNotification });
+    // if (
+    //   !notificationInitialized ||
+    //   notificationLoading ||
+    //   (notificationRefetch && !notificationConnected)
+    // ) {
+    //   incrementCount({playNotification});
+    // } else if (
+    //   notificationFetching ||
+    //   (notificationRefetch && notificationConnected)
+    // ) {
+    //   prependNotification({ notification: data, cursor: data.id });
+    // }
+    // playNotification();
   };
 
   const handleSocketRefresh = async (payload) => {
@@ -186,21 +224,10 @@ const Interceptor = () => {
           return object;
         }, {}),
       });
-      if (notificationCount !== data.user.notifications) {
-        updateEvents({
-          notifications: { count: data.user.notifications },
-        });
-        playNotification();
-      }
 
-      // not needed because of useEffect?
-      // socket.emit("authenticateUser", {
-      //   token: `Bearer ${data.accessToken}`,
-      //   data: payload,
-      // });
       socket.payload = payload;
     } catch (err) {
-      resetUser();
+      disconnectMenu();
     }
   };
 
