@@ -84,10 +84,8 @@ const Interceptor = () => {
                 data.user.notifications[data.user.notifications.length - 1].id,
             },
           });
-          setApp({ loading: false, error: false, theme });
-        } else {
-          setApp({ loading: false, error: false, theme });
         }
+        setApp({ loading: false, error: false, theme });
       }
     } catch (err) {
       setApp({ loading: false, error: err, theme });

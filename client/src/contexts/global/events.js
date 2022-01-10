@@ -223,6 +223,17 @@ const initActions = (set, get) => ({
       },
     }));
   },
+  disconnectMenu: () => {
+    set((state) => ({
+      ...state,
+      notifications: {
+        ...state.notifications,
+        anchor: null,
+        opened: false,
+        connected: false,
+      },
+    }));
+  },
   readNotification: async ({ event = window.event, id }) => {
     try {
       event.stopPropagation();
