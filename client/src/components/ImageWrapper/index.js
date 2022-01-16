@@ -11,6 +11,7 @@ const ImageWrapper = ({
   source,
   placeholder,
   cover,
+  caption = "",
   addOverlay = false,
   shouldCover = false,
   loading = false,
@@ -38,6 +39,7 @@ const ImageWrapper = ({
         <img
           className={`${classes.media} ${shouldCover && classes.coverParent}`}
           src={source}
+          alt={caption}
         />
       </Box>
     )
