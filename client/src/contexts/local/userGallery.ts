@@ -30,7 +30,6 @@ const initialState = {
     },
   },
   elements: [],
-  captions: [],
   display: "purchases",
   // display: {
   //   type: "purchases",
@@ -102,7 +101,7 @@ const initActions = (set, get) => ({
         };
         return object;
       }, {});
-      const formattedArtwork = formatArtwork(newArtwork, elements.length);
+      const formattedArtwork = formatArtwork(newArtwork);
       set((state) => ({
         ...state,
         [display]: {
@@ -116,7 +115,6 @@ const initActions = (set, get) => ({
           cursor: resolvePaginationId(data[display]),
         },
         elements: [...state.elements, ...formattedArtwork.elements],
-        captions: [...state.captions, ...formattedArtwork.captions],
       }));
     } catch (err) {
       console.log(err);
