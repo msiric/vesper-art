@@ -379,16 +379,35 @@ export const getUserSettings = async ({ userId, connection }) => {
   throw createError(...formatError(errors.userNotFound));
 };
 
-export const getUserNotifications = async ({
+export const getPreviousNotifications = async ({
   userId,
   cursor,
   limit,
   connection,
 }) => {
+  const direction = "previous";
   const foundNotifications = await fetchUserNotifications({
     userId,
     cursor,
     limit,
+    direction,
+    connection,
+  });
+  return { notifications: foundNotifications };
+};
+
+export const getLatestNotifications = async ({
+  userId,
+  cursor,
+  limit,
+  connection,
+}) => {
+  const direction = "latest";
+  const foundNotifications = await fetchUserNotifications({
+    userId,
+    cursor,
+    limit,
+    direction,
     connection,
   });
   return { notifications: foundNotifications };

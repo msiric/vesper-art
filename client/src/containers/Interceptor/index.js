@@ -242,6 +242,9 @@ const Interceptor = () => {
       socket.payload = null;
       socket.instance.on("sendNotification", handleSocketNotification);
       socket.instance.on("expiredToken", handleSocketRefresh);
+      socket.instance.on("disconnect", () => {
+        console.log("you have been disconnected");
+      });
     } else {
       if (socket && socket.instance) socket.instance.emit("disconnectUser");
     }

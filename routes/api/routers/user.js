@@ -5,11 +5,12 @@ import {
   deactivateUser,
   deleteUserIntent,
   getBuyerStatistics,
+  getLatestNotifications,
+  getPreviousNotifications,
   getSellerStatistics,
   getUserArtworkById,
   getUserArtworkByUsername,
   getUserFavorites,
-  getUserNotifications,
   getUserOwnership,
   getUserProfile,
   getUserPurchases,
@@ -173,11 +174,22 @@ router
   );
 
 router
-  .route("/users/:userId/notifications")
+  .route("/users/:userId/notifications/previous")
   // $TODO not tested
   .get(
     [isAuthenticated, isAuthorized],
-    handler(getUserNotifications, false, (req, res, next) => ({
+    handler(getPreviousNotifications, false, (req, res, next) => ({
+      ...req.params,
+      ...req.query,
+    }))
+  );
+
+router
+  .route("/users/:userId/notifications/latest")
+  // $TODO not tested
+  .get(
+    [isAuthenticated, isAuthorized],
+    handler(getLatestNotifications, false, (req, res, next) => ({
       ...req.params,
       ...req.query,
     }))

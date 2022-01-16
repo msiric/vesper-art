@@ -1,5 +1,10 @@
 import create from "zustand";
-import { getNotifications, patchRead, patchUnread } from "../../services/user";
+import {
+  getNotifications,
+  patchRead,
+  patchUnread,
+  restoreNotifications,
+} from "../../services/user";
 import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 
 const SEARCH_TYPES = {
@@ -15,10 +20,11 @@ const initialState = {
     hasMore: true,
     cursor: "",
     limit: 10,
-    loading: true,
+    loading: false,
     fetching: false,
     initialized: false,
     connected: true,
+    idle: false,
     error: {
       refetch: false,
       message: "",
@@ -157,22 +163,14 @@ const initActions = (set, get) => ({
         },
       }));
     } else {
-      set((state) => ({
-        ...state,
-        notifications: {
-          ...state.notifications,
-          anchor: target,
-          opened: true,
-          loading: !state.notifications.initialized,
-          fetching: state.notifications.initialized,
-        },
-      }));
       try {
-        const notifications = get().notifications;
         set((state) => ({
           ...state,
           notifications: {
             ...state.notifications,
+            anchor: target,
+            opened: true,
+            loading: !state.notifications.initialized,
             fetching: state.notifications.initialized,
           },
         }));
@@ -185,7 +183,7 @@ const initActions = (set, get) => ({
           ...state,
           notifications: {
             ...state.notifications,
-            items: [...state.notifications.items].concat(data.notifications),
+            items: [...state.notifications.items, ...data.notifications],
             hasMore:
               data.notifications.length < state.notifications.limit
                 ? false
@@ -213,7 +211,52 @@ const initActions = (set, get) => ({
       }
     }
   },
-  refreshNotifications: () => {},
+  refreshNotifications: async ({ event, userId }) => {
+    try {
+      const notifications = get().notifications;
+      const target = event.currentTarget;
+      set((state) => ({
+        ...state,
+        notifications: {
+          ...state.notifications,
+          anchor: target,
+          opened: true,
+          loading: !state.notifications.initialized,
+          fetching: state.notifications.initialized,
+        },
+      }));
+      const { data } = await restoreNotifications.request({
+        userId,
+        cursor: notifications.items[0].id,
+      });
+      set((state) => ({
+        ...state,
+        notifications: {
+          ...state.notifications,
+          items: [...data.notifications, ...state.notifications.items],
+          loading: false,
+          fetching: false,
+          connected: true,
+          idle: false,
+          error: { ...initialState.notifications.error },
+        },
+      }));
+    } catch (err) {
+      console.log("error", err);
+      set((state) => ({
+        ...state,
+        notifications: {
+          ...initialState.notifications,
+          anchor: state.notifications.anchor,
+          opened: state.notifications.opened,
+          count: state.notifications.count,
+          cursor: state.notifications.cursor,
+          connected: false,
+          error: resolveAsyncError(err, true),
+        },
+      }));
+    }
+  },
   closeMenu: () => {
     set((state) => ({
       ...state,
@@ -232,6 +275,7 @@ const initActions = (set, get) => ({
         anchor: null,
         opened: false,
         connected: false,
+        idle: true,
       },
     }));
   },
