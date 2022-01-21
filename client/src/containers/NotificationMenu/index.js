@@ -17,6 +17,7 @@ const NotificationsMenu = () => {
   const anchor = useEventsStore((state) => state.notifications.anchor);
   const loading = useEventsStore((state) => state.notifications.loading);
   const fetching = useEventsStore((state) => state.notifications.fetching);
+  const refreshing = useEventsStore((state) => state.notifications.refreshing);
   const isUpdating = useEventsStore((state) => state.notifications.isUpdating);
   const error = useEventsStore((state) => state.notifications.error);
   const fetchNotifications = useEventsStore(
@@ -60,6 +61,7 @@ const NotificationsMenu = () => {
           className={`${classes.list} ${loading && classes.spinner}`}
           disablePadding
         >
+          {refreshing && "Refreshing notifications"}
           {notifications.map((notification) => (
             <>
               <Divider />

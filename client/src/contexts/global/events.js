@@ -19,12 +19,11 @@ const initialState = {
     opened: false,
     hasMore: true,
     cursor: "",
-    limit: 10,
+    limit: 5,
     loading: false,
     fetching: false,
+    refreshing: false,
     initialized: false,
-    connected: true,
-    idle: false,
     error: {
       refetch: false,
       message: "",
@@ -113,7 +112,18 @@ const initActions = (set, get) => ({
       },
     }));
   },
-  updateEvents: ({ notifications, search }) => {
+  updateEvents: ({
+    notifications,
+    search,
+    shouldPlayNotification = false,
+    playNotification,
+  }) => {
+    if (shouldPlayNotification) {
+      const prevNotifications = get().notifications;
+      if (notifications.count !== prevNotifications.count) {
+        playNotification();
+      }
+    }
     set((state) => ({
       ...state,
       notifications: {
@@ -152,6 +162,7 @@ const initActions = (set, get) => ({
   },
   fetchNotifications: async ({ event, userId, shouldFetch = false }) => {
     const notifications = get().notifications;
+    const initialized = notifications.initialized;
     const target = shouldFetch ? notifications.anchor : event.currentTarget;
     if (notifications.initialized && !shouldFetch) {
       set((state) => ({
@@ -191,38 +202,35 @@ const initActions = (set, get) => ({
             cursor: resolvePaginationId(data.notifications),
             loading: false,
             fetching: false,
-            connected: true,
             initialized: true,
             error: { ...initialState.notifications.error },
           },
         }));
       } catch (err) {
         console.log("error", err);
-        set((state) => ({
-          ...state,
-          notifications: {
-            ...state.notifications,
-            loading: false,
-            fetching: false,
-            connected: state.notifications.initialized,
-            error: resolveAsyncError(err, true),
-          },
-        }));
+        const resetEvents = get().resetEvents;
+        initialized
+          ? set((state) => ({
+              ...state,
+              notifications: {
+                ...state.notifications,
+                loading: false,
+                fetching: false,
+                error: resolveAsyncError(err, true),
+              },
+            }))
+          : resetEvents();
       }
     }
   },
-  refreshNotifications: async ({ event, userId }) => {
+  refreshNotifications: async ({ userId }) => {
     try {
       const notifications = get().notifications;
-      const target = event.currentTarget;
       set((state) => ({
         ...state,
         notifications: {
           ...state.notifications,
-          anchor: target,
-          opened: true,
-          loading: !state.notifications.initialized,
-          fetching: state.notifications.initialized,
+          refreshing: true,
         },
       }));
       const { data } = await restoreNotifications.request({
@@ -234,27 +242,14 @@ const initActions = (set, get) => ({
         notifications: {
           ...state.notifications,
           items: [...data.notifications, ...state.notifications.items],
-          loading: false,
-          fetching: false,
-          connected: true,
-          idle: false,
+          refreshing: false,
           error: { ...initialState.notifications.error },
         },
       }));
     } catch (err) {
       console.log("error", err);
-      set((state) => ({
-        ...state,
-        notifications: {
-          ...initialState.notifications,
-          anchor: state.notifications.anchor,
-          opened: state.notifications.opened,
-          count: state.notifications.count,
-          cursor: state.notifications.cursor,
-          connected: false,
-          error: resolveAsyncError(err, true),
-        },
-      }));
+      const disconnectMenu = get().disconnectMenu;
+      disconnectMenu();
     }
   },
   closeMenu: () => {
@@ -269,13 +264,10 @@ const initActions = (set, get) => ({
   },
   disconnectMenu: () => {
     set((state) => ({
-      ...state,
+      ...initialState,
       notifications: {
-        ...state.notifications,
-        anchor: null,
-        opened: false,
-        connected: false,
-        idle: true,
+        ...initialState.notifications,
+        count: state.notifications.count,
       },
     }));
   },

@@ -29,7 +29,6 @@ const Header = () => {
 
   const search = useEventsStore((state) => state.search);
   const count = useEventsStore((state) => state.notifications.count);
-  const idle = useEventsStore((state) => state.notifications.idle);
   const toggleSearch = useEventsStore((state) => state.toggleSearch);
   const fetchNotifications = useEventsStore(
     (state) => state.fetchNotifications
@@ -90,11 +89,7 @@ const Header = () => {
                   </Badge>
                 </IconButton> */}
                 <IconButton
-                  onClick={(e) =>
-                    idle
-                      ? refreshNotifications({ event: e, userId })
-                      : fetchNotifications({ event: e, userId })
-                  }
+                  onClick={(e) => fetchNotifications({ event: e, userId })}
                   aria-label="Show notifications"
                   color="inherit"
                 >

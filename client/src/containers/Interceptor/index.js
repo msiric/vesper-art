@@ -21,25 +21,14 @@ const Interceptor = () => {
   const loading = useAppStore((state) => state.loading);
   const setApp = useAppStore((state) => state.setApp);
 
+  const userId = useUserStore((state) => state.id);
   const userToken = useUserStore((state) => state.token);
   const setUser = useUserStore((state) => state.setUser);
   const updateUser = useUserStore((state) => state.updateUser);
   const resetUser = useUserStore((state) => state.resetUser);
 
-  const notificationLoading = useEventsStore(
-    (state) => state.notifications.loading
-  );
-  const notificationFetching = useEventsStore(
-    (state) => state.notifications.fetching
-  );
-  const notificationRefetch = useEventsStore(
-    (state) => state.notifications.error.refetch
-  );
-  const notificationCount = useEventsStore(
-    (state) => state.notifications.count
-  );
-  const notificationConnected = useEventsStore(
-    (state) => state.notifications.connected
+  const refreshNotifications = useEventsStore(
+    (state) => state.refreshNotifications
   );
   const notificationInitialized = useEventsStore(
     (state) => state.notifications.initialized
@@ -75,6 +64,8 @@ const Interceptor = () => {
           },
         });
 
+        console.log("data", data);
+
         if (data.user) {
           setUser({
             authenticated: true,
@@ -93,12 +84,7 @@ const Interceptor = () => {
           });
           setEvents({
             notifications: {
-              items: [],
               count: data.user.notifications,
-              hasMore: true,
-              cursor:
-                data.user.notifications[data.user.notifications.length - 1] &&
-                data.user.notifications[data.user.notifications.length - 1].id,
             },
           });
         }
@@ -178,15 +164,12 @@ const Interceptor = () => {
   };
 
   const handleSocketNotification = (data) => {
-    console.log("INCREMENT NOFIRICATION");
-    if (notificationConnected) {
-      if (notificationInitialized) {
-        return prependNotification({
-          notification: data,
-          cursor: data.id,
-          playNotification,
-        });
-      }
+    if (notificationInitialized) {
+      return prependNotification({
+        notification: data,
+        cursor: data.id,
+        playNotification,
+      });
     }
     return incrementCount({ playNotification });
     // if (
@@ -224,10 +207,21 @@ const Interceptor = () => {
           return object;
         }, {}),
       });
-
-      socket.payload = payload;
+      updateEvents({
+        notifications: { count: data.user.notifications },
+        shouldPlayNotification: true,
+        playNotification,
+      });
+      /*  socket.payload = payload; */
     } catch (err) {
       disconnectMenu();
+    }
+  };
+
+  const handleNotificationRefresh = async () => {
+    console.log("NOTIFICATION REFRESH");
+    if (notificationInitialized) {
+      await refreshNotifications({ userId });
     }
   };
 
@@ -239,12 +233,10 @@ const Interceptor = () => {
         token: token ? `Bearer ${token}` : null,
         data: socket.payload,
       });
-      socket.payload = null;
+      /*       socket.payload = null; */
       socket.instance.on("sendNotification", handleSocketNotification);
       socket.instance.on("expiredToken", handleSocketRefresh);
-      socket.instance.on("disconnect", () => {
-        console.log("you have been disconnected");
-      });
+      socket.instance.on("connect", handleNotificationRefresh);
     } else {
       if (socket && socket.instance) socket.instance.emit("disconnectUser");
     }
