@@ -14,7 +14,7 @@ import { postRefresh } from "../../services/auth";
 import history from "../../utils/history";
 
 const ax = axios.create();
-export const socket = { instance: null, payload: null };
+export const socket = { instance: null };
 
 const Interceptor = () => {
   const theme = useAppStore((state) => state.theme);
@@ -55,17 +55,8 @@ const Interceptor = () => {
   const getRefreshToken = async () => {
     try {
       if (!userToken) {
-        console.log("GET REFRESH TOKEN");
         setApp({ loading: true, error: false, theme });
-
-        const { data } = await axios.post("/api/auth/refresh_token", {
-          headers: {
-            credentials: "include",
-          },
-        });
-
-        console.log("data", data);
-
+        const { data } = await postRefresh.request();
         if (data.user) {
           setUser({
             authenticated: true,
@@ -77,10 +68,10 @@ const Interceptor = () => {
             avatar: data.user.avatar,
             stripeId: data.user.stripeId,
             country: data.user.country,
-            favorites: data.user.favorites.reduce((object, item) => {
-              object[item.artworkId] = true;
-              return object;
-            }, {}),
+            favorites: data.user.favorites.reduce(
+              (object, item) => ({ ...object, [item.artworkId]: true }),
+              {}
+            ),
           });
           setEvents({
             notifications: {
@@ -104,7 +95,6 @@ const Interceptor = () => {
 
     ax.interceptors.response.use(
       (response) => {
-        console.log("RESPONSE", response);
         if (response.data && response.data.expose) {
           enqueueSnackbar(response.data.message, {
             variant: "success",
@@ -135,13 +125,14 @@ const Interceptor = () => {
             avatar: data.user.avatar,
             stripeId: data.user.stripeId,
             country: data.user.country,
-            favorites: data.user.favorites.reduce((object, item) => {
-              object[item.artworkId] = true;
-              return object;
-            }, {}),
+            favorites: data.user.favorites.reduce(
+              (object, item) => ({ ...object, [item.artworkId]: true }),
+              {}
+            ),
           });
           updateEvents({
             notifications: { count: data.user.notifications },
+            playNotification,
           });
           const config = error.config;
           config._retry = true;
@@ -172,54 +163,33 @@ const Interceptor = () => {
       });
     }
     return incrementCount({ playNotification });
-    // if (
-    //   !notificationInitialized ||
-    //   notificationLoading ||
-    //   (notificationRefetch && !notificationConnected)
-    // ) {
-    //   incrementCount({playNotification});
-    // } else if (
-    //   notificationFetching ||
-    //   (notificationRefetch && notificationConnected)
-    // ) {
-    //   prependNotification({ notification: data, cursor: data.id });
-    // }
-    // playNotification();
   };
 
-  const handleSocketRefresh = async (payload) => {
-    console.log("SOCKETT REFRESH");
+  const handleSocketRefresh = async () => {
     try {
       socket.instance.emit("disconnectUser");
-      const { data } = await axios.post(`/api/auth/refresh_token`, {
-        headers: {
-          credentials: "include",
-        },
-      });
+      const { data } = await postRefresh.request();
       updateUser({
         token: data.accessToken,
         email: data.user.email,
         avatar: data.user.avatar,
         stripeId: data.user.stripeId,
         country: data.user.country,
-        favorites: data.user.favorites.reduce((object, item) => {
-          object[item.artworkId] = true;
-          return object;
-        }, {}),
+        favorites: data.user.favorites.reduce(
+          (object, item) => ({ ...object, [item.artworkId]: true }),
+          {}
+        ),
       });
       updateEvents({
         notifications: { count: data.user.notifications },
-        shouldPlayNotification: true,
         playNotification,
       });
-      /*  socket.payload = payload; */
     } catch (err) {
       disconnectMenu();
     }
   };
 
   const handleNotificationRefresh = async () => {
-    console.log("NOTIFICATION REFRESH");
     if (notificationInitialized) {
       await refreshNotifications({ userId });
     }
@@ -228,12 +198,9 @@ const Interceptor = () => {
   const handleSocket = (token) => {
     if (token) {
       socket.instance = openSocket();
-
       socket.instance.emit("authenticateUser", {
         token: token ? `Bearer ${token}` : null,
-        data: socket.payload,
       });
-      /*       socket.payload = null; */
       socket.instance.on("sendNotification", handleSocketNotification);
       socket.instance.on("expiredToken", handleSocketRefresh);
       socket.instance.on("connect", handleNotificationRefresh);

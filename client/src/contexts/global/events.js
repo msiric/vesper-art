@@ -112,17 +112,10 @@ const initActions = (set, get) => ({
       },
     }));
   },
-  updateEvents: ({
-    notifications,
-    search,
-    shouldPlayNotification = false,
-    playNotification,
-  }) => {
-    if (shouldPlayNotification) {
-      const prevNotifications = get().notifications;
-      if (notifications.count !== prevNotifications.count) {
-        playNotification();
-      }
+  updateEvents: ({ notifications, search, playNotification }) => {
+    const prevNotifications = get().notifications;
+    if (notifications.count !== prevNotifications.count) {
+      playNotification();
     }
     set((state) => ({
       ...state,
