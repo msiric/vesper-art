@@ -23,7 +23,6 @@ const NotificationItem = ({
   handleRedirectClick,
   handleReadClick,
   handleUnreadClick,
-  readNotification,
   closeMenu,
   isUpdating,
 }) => {
@@ -57,7 +56,7 @@ const NotificationItem = ({
         handleRedirectClick({
           notification,
           link: data.link,
-          readNotification,
+          readNotification: handleReadClick,
           closeMenu,
           history,
         })
