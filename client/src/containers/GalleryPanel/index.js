@@ -22,7 +22,6 @@ const GalleryPanel = ({ formatArtwork }) => {
   const hasMore = useUserGallery((state) => state[display].hasMore);
   const error = useUserGallery((state) => state[display].error);
   const elements = useUserGallery((state) => state.elements);
-  const captions = useUserGallery((state) => state.captions);
   const fetchUser = useUserGallery((state) => state.fetchUser);
 
   const history = useHistory();
@@ -51,26 +50,6 @@ const GalleryPanel = ({ formatArtwork }) => {
     },
   };
 
-  const masonryElement = (
-    <Masonry
-      breakpointCols={breakpointsFixedWidth}
-      className={classes.masonry}
-      columnClassName={classes.column}
-    >
-      {elements.map((item) => (
-        <Card className={classes.card} key={item.id}>
-          <ImageWrapper
-            height={item.height}
-            source={item.media}
-            placeholder={item.dominant}
-            shouldCover={true}
-            loading={loading}
-          />
-        </Card>
-      ))}
-    </Masonry>
-  );
-
   return (
     <Box className={classes.container}>
       <InfiniteList
@@ -83,16 +62,30 @@ const GalleryPanel = ({ formatArtwork }) => {
         empty="No artwork in your gallery"
         type="masonry"
       >
-        {!loading &&
-          (!fetching ? (
-            <SimpleReactLightbox>
-              <SRLWrapper options={options} customCaptions={captions}>
-                {masonryElement}
-              </SRLWrapper>
-            </SimpleReactLightbox>
-          ) : (
-            masonryElement
-          ))}
+        {!loading && (
+          <SimpleReactLightbox>
+            <SRLWrapper options={options}>
+              <Masonry
+                breakpointCols={breakpointsFixedWidth}
+                className={classes.masonry}
+                columnClassName={classes.column}
+              >
+                {elements.map((item) => (
+                  <Card className={classes.card} key={item.id}>
+                    <ImageWrapper
+                      height={item.height}
+                      source={item.media}
+                      placeholder={item.dominant}
+                      caption={item.caption}
+                      shouldCover={true}
+                      loading={loading}
+                    />
+                  </Card>
+                ))}
+              </Masonry>
+            </SRLWrapper>
+          </SimpleReactLightbox>
+        )}
       </InfiniteList>
     </Box>
   );
