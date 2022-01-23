@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useSnackbar } from "notistack";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import openSocket from "socket.io-client";
 import useSound from "use-sound";
 import { auth } from "../../../../common/constants";
@@ -45,6 +45,8 @@ const Interceptor = () => {
     (state) => state.prependNotification
   );
   const incrementCount = useEventsStore((state) => state.incrementCount);
+
+  const previousCount = useRef(0);
 
   const [playNotification] = useSound(notificationSound);
 
@@ -231,8 +233,11 @@ const Interceptor = () => {
 
   useEffect(() => {
     if (updatedCount) {
-      playNotification();
+      if (count > previousCount.current) {
+        playNotification();
+      }
     }
+    previousCount.current = count;
   }, [count]);
 
   return loading ? <Backdrop loading={loading} /> : <App />;
