@@ -638,6 +638,7 @@ export const fetchUserNotifications = async ({
   userId,
   cursor,
   limit,
+  direction,
   connection,
 }) => {
   // return await Notification.find({
@@ -650,19 +651,26 @@ export const fetchUserNotifications = async ({
   //   },
   // });
 
+  const queryElements =
+    direction === "previous"
+      ? { sign: "<", threshold: Number.MAX_VALUE }
+      : { sign: ">", threshold: -1 };
+
   const queryBuilder = await connection
     .getRepository(Notification)
     .createQueryBuilder("notification");
   const foundNotifications = await queryBuilder
     .select([...NOTIFICATION_SELECTION["ESSENTIAL_INFO"]()])
     .where(
-      `notification.receiverId = :userId AND notification.serial < 
+      `notification.receiverId = :userId AND notification.serial ${
+        queryElements.sign
+      } 
       ${resolveSubQuery(
         queryBuilder,
         "notification",
         Notification,
         cursor,
-        Number.MAX_VALUE
+        queryElements.threshold
       )}`,
       {
         userId,

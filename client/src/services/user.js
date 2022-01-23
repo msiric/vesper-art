@@ -130,7 +130,18 @@ export const patchBilling = {
 export const getNotifications = {
   request: async ({ userId, cursor = "", limit = "" }) =>
     await ax.get(
-      `/api/users/${userId}/notifications?cursor=${cursor}&limit=${limit}`
+      `/api/users/${userId}/notifications/previous?cursor=${cursor}&limit=${limit}`
+    ),
+  success: {
+    message: "Notifications successfully fetched",
+    variant: "success",
+  },
+  error: { message: "Failed to fetch notifications", variant: "error" },
+};
+export const restoreNotifications = {
+  request: async ({ userId, cursor = "", limit = "" }) =>
+    await ax.get(
+      `/api/users/${userId}/notifications/latest?cursor=${cursor}&limit=${limit}`
     ),
   success: {
     message: "Notifications successfully fetched",

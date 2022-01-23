@@ -941,16 +941,16 @@ describe("User tests", () => {
     });
   });
 
-  describe("/api/users/:userId/notifications", () => {
+  describe("/api/users/:userId/notifications/previous", () => {
     let userNotifications;
     beforeAll(() => {
       userNotifications = entities.Notification.filter(
         (item) => item.receiverId === seller.id
       );
     });
-    it("should fetch seller notifications", async () => {
+    it("should fetch previous seller notifications", async () => {
       const res = await request(app, sellerToken).get(
-        `/api/users/${seller.id}/notifications`
+        `/api/users/${seller.id}/notifications/previous`
       );
       expect(res.body.notifications).toHaveLength(userNotifications.length);
       expect(res.statusCode).toEqual(statusCodes.ok);
@@ -959,7 +959,7 @@ describe("User tests", () => {
     it("should limit user notifications to 1", async () => {
       const limit = 1;
       const res = await request(app, sellerToken).get(
-        `/api/users/${seller.id}/notifications?cursor=&limit=${limit}`
+        `/api/users/${seller.id}/notifications/previous?cursor=&limit=${limit}`
       );
       expect(res.body.notifications).toHaveLength(limit);
       expect(res.statusCode).toEqual(statusCodes.ok);
@@ -969,7 +969,7 @@ describe("User tests", () => {
       const cursor = userNotifications[userNotifications.length - 1].id;
       const limit = 1;
       const res = await request(app, sellerToken).get(
-        `/api/users/${seller.id}/notifications?cursor=${cursor}&limit=${limit}`
+        `/api/users/${seller.id}/notifications/previous?cursor=${cursor}&limit=${limit}`
       );
       expect(res.body.notifications[0].id).toEqual(
         userNotifications[userNotifications.length - 2].id
@@ -979,7 +979,7 @@ describe("User tests", () => {
 
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get(
-        `/api/users/${seller.id}/notifications`
+        `/api/users/${seller.id}/notifications/previous`
       );
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
       expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
@@ -987,7 +987,60 @@ describe("User tests", () => {
 
     it("should throw an error if user is not authorized", async () => {
       const res = await request(app, buyerToken).get(
-        `/api/users/${seller.id}/notifications`
+        `/api/users/${seller.id}/notifications/previous`
+      );
+      expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
+    });
+  });
+
+  describe("/api/users/:userId/notifications/latest", () => {
+    let userNotifications;
+    beforeAll(() => {
+      userNotifications = entities.Notification.filter(
+        (item) => item.receiverId === seller.id
+      );
+    });
+    it("should fetch latest seller notifications", async () => {
+      const res = await request(app, sellerToken).get(
+        `/api/users/${seller.id}/notifications/latest`
+      );
+      expect(res.body.notifications).toHaveLength(userNotifications.length);
+      expect(res.statusCode).toEqual(statusCodes.ok);
+    });
+
+    it("should limit user notifications to 1", async () => {
+      const limit = 1;
+      const res = await request(app, sellerToken).get(
+        `/api/users/${seller.id}/notifications/latest?cursor=&limit=${limit}`
+      );
+      expect(res.body.notifications).toHaveLength(limit);
+      expect(res.statusCode).toEqual(statusCodes.ok);
+    });
+
+    it("should limit user notifications to 1 and skip the first one", async () => {
+      const cursor = userNotifications[0].id;
+      const limit = 1;
+      const res = await request(app, sellerToken).get(
+        `/api/users/${seller.id}/notifications/latest?cursor=${cursor}&limit=${limit}`
+      );
+      expect(res.body.notifications[0].id).toEqual(
+        userNotifications[userNotifications.length - 1].id
+      );
+      expect(res.statusCode).toEqual(statusCodes.ok);
+    });
+
+    it("should throw an error if user is not authenticated", async () => {
+      const res = await request(app).get(
+        `/api/users/${seller.id}/notifications/latest`
+      );
+      expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
+    });
+
+    it("should throw an error if user is not authorized", async () => {
+      const res = await request(app, buyerToken).get(
+        `/api/users/${seller.id}/notifications/latest`
       );
       expect(res.body.message).toEqual(errors.notAuthorized.message);
       expect(res.statusCode).toEqual(errors.notAuthorized.status);

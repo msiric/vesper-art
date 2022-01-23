@@ -95,6 +95,7 @@ export const scrollToHighlight = (highlightRef) => {
 };
 
 export const isFormDisabled = (currentValues, defaultValues, formState) => {
-  const isFormInvalid = formState.isSubmitting || !formState.isValid;
+  const isFormInvalid = formState.isSubmitting;
+  // || !formState.isValid;
   return !isFormAltered(currentValues, defaultValues) || isFormInvalid;
 };

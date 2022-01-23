@@ -25,7 +25,12 @@ const initActions = (set) => ({
       const { data } = await postVerifier.request({ data: values });
       set((state) => ({
         ...state,
-        license: { ...state.license, data: data.license, loading: false },
+        license: {
+          ...state.license,
+          data: data.license,
+          loading: false,
+          error: { ...initialState.license.error },
+        },
       }));
     } catch (err) {
       set((state) => ({

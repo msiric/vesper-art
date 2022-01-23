@@ -1,5 +1,10 @@
 import create from "zustand";
-import { getNotifications, patchRead, patchUnread } from "../../services/user";
+import {
+  getNotifications,
+  patchRead,
+  patchUnread,
+  restoreNotifications,
+} from "../../services/user";
 import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 
 const SEARCH_TYPES = {
@@ -14,10 +19,12 @@ const initialState = {
     opened: false,
     hasMore: true,
     cursor: "",
-    limit: 10,
-    loading: true,
+    limit: 5,
+    loading: false,
     fetching: false,
+    refreshing: false,
     initialized: false,
+    updatedCount: false,
     error: {
       refetch: false,
       message: "",
@@ -62,10 +69,6 @@ const initActions = (set, get) => ({
           typeof notifications.limit !== "undefined"
             ? notifications.limit
             : state.notifications.limit,
-        isLoading:
-          typeof notifications.isLoading !== "undefined"
-            ? notifications.isLoading
-            : state.notifications.isLoading,
       },
       search: typeof search !== "undefined" ? search : state.search,
     }));
@@ -99,10 +102,15 @@ const initActions = (set, get) => ({
           typeof notifications.limit !== "undefined"
             ? notifications.limit
             : state.notifications.limit,
-        isLoading:
-          typeof notifications.isLoading !== "undefined"
-            ? notifications.isLoading
-            : state.notifications.isLoading,
+      },
+    }));
+  },
+  updateCount: ({ enabled }) => {
+    set((state) => ({
+      ...state,
+      notifications: {
+        ...state.notifications,
+        updatedCount: enabled,
       },
     }));
   },
@@ -135,33 +143,35 @@ const initActions = (set, get) => ({
           typeof notifications.limit !== "undefined"
             ? notifications.limit
             : state.notifications.limit,
-        isLoading:
-          typeof notifications.isLoading !== "undefined"
-            ? notifications.isLoading
-            : state.notifications.isLoading,
       },
       search: typeof search !== "undefined" ? search : state.search,
     }));
   },
-  toggleMenu: async ({ event, userId, fetching = false }) => {
-    const target = event ? event.currentTarget : null;
+  fetchNotifications: async ({ event, userId, shouldFetch = false }) => {
     const notifications = get().notifications;
-    if (
-      (fetching && !notifications.opened) ||
-      (notifications.items.length < notifications.limit &&
-        !notifications.opened)
-    ) {
+    const initialized = notifications.initialized;
+    const target = shouldFetch ? notifications.anchor : event.currentTarget;
+    if (notifications.initialized && !shouldFetch) {
       set((state) => ({
         ...state,
         notifications: {
           ...state.notifications,
-          anchor: target,
           opened: true,
-          loading: !state.notifications.initialized,
-          fetching: state.notifications.initialized,
+          anchor: target,
         },
       }));
+    } else {
       try {
+        set((state) => ({
+          ...state,
+          notifications: {
+            ...state.notifications,
+            anchor: target,
+            opened: true,
+            loading: !state.notifications.initialized,
+            fetching: state.notifications.initialized,
+          },
+        }));
         const { data } = await getNotifications.request({
           userId,
           cursor: notifications.cursor,
@@ -171,7 +181,7 @@ const initActions = (set, get) => ({
           ...state,
           notifications: {
             ...state.notifications,
-            items: [...state.notifications.items].concat(data.notifications),
+            items: [...state.notifications.items, ...data.notifications],
             hasMore:
               data.notifications.length < state.notifications.limit
                 ? false
@@ -180,29 +190,74 @@ const initActions = (set, get) => ({
             loading: false,
             fetching: false,
             initialized: true,
+            error: { ...initialState.notifications.error },
           },
         }));
       } catch (err) {
         console.log("error", err);
-        set((state) => ({
-          ...state,
-          notifications: {
-            ...state.notifications,
-            loading: false,
-            fetching: false,
-            error: resolveAsyncError(err, true),
-          },
-        }));
+        const resetEvents = get().resetEvents;
+        initialized
+          ? set((state) => ({
+              ...state,
+              notifications: {
+                ...state.notifications,
+                loading: false,
+                fetching: false,
+                error: resolveAsyncError(err, true),
+              },
+            }))
+          : resetEvents();
       }
-    } else {
+    }
+  },
+  refreshNotifications: async ({ userId }) => {
+    try {
+      const notifications = get().notifications;
       set((state) => ({
         ...state,
         notifications: {
           ...state.notifications,
-          anchor: state.notifications.anchor ? null : target,
+          refreshing: true,
         },
       }));
+      const { data } = await restoreNotifications.request({
+        userId,
+        cursor: notifications.items[0].id,
+      });
+      set((state) => ({
+        ...state,
+        notifications: {
+          ...state.notifications,
+          items: [...data.notifications, ...state.notifications.items],
+          refreshing: false,
+          error: { ...initialState.notifications.error },
+        },
+      }));
+    } catch (err) {
+      console.log("error", err);
+      const disconnectMenu = get().disconnectMenu;
+      disconnectMenu();
     }
+  },
+  closeMenu: () => {
+    set((state) => ({
+      ...state,
+      notifications: {
+        ...state.notifications,
+        anchor: null,
+        opened: false,
+      },
+    }));
+  },
+  disconnectMenu: () => {
+    set((state) => ({
+      ...initialState,
+      notifications: {
+        ...initialState.notifications,
+        count: state.notifications.count,
+        updatedCount: state.notifications.updatedCount,
+      },
+    }));
   },
   readNotification: async ({ event = window.event, id }) => {
     try {
@@ -260,18 +315,26 @@ const initActions = (set, get) => ({
       console.log(err);
     }
   },
-  incrementNotification: ({ notification, cursor }) => {
+  prependNotification: ({ notification, cursor, count = 1 }) => {
     set((state) => {
       return {
         ...state,
         notifications: {
           ...state.notifications,
-          items: state.notifications.opened
-            ? [notification].concat(state.notifications.items)
-            : state.notifications.items,
+          items: [notification, ...state.notifications.items],
+          count: state.notifications.count + count,
+          cursor: cursor,
+        },
+      };
+    });
+  },
+  incrementCount: () => {
+    set((state) => {
+      return {
+        ...state,
+        notifications: {
+          ...state.notifications,
           count: state.notifications.count + 1,
-          // $TODO still not implemented
-          cursor: state.notifications.opened ? cursor : "",
         },
       };
     });
@@ -294,26 +357,15 @@ const initActions = (set, get) => ({
     }
   },
   redirectUser: ({
-    event,
     notification,
     link,
     readNotification,
-    toggleMenu,
-    userId,
+    closeMenu,
     history,
   }) => {
-    toggleMenu({ event, userId });
+    closeMenu();
     history.push(link);
     if (!notification.read) readNotification({ id: notification.id });
-  },
-  updateLoading: ({ notifications }) => {
-    set((state) => ({
-      ...state,
-      notifications: {
-        ...state.notifications,
-        isLoading: notifications.isLoading,
-      },
-    }));
   },
   resetEvents: () => {
     set({ ...initialState });

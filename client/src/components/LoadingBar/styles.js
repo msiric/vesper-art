@@ -7,23 +7,15 @@ const loadingSpinnerStyles = makeStyles((muiTheme) => ({
     alignItems: "center",
     width: "100%",
     maxWidth: "100%",
+    paddingLeft: 0,
+    paddingRight: 0,
   },
   item: {
     display: "flex",
     justifyContent: "center",
-    alignItems: "center",
     height: "100%",
     width: "100%",
-    padding: "32px 0",
     flexDirection: "column",
-  },
-  circle: {
-    "&>svg": {
-      color: "rgba(255, 255, 255, 0.31)",
-    },
-  },
-  customPadding: {
-    padding: "154px 0",
   },
   label: {
     margin: "6px auto",

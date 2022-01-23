@@ -14,26 +14,37 @@ import { postRefresh } from "../../services/auth";
 import history from "../../utils/history";
 
 const ax = axios.create();
-export const socket = { instance: null, payload: null };
+export const socket = { instance: null };
 
 const Interceptor = () => {
   const theme = useAppStore((state) => state.theme);
   const loading = useAppStore((state) => state.loading);
   const setApp = useAppStore((state) => state.setApp);
 
+  const userId = useUserStore((state) => state.id);
   const userToken = useUserStore((state) => state.token);
   const setUser = useUserStore((state) => state.setUser);
   const updateUser = useUserStore((state) => state.updateUser);
   const resetUser = useUserStore((state) => state.resetUser);
 
-  const notificationCount = useEventsStore(
-    (state) => state.notifications.count
+  const initialized = useEventsStore(
+    (state) => state.notifications.initialized
   );
+  const count = useEventsStore((state) => state.notifications.count);
+  const updatedCount = useEventsStore(
+    (state) => state.notifications.updatedCount
+  );
+  const updateCount = useEventsStore((state) => state.updateCount);
+  const refreshNotifications = useEventsStore(
+    (state) => state.refreshNotifications
+  );
+  const disconnectMenu = useEventsStore((state) => state.disconnectMenu);
   const setEvents = useEventsStore((state) => state.setEvents);
   const updateEvents = useEventsStore((state) => state.updateEvents);
-  const incrementNotification = useEventsStore(
-    (state) => state.incrementNotification
+  const prependNotification = useEventsStore(
+    (state) => state.prependNotification
   );
+  const incrementCount = useEventsStore((state) => state.incrementCount);
 
   const [playNotification] = useSound(notificationSound);
 
@@ -49,15 +60,8 @@ const Interceptor = () => {
   const getRefreshToken = async () => {
     try {
       if (!userToken) {
-        console.log("GET REFRESH TOKEN");
         setApp({ loading: true, error: false, theme });
-
-        const { data } = await axios.post("/api/auth/refresh_token", {
-          headers: {
-            credentials: "include",
-          },
-        });
-
+        const { data } = await postRefresh.request();
         if (data.user) {
           setUser({
             authenticated: true,
@@ -69,26 +73,19 @@ const Interceptor = () => {
             avatar: data.user.avatar,
             stripeId: data.user.stripeId,
             country: data.user.country,
-            favorites: data.user.favorites.reduce((object, item) => {
-              object[item.artworkId] = true;
-              return object;
-            }, {}),
+            favorites: data.user.favorites.reduce(
+              (object, item) => ({ ...object, [item.artworkId]: true }),
+              {}
+            ),
           });
           setEvents({
             notifications: {
-              items: [],
               count: data.user.notifications,
-              hasMore: true,
-              cursor:
-                data.user.notifications[data.user.notifications.length - 1] &&
-                data.user.notifications[data.user.notifications.length - 1].id,
-              limit: 10,
             },
           });
-          setApp({ loading: false, error: false, theme });
-        } else {
-          setApp({ loading: false, error: false, theme });
+          updateCount({ enabled: true });
         }
+        setApp({ loading: false, error: false, theme });
       }
     } catch (err) {
       setApp({ loading: false, error: err, theme });
@@ -104,7 +101,6 @@ const Interceptor = () => {
 
     ax.interceptors.response.use(
       (response) => {
-        console.log("RESPONSE", response);
         if (response.data && response.data.expose) {
           enqueueSnackbar(response.data.message, {
             variant: "success",
@@ -135,10 +131,10 @@ const Interceptor = () => {
             avatar: data.user.avatar,
             stripeId: data.user.stripeId,
             country: data.user.country,
-            favorites: data.user.favorites.reduce((object, item) => {
-              object[item.artworkId] = true;
-              return object;
-            }, {}),
+            favorites: data.user.favorites.reduce(
+              (object, item) => ({ ...object, [item.artworkId]: true }),
+              {}
+            ),
           });
           updateEvents({
             notifications: { count: data.user.notifications },
@@ -164,60 +160,53 @@ const Interceptor = () => {
   };
 
   const handleSocketNotification = (data) => {
-    console.log("INCREMENT NOFIRICATION");
-    incrementNotification({ notification: data, cursor: data.id });
-    playNotification();
+    if (initialized) {
+      return prependNotification({
+        notification: data,
+        cursor: data.id,
+      });
+    }
+    return incrementCount();
   };
 
-  const handleSocketRefresh = async (payload) => {
-    console.log("SOCKETT REFRESH");
+  const handleSocketRefresh = async () => {
     try {
       socket.instance.emit("disconnectUser");
-      const { data } = await axios.post(`/api/auth/refresh_token`, {
-        headers: {
-          credentials: "include",
-        },
-      });
+      const { data } = await postRefresh.request();
       updateUser({
         token: data.accessToken,
         email: data.user.email,
         avatar: data.user.avatar,
         stripeId: data.user.stripeId,
         country: data.user.country,
-        favorites: data.user.favorites.reduce((object, item) => {
-          object[item.artworkId] = true;
-          return object;
-        }, {}),
+        favorites: data.user.favorites.reduce(
+          (object, item) => ({ ...object, [item.artworkId]: true }),
+          {}
+        ),
       });
-      if (notificationCount !== data.user.notifications) {
-        updateEvents({
-          notifications: { count: data.user.notifications },
-        });
-        playNotification();
-      }
-
-      // not needed because of useEffect?
-      // socket.emit("authenticateUser", {
-      //   token: `Bearer ${data.accessToken}`,
-      //   data: payload,
-      // });
-      socket.payload = payload;
+      updateEvents({
+        notifications: { count: data.user.notifications },
+      });
     } catch (err) {
-      resetUser();
+      disconnectMenu();
+    }
+  };
+
+  const handleNotificationRefresh = async () => {
+    if (initialized) {
+      await refreshNotifications({ userId });
     }
   };
 
   const handleSocket = (token) => {
     if (token) {
       socket.instance = openSocket();
-
       socket.instance.emit("authenticateUser", {
         token: token ? `Bearer ${token}` : null,
-        data: socket.payload,
       });
-      socket.payload = null;
       socket.instance.on("sendNotification", handleSocketNotification);
       socket.instance.on("expiredToken", handleSocketRefresh);
+      socket.instance.on("connect", handleNotificationRefresh);
     } else {
       if (socket && socket.instance) socket.instance.emit("disconnectUser");
     }
@@ -228,6 +217,7 @@ const Interceptor = () => {
     return () => {
       socket.instance.off("sendNotification", handleSocketNotification);
       socket.instance.off("expiredToken", handleSocketRefresh);
+      socket.instance.off("connect", handleNotificationRefresh);
     };
   }, []);
 
@@ -238,6 +228,12 @@ const Interceptor = () => {
       axios.interceptors.response.eject(ax);
     };
   }, [userToken]);
+
+  useEffect(() => {
+    if (updatedCount) {
+      playNotification();
+    }
+  }, [count]);
 
   return loading ? <Backdrop loading={loading} /> : <App />;
 };
