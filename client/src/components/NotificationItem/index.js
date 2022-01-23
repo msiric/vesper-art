@@ -53,6 +53,7 @@ const NotificationItem = ({
   return data.label && data.link ? (
     <ListItem
       onClick={() =>
+        !isUpdating &&
         handleRedirectClick({
           notification,
           link: data.link,

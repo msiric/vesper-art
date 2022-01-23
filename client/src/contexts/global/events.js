@@ -315,29 +315,31 @@ const initActions = (set, get) => ({
       console.log(err);
     }
   },
-  prependNotification: ({ notification, cursor, count = 1 }) => {
-    set((state) => {
-      return {
-        ...state,
-        notifications: {
-          ...state.notifications,
-          items: [notification, ...state.notifications.items],
-          count: state.notifications.count + count,
-          cursor: cursor,
-        },
-      };
-    });
-  },
-  incrementCount: () => {
-    set((state) => {
-      return {
-        ...state,
-        notifications: {
-          ...state.notifications,
-          count: state.notifications.count + 1,
-        },
-      };
-    });
+  addNotification: ({ notification, cursor, count = 1 }) => {
+    const initialized = get().notifications.initialized;
+    if (initialized) {
+      set((state) => {
+        return {
+          ...state,
+          notifications: {
+            ...state.notifications,
+            items: [notification, ...state.notifications.items],
+            count: state.notifications.count + count,
+            cursor: cursor,
+          },
+        };
+      });
+    } else {
+      set((state) => {
+        return {
+          ...state,
+          notifications: {
+            ...state.notifications,
+            count: state.notifications.count + 1,
+          },
+        };
+      });
+    }
   },
   toggleSearch: () => {
     const search = get().search;

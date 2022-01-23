@@ -34,6 +34,7 @@ const Interceptor = () => {
   const updatedCount = useEventsStore(
     (state) => state.notifications.updatedCount
   );
+  const isUpdating = useEventsStore((state) => state.notifications.isUpdating);
   const updateCount = useEventsStore((state) => state.updateCount);
   const refreshNotifications = useEventsStore(
     (state) => state.refreshNotifications
@@ -41,12 +42,9 @@ const Interceptor = () => {
   const disconnectMenu = useEventsStore((state) => state.disconnectMenu);
   const setEvents = useEventsStore((state) => state.setEvents);
   const updateEvents = useEventsStore((state) => state.updateEvents);
-  const prependNotification = useEventsStore(
-    (state) => state.prependNotification
-  );
-  const incrementCount = useEventsStore((state) => state.incrementCount);
+  const addNotification = useEventsStore((state) => state.addNotification);
 
-  const previousCount = useRef(0);
+  const notificationState = useRef({ count: 0, shouldUpdate: true });
 
   const [playNotification] = useSound(notificationSound);
 
@@ -162,13 +160,10 @@ const Interceptor = () => {
   };
 
   const handleSocketNotification = (data) => {
-    if (initialized) {
-      return prependNotification({
-        notification: data,
-        cursor: data.id,
-      });
-    }
-    return incrementCount();
+    return addNotification({
+      notification: data,
+      cursor: data.id,
+    });
   };
 
   const handleSocketRefresh = async () => {
@@ -233,12 +228,17 @@ const Interceptor = () => {
 
   useEffect(() => {
     if (updatedCount) {
-      if (count > previousCount.current) {
+      if (
+        notificationState.current.shouldUpdate &&
+        count > notificationState.current.count
+      ) {
         playNotification();
       }
     }
-    previousCount.current = count;
-  }, [count]);
+    if (isUpdating) notificationState.current.shouldUpdate = false;
+    else notificationState.current.shouldUpdate = true;
+    notificationState.current.count = count;
+  }, [count, isUpdating]);
 
   return loading ? <Backdrop loading={loading} /> : <App />;
 };

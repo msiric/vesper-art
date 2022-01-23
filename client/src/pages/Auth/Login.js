@@ -44,8 +44,8 @@ const useStyles = makeStyles((muiTheme) => ({
 const Login = () => {
   const setUser = useUserStore((state) => state.setUser);
 
-  const notifications = useEventsStore((state) => state.notifications);
   const setEvents = useEventsStore((state) => state.setEvents);
+  const updateCount = useEventsStore((state) => state.updateCount);
 
   const setDefaultValues = () => ({
     userUsername: "",
@@ -87,14 +87,10 @@ const Login = () => {
         });
         setEvents({
           notifications: {
-            ...notifications,
-            items: [],
             count: data.user.notifications,
-            hasMore: true,
-            cursor: "",
-            limit: 10,
           },
         });
+        updateCount({ enabled: true });
       }
     } catch (err) {
       console.log(err);
