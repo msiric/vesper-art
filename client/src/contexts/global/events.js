@@ -24,6 +24,7 @@ const initialState = {
     fetching: false,
     refreshing: false,
     initialized: false,
+    updatedCount: false,
     error: {
       refetch: false,
       message: "",
@@ -68,10 +69,6 @@ const initActions = (set, get) => ({
           typeof notifications.limit !== "undefined"
             ? notifications.limit
             : state.notifications.limit,
-        isLoading:
-          typeof notifications.isLoading !== "undefined"
-            ? notifications.isLoading
-            : state.notifications.isLoading,
       },
       search: typeof search !== "undefined" ? search : state.search,
     }));
@@ -105,18 +102,19 @@ const initActions = (set, get) => ({
           typeof notifications.limit !== "undefined"
             ? notifications.limit
             : state.notifications.limit,
-        isLoading:
-          typeof notifications.isLoading !== "undefined"
-            ? notifications.isLoading
-            : state.notifications.isLoading,
       },
     }));
   },
-  updateEvents: ({ notifications, search, playNotification }) => {
-    const prevNotifications = get().notifications;
-    if (notifications.count !== prevNotifications.count) {
-      playNotification();
-    }
+  updateCount: ({ enabled }) => {
+    set((state) => ({
+      ...state,
+      notifications: {
+        ...state.notifications,
+        updatedCount: enabled,
+      },
+    }));
+  },
+  updateEvents: ({ notifications, search }) => {
     set((state) => ({
       ...state,
       notifications: {
@@ -145,10 +143,6 @@ const initActions = (set, get) => ({
           typeof notifications.limit !== "undefined"
             ? notifications.limit
             : state.notifications.limit,
-        isLoading:
-          typeof notifications.isLoading !== "undefined"
-            ? notifications.isLoading
-            : state.notifications.isLoading,
       },
       search: typeof search !== "undefined" ? search : state.search,
     }));
@@ -261,6 +255,7 @@ const initActions = (set, get) => ({
       notifications: {
         ...initialState.notifications,
         count: state.notifications.count,
+        updatedCount: state.notifications.updatedCount,
       },
     }));
   },
@@ -320,12 +315,7 @@ const initActions = (set, get) => ({
       console.log(err);
     }
   },
-  prependNotification: ({
-    notification,
-    cursor,
-    count = 1,
-    playNotification,
-  }) => {
+  prependNotification: ({ notification, cursor, count = 1 }) => {
     set((state) => {
       return {
         ...state,
@@ -337,9 +327,8 @@ const initActions = (set, get) => ({
         },
       };
     });
-    playNotification();
   },
-  incrementCount: ({ playNotification }) => {
+  incrementCount: () => {
     set((state) => {
       return {
         ...state,
@@ -349,7 +338,6 @@ const initActions = (set, get) => ({
         },
       };
     });
-    playNotification();
   },
   toggleSearch: () => {
     const search = get().search;
@@ -378,15 +366,6 @@ const initActions = (set, get) => ({
     closeMenu();
     history.push(link);
     if (!notification.read) readNotification({ id: notification.id });
-  },
-  updateLoading: ({ notifications }) => {
-    set((state) => ({
-      ...state,
-      notifications: {
-        ...state.notifications,
-        isLoading: notifications.isLoading,
-      },
-    }));
   },
   resetEvents: () => {
     set({ ...initialState });

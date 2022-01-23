@@ -27,11 +27,16 @@ const Interceptor = () => {
   const updateUser = useUserStore((state) => state.updateUser);
   const resetUser = useUserStore((state) => state.resetUser);
 
+  const initialized = useEventsStore(
+    (state) => state.notifications.initialized
+  );
+  const count = useEventsStore((state) => state.notifications.count);
+  const updatedCount = useEventsStore(
+    (state) => state.notifications.updatedCount
+  );
+  const updateCount = useEventsStore((state) => state.updateCount);
   const refreshNotifications = useEventsStore(
     (state) => state.refreshNotifications
-  );
-  const notificationInitialized = useEventsStore(
-    (state) => state.notifications.initialized
   );
   const disconnectMenu = useEventsStore((state) => state.disconnectMenu);
   const setEvents = useEventsStore((state) => state.setEvents);
@@ -78,6 +83,7 @@ const Interceptor = () => {
               count: data.user.notifications,
             },
           });
+          updateCount({ enabled: true });
         }
         setApp({ loading: false, error: false, theme });
       }
@@ -132,7 +138,6 @@ const Interceptor = () => {
           });
           updateEvents({
             notifications: { count: data.user.notifications },
-            playNotification,
           });
           const config = error.config;
           config._retry = true;
@@ -155,14 +160,13 @@ const Interceptor = () => {
   };
 
   const handleSocketNotification = (data) => {
-    if (notificationInitialized) {
+    if (initialized) {
       return prependNotification({
         notification: data,
         cursor: data.id,
-        playNotification,
       });
     }
-    return incrementCount({ playNotification });
+    return incrementCount();
   };
 
   const handleSocketRefresh = async () => {
@@ -182,7 +186,6 @@ const Interceptor = () => {
       });
       updateEvents({
         notifications: { count: data.user.notifications },
-        playNotification,
       });
     } catch (err) {
       disconnectMenu();
@@ -190,7 +193,7 @@ const Interceptor = () => {
   };
 
   const handleNotificationRefresh = async () => {
-    if (notificationInitialized) {
+    if (initialized) {
       await refreshNotifications({ userId });
     }
   };
@@ -214,6 +217,7 @@ const Interceptor = () => {
     return () => {
       socket.instance.off("sendNotification", handleSocketNotification);
       socket.instance.off("expiredToken", handleSocketRefresh);
+      socket.instance.off("connect", handleNotificationRefresh);
     };
   }, []);
 
@@ -224,6 +228,12 @@ const Interceptor = () => {
       axios.interceptors.response.eject(ax);
     };
   }, [userToken]);
+
+  useEffect(() => {
+    if (updatedCount) {
+      playNotification();
+    }
+  }, [count]);
 
   return loading ? <Backdrop loading={loading} /> : <App />;
 };
