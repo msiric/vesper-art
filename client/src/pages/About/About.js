@@ -74,7 +74,7 @@ const About = () => {
           <Typography className={classes.paragraph}>
             {`Signing up with ${appName} is free and unlocks all the benefits of using the platform. 
             As an artist, you have the option to upload your artwork and be in full control of how it is displayed and interacted with. 
-            You can make your artwork „preview only“ which, as the name suggests, allows users to only preview without downloading or purchasing. 
+            You can make your artwork „preview only“ which, as the name suggests, allows users to only preview your art without downloading or purchasing it. 
             Another option is to make your artwork „available for download“, but fine-tune the details regarding the "personal" and "commercial" licenses. 
             `}
           </Typography>
@@ -85,17 +85,17 @@ const About = () => {
           </Typography>
           <Typography className={classes.paragraph}>
             {`As a collector, you can interact with your favorite artists, explore new artwork and download/purchase existing artwork, depending on the available options. 
-            When you select a license and download or purchase an artwork from a certain artist, you are issued a license that proves your ownership of that specific artwork. 
+            When you select a license and download or purchase an artwork from a certain artist, you are issued a license that proves the authenticity of your order and specifies what you are allowed and not allowed to do with it. 
             `}
           </Typography>
           <Typography className={classes.paragraph}>
-            {`A license fingerprint that comes with your license can be used to prove the authenticity of your ownership and provide basic information about the license. 
+            {`A license fingerprint that comes with your license can be used to validate your order and provide basic information about the license. 
             If needed, you can use your assignee identifier to display additional information about the personal information contained inside the license. Make sure to keep your identifiers safe and only share them if absolutely necessary. 
             `}
           </Typography>
           <Typography className={classes.paragraph}>
-            {`Thanks to this system, every artwork you ever downloaded/purchased is yours to use within the permissions of the license's rights and allows you to freely download the artwork on as many devices as you want (DRM free), as long as you are the one using it.
-            If any disputes arise from either the artist's or collector's side, it can quickly and securely be resolved by verifying the license information from either or both parties involved by heading to the platform's verifier.
+            {`Thanks to this system, every artwork you ever downloaded/purchased is yours to use within the license's permissions and allows you to freely download the artwork on as many devices as you want as long as you are the one using it.
+            If any disputes arise from either the artist's or collector's side, it can quickly and securely be resolved by verifying the license information from both parties involved by heading to the platform's verifier.
             `}
           </Typography>
         </Grid>

@@ -69,8 +69,7 @@ const Buying = () => {
           <Typography variant="h4">{`Buying on ${appName}`}</Typography>
           <Typography className={classes.paragraph}>
             {`Signing up is free and required for collectors to start downloading and purchasing art on ${appName}. 
-            When you sign up, you will be able to download and purchase artwork published by artists, depending on what they choose to offer. 
-            When browsing artwork, pay attention to the type and the availability.
+            The status of a specific artwork is determined by its type and availability so pay attention to these options while browsing.
            `}
           </Typography>
           <Typography className={classes.paragraph}>

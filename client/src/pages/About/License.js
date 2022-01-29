@@ -65,16 +65,16 @@ const LicenseInformation = () => {
           <Typography variant="h4">License information</Typography>
           <Typography className={classes.paragraph}>
             {`When downloading or purchasing artwork on ${appName}, you will be assigned a license based on the information you entered. 
-            This allows you to prove ownership and define the boundaries of how you're allowed to use said artwork.
+            This allows you to prove the authenticity of your order and attest that you are using the acquired artwork for permitted purposes.
             `}
           </Typography>
           <Typography className={classes.paragraph}>
             {`Additionally, this also allows you to download the artwork's digital file on as many devices as you like, as long as you are the one using it.
-            A license can be assigned to an individual, meaning to you personally, or to a business, which allows your business to use the license while being assigned to your name.
+            A license can be assigned to an individual, meaning to you personally, or to a business, which allows your company to use it.
             `}
           </Typography>
           <Typography className={classes.paragraph}>
-            {`Every user that signs up to ${appName} has to provide their full name which cannot be changed and is automatically prefilled and saved for every generated license.
+            {`Every user that signs up to ${appName} has to provide their full name which is unalterable and automatically prefilled for every future generated license.
             This helps identify every user and the licenses said user owns, but doesn't reveal any sensitive information unless said user explicitly shares the identifer value to do so, as explained below:
             `}
           </Typography>
@@ -84,10 +84,10 @@ const LicenseInformation = () => {
             `}
           </Typography>
           <Typography className={classes.paragraph}>
-            {`In addition to the above, both the artist (license assignor) and the collector (license assignee), will receive identifiers that are unique to that specific license.
+            {`In addition to the above, both the artist (license assignor) and the collector (license assignee) will receive identifiers that are unique to that specific license.
             These identifiers are different for each license and reveal the full name of their respective owner. They should be kept secret and not shared with anyone since they are used to display sensitive license information.
-            When an identifier is entered in the platform's verifier alongside the license fingerprint, all the information about the license is revealed, including that of the identifier's owner.
-            If a dispute about a specific license or order ever arises, you can then share your identifier with the other party in order to verify additional license information and prove the authenticity of your ownership.
+            When an identifier is entered in the platform's verifier alongside the license fingerprint, complete license information is revealed, including that of the identifier's owner.
+            If a dispute about a specific license or order ever arises, you can then share your identifier with the other party in order to verify additional license information and prove the authenticity of your order.
             `}
           </Typography>
           <Typography className={classes.paragraph}>

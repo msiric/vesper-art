@@ -73,7 +73,7 @@ const SELLER_ILLUSTRATIONS = [
   {
     heading: "Unleash your creativity",
     paragraph:
-      "Set up your profile and work at your own pace. If and when you're ready, go through the onboarding process and you can start earning money from your art.",
+      "Set up your profile and work at your own pace. When you're ready, go through the onboarding process and start earning money from your art.",
     illustration: <WorkingArtist />,
   },
   {
@@ -85,13 +85,13 @@ const SELLER_ILLUSTRATIONS = [
   {
     heading: "You're in charge",
     paragraph:
-      "Fill out the information about your artwork and the licenses you will be offering. You have full control and freedom to adjust everything to your liking.",
+      "Fill out the information about your artwork and the licenses you will be offering. You have full control and complete freedom to adjust everything to your liking.",
     illustration: <MakeAdjustments />,
   },
   {
     heading: "Stay up to date",
     paragraph:
-      "Every time someone comments, downloads, purchases or leaves a rating on your artwork, you will be notified. You'll never miss a thing.",
+      "Every time someone comments, downloads, purchases or leaves a rating on your artwork, you will be notified in real-time. You'll never miss a thing.",
     illustration: <ReceiveUpdates />,
   },
   {
@@ -112,13 +112,13 @@ const BUYER_ILLUSTRATIONS = [
   {
     heading: "Browse artwork",
     paragraph:
-      "Sign up and browse the diverse collection of artwork from our talented artists. There's something for everyone.",
+      "Sign up and browse the diverse collection of artwork from various talented artists. There's something for everyone.",
     illustration: <BrowseArtwork />,
   },
   {
-    heading: "Select art of your choosing",
+    heading: "Interact with artists",
     paragraph:
-      "Once you find something you like, favorite it, comment on it and explore more from that artist. Interact and stay in touch.",
+      "Once you find something you like, favorite it, comment on it and explore more from what the artist is showcasing. Interact and stay in touch.",
     illustration: <SelectArtwork />,
   },
   {
@@ -130,13 +130,13 @@ const BUYER_ILLUSTRATIONS = [
   {
     heading: "Keep it yours",
     paragraph:
-      "Every download/purchase comes with a license that proves your ownership of the artwork and the order that was placed to acquire it.",
+      "Every download/purchase comes with a license that specifies the owner's rights and limitations while proving the authenticity of the order.",
     illustration: <LicenseCertification />,
   },
   {
     heading: "Admire your collection",
     paragraph:
-      "Head to your gallery at any time to enjoy the art that you own and play the slideshow in fullscreen mode for complete immersion.",
+      "Head to the gallery at any time to marvel at the art you acquired and play the slideshow in fullscreen mode for complete immersion.",
     illustration: <ArtworkGallery />,
   },
   {

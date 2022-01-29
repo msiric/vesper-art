@@ -87,7 +87,7 @@ const FAQ = () => {
             {`How do I change/reset my password?`}
           </Typography>
           <Typography className={classes.paragraph}>
-            {`Go to the Settings page and under the password section, modify and save the newly created password.
+            {`Go to the Settings page and under the password section enter and save the new password.
             If you don’t remember your password, you can reset it from the Account Restoration page.
             On the Login page, click on the „Trouble logging in?“ link and follow the instructions to reset your password.`}
           </Typography>
@@ -118,7 +118,7 @@ const FAQ = () => {
             {`Do I have to pay taxes on income earned on ${appName}?`}
           </Typography>
           <Typography className={classes.paragraph}>
-            {`It is the sole responsibility of Artists to verify their personal tax obligation, report, and pay taxes according to the laws of the state and/or country of residence, as applicable and required by local law and regulations.`}
+            {`It is the sole responsibility of artists to verify their personal tax obligation, report, and pay taxes according to the laws of the state and/or country of residence, as applicable and required by local law and regulations.`}
           </Typography>
           <Typography variant="h5" className={classes.heading}>
             Platform-specific questions
@@ -140,7 +140,7 @@ const FAQ = () => {
           </Typography>
           <Typography className={classes.paragraph}>
             {`This depends solely on the artist. If an artist chooses to upload their artwork as „preview only“, then you can only preview the art without the option of downloading or buying it. 
-            On the other hand, an artist can choose to offer the artwork free of charge depending on the licenses and their cost, or charge a price for a specific license. `}
+            On the other hand, an artist can choose to offer the artwork's licenses free of charge or charge a price for a specific license depending on the options selected.`}
           </Typography>
         </Grid>
         <Grid item sm={12} className={classes.wrapper}>

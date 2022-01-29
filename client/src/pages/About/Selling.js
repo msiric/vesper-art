@@ -69,8 +69,8 @@ const Selling = () => {
           }
           <Typography variant="h4">{`Selling on ${appName}`}</Typography>
           <Typography className={classes.paragraph}>
-            {`Signing up is free and required for artists to start selling art on ${appName}. When you sign up, you will be able to upload, sell and control the way users can interact with your artwork. 
-            Your art can be published as „preview only“, which allows users to only view your artwork without downloading or purchasing, or „available for download“, which allows users to download your artwork for free or purchase it, depending on your preferences. 
+            {`Signing up is free and required for artists to start selling art on ${appName}. When you sign up, you will be able to upload, sell and control the way users interact with your artwork. 
+            Your art can be published as „preview only“, which allows users to only view your artwork without downloading or purchasing, or „available for download“, which allows users to purchase or download your artwork for free, depending on your preferences. 
             `}
           </Typography>
           <Typography className={classes.paragraph}>
@@ -81,7 +81,7 @@ const Selling = () => {
           </Typography>
           <Typography className={classes.paragraph}>
             {`In order to monetize your art, you will have to go through the onboarding process where you will be taken to Stripe, ${appName}'s partner in charge of handling, securing and processing payments on the platform, to finalize your account setup and receive future payments. 
-            Whenever an order is placed, commercial or free, the buyer (collector) will receive a license for using your artwork in compliance with the license's permissions along with the actual digital file of the artwork. 
+            Whenever an order is placed, commercial or free, the buyer (collector) will receive a license for using your artwork in compliance with the license's permissions along with the actual digital file of the artwork in question. 
             `}
           </Typography>
           <Typography className={classes.paragraph}>
