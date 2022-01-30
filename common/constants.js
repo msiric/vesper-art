@@ -13,6 +13,11 @@ export const appName = "Vesper";
 
 export const domainName = "vesperart.co";
 
+export const cookieKeys = {
+  consent: "consent",
+  jid: "jid",
+};
+
 export const featureFlags = {
   stripe: true,
   payment: true,

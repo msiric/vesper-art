@@ -1,6 +1,6 @@
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
-import { auth } from "../common/constants";
+import { auth, cookieKeys } from "../common/constants";
 import { tokens } from "../config/secret";
 import { fetchUserByAuth } from "../services/postgres/user";
 import { formatError, formatTokenData, verifyTokenValidity } from "./helpers";
@@ -20,7 +20,7 @@ export const createAccessToken = ({ userData }) => {
 
 // $TODO getConnection needs to come from one of the services
 export const updateAccessToken = async (req, res, next, connection) => {
-  const refreshToken = req.cookies.jid;
+  const refreshToken = req.cookies[cookieKeys.jid];
   if (!refreshToken) throw createError(...formatError(errors.forbiddenAccess));
 
   const { data } = verifyTokenValidity(
@@ -72,7 +72,7 @@ export const createRefreshToken = ({ userData }) => {
 };
 
 export const sendRefreshToken = (res, refreshToken) => {
-  return res.cookie("jid", refreshToken, {
+  return res.cookie(cookieKeys.jid, refreshToken, {
     httpOnly: true,
     path: auth.refreshEndpoint,
   });

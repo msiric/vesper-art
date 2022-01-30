@@ -12,6 +12,7 @@ import SyncButton from "../../components/SyncButton";
 import Box from "../../domain/Box";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
+import Link from "../../domain/Link";
 import Typography from "../../domain/Typography";
 import globalStyles from "../../styles/global";
 
@@ -50,6 +51,13 @@ const useFAQStyling = makeStyles((muiTheme) => ({
     [muiTheme.breakpoints.down("xs")]: {
       fontSize: "1.8rem",
     },
+  },
+  linkLabel: {
+    display: "inline",
+  },
+  link: {
+    fontSize: "1rem",
+    marginLeft: 3,
   },
 }));
 
@@ -126,15 +134,29 @@ const FAQ = () => {
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
             {`What are artwork licenses and what is their purpose?`}
           </Typography>
-          <Typography className={classes.paragraph}>
-            {`You can find all the necessary information regarding the licenses and the way they work here.`}
+          <Typography className={`${classes.paragraph} ${classes.linkLabel}`}>
+            {`You can find all the necessary information regarding the licenses and the way they work`}
           </Typography>
+          <Link
+            component={RouterLink}
+            to="/license_information"
+            className={classes.link}
+          >
+            here.
+          </Link>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
             {`How do I become an artist on the platform and start uploading my artwork?`}
           </Typography>
-          <Typography className={classes.paragraph}>
-            {`You can learn more about becoming an artist on ${appName} and uploading your art by clicking on this link.`}
+          <Typography className={`${classes.paragraph} ${classes.linkLabel}`}>
+            {`You can learn more about becoming an artist on ${appName} and uploading your art by clicking on`}
           </Typography>
+          <Link
+            component={RouterLink}
+            to="/start_selling"
+            className={classes.link}
+          >
+            this link.
+          </Link>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
             {`Why are some artwork only available for preview while others are downloadable free of charge?`}
           </Typography>

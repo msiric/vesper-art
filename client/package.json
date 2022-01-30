@@ -19,6 +19,7 @@
     "customize-cra": "^1.0.0",
     "date-fns": "^2.14.0",
     "install": "^0.13.0",
+    "js-cookie": "^3.0.1",
     "mui-datatables": "^3.3.1",
     "notistack": "^0.9.9",
     "number-abbreviate": "^2.0.0",
@@ -51,7 +52,6 @@
     "eject": "react-app-rewired eject",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx}",
     "lint": "eslint --fix --ext .js,.jsx ."
-
   },
   "eslintConfig": {
     "extends": "react-app"
