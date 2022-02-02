@@ -9,6 +9,7 @@ import userFavoritesStyles from "./styles";
 
 const UserFavorites = ({ userUsername, shouldPause, type, fixed }) => {
   const elements = useUserArtwork((state) => state.favorites.data);
+  const initialized = useUserArtwork((state) => state.favorites.initialized);
   const hasMore = useUserArtwork((state) => state.favorites.hasMore);
   const loading = useUserArtwork((state) => state.favorites.loading);
   const fetching = useUserArtwork((state) => state.favorites.fetching);
@@ -25,6 +26,7 @@ const UserFavorites = ({ userUsername, shouldPause, type, fixed }) => {
         hasMore={hasMore}
         loading={loading}
         fetching={fetching}
+        initialized={initialized}
         shouldPause={shouldPause}
         error={error.refetch}
         empty="No favorites yet"

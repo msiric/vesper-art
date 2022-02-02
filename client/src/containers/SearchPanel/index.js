@@ -11,6 +11,7 @@ import searchPanelStyles from "./styles";
 
 const SearchPanel = ({ type }) => {
   const elements = useSearchResults((state) => state[type].data);
+  const initialized = useSearchResults((state) => state[type].initialized);
   const hasMore = useSearchResults((state) => state[type].hasMore);
   const loading = useSearchResults((state) => state[type].loading);
   const fetching = useSearchResults((state) => state[type].fetching);
@@ -33,6 +34,7 @@ const SearchPanel = ({ type }) => {
         hasMore={hasMore}
         loading={loading}
         fetching={fetching}
+        initialized={initialized}
         error={error.refetch}
         empty="No results matched your query"
         type="masonry"

@@ -42,6 +42,7 @@ const CommentSection = ({
   const loading = useArtworkDetails((state) => state.artwork.loading);
 
   const comments = useArtworkComments((state) => state.comments.data);
+  const initialized = useArtworkComments((state) => state.comments.initialized);
   const fetching = useArtworkComments((state) => state.comments.fetching);
   const error = useArtworkComments((state) => state.comments.error);
   const edits = useArtworkComments((state) => state.edits);
@@ -143,6 +144,7 @@ const CommentSection = ({
           hasMore={hasMore}
           loading={loading}
           fetching={fetching}
+          initialized={initialized}
           error={error.refetch}
           empty="No comments yet"
           type="list"

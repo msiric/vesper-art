@@ -15,6 +15,9 @@ const NotificationsMenu = () => {
   const userId = useUserStore((state) => state.id);
 
   const notifications = useEventsStore((state) => state.notifications.items);
+  const initialized = useEventsStore(
+    (state) => state.notifications.initialized
+  );
   const hasMore = useEventsStore((state) => state.notifications.hasMore);
   const anchor = useEventsStore((state) => state.notifications.anchor);
   const loading = useEventsStore((state) => state.notifications.loading);
@@ -54,6 +57,7 @@ const NotificationsMenu = () => {
         hasMore={hasMore}
         loading={loading}
         fetching={fetching}
+        initialized={initialized}
         error={error.refetch}
         empty="No notifications yet"
         type="list"

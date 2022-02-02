@@ -9,6 +9,7 @@ import artworkPanelStyles from "./styles";
 
 const ArtworkPanel = ({ type, fixed }) => {
   const elements = useHomeArtwork((state) => state.artwork.data);
+  const initialized = useHomeArtwork((state) => state.artwork.initialized);
   const hasMore = useHomeArtwork((state) => state.artwork.hasMore);
   const loading = useHomeArtwork((state) => state.artwork.loading);
   const fetching = useHomeArtwork((state) => state.artwork.fetching);
@@ -25,6 +26,7 @@ const ArtworkPanel = ({ type, fixed }) => {
         hasMore={hasMore}
         loading={loading}
         fetching={fetching}
+        initialized={initialized}
         error={error.refetch}
         empty="No artwork found"
         type="masonry"

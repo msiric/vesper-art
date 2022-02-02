@@ -17,6 +17,7 @@ const InfiniteList = ({
   hasMore,
   loading,
   fetching,
+  initialized,
   error,
   empty,
   height,
@@ -28,6 +29,12 @@ const InfiniteList = ({
   ...props
 }) => {
   const classes = infiniteListStyles({ overflow });
+
+  const showEmptySection =
+    initialized && !loading && !fetching && !dataLength && !error;
+  const showLoadMore =
+    initialized && !loading && !fetching && !error && hasMore;
+  const showLinearProgress = type === "masonry" && loading;
 
   return (
     <InfiniteScroll
@@ -46,11 +53,19 @@ const InfiniteList = ({
       height={height}
       {...props}
     >
-      {type === "masonry" && loading && <LinearProgress />}
       {children}
-      {!loading && !fetching && !dataLength && !error ? (
-        <EmptySection label={empty} />
-      ) : null}
+      {showLinearProgress && <LinearProgress />}
+      {showEmptySection && <EmptySection label={empty} />}
+      {showLoadMore && (
+        <AsyncButton
+          type="button"
+          padding
+          startIcon={<RefetchIcon />}
+          onClick={next}
+        >
+          Load more
+        </AsyncButton>
+      )}
       {error && (
         <Box className={classes.error}>
           <Typography>Error fetching data</Typography>

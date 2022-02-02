@@ -12,6 +12,7 @@ const UserArtwork = ({ userUsername, shouldPause, type, fixed }) => {
   const loading = useUserProfile((state) => state.profile.loading);
 
   const elements = useUserArtwork((state) => state.artwork.data);
+  const initialized = useUserArtwork((state) => state.artwork.initialized);
   const hasMore = useUserArtwork((state) => state.artwork.hasMore);
   const fetching = useUserArtwork((state) => state.artwork.fetching);
   const error = useUserArtwork((state) => state.artwork.error);
@@ -27,6 +28,7 @@ const UserArtwork = ({ userUsername, shouldPause, type, fixed }) => {
         hasMore={hasMore}
         loading={loading}
         fetching={fetching}
+        initialized={initialized}
         shouldPause={shouldPause}
         error={error.refetch}
         empty="No artwork yet"

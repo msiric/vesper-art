@@ -19,6 +19,7 @@ const GalleryPanel = ({ formatArtwork }) => {
   const display = useUserGallery((state) => state.display);
   const loading = useUserGallery((state) => state[display].loading);
   const fetching = useUserGallery((state) => state[display].fetching);
+  const initialized = useUserGallery((state) => state[display].initialized);
   const hasMore = useUserGallery((state) => state[display].hasMore);
   const error = useUserGallery((state) => state[display].error);
   const elements = useUserGallery((state) => state.elements);
@@ -58,6 +59,7 @@ const GalleryPanel = ({ formatArtwork }) => {
         hasMore={hasMore}
         loading={loading}
         fetching={fetching}
+        initialized={initialized}
         error={error.refetch}
         empty="No artwork in your gallery"
         type="masonry"
