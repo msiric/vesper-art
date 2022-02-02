@@ -2,7 +2,6 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import InfiniteList from "../../components/InfiniteList/index";
 import LoadingBar from "../../components/LoadingBar/index";
-import LoadingSpinner from "../../components/LoadingSpinner/index";
 import NotificationItem from "../../components/NotificationItem/index";
 import { useEventsStore } from "../../contexts/global/events";
 import { useUserStore } from "../../contexts/global/user";
@@ -63,12 +62,7 @@ const NotificationsMenu = () => {
         type="list"
         overflow="hidden"
       >
-        <List
-          className={`${classes.list} ${loading && classes.spinner}`}
-          disablePadding
-        >
-          {/* Needed because next is not called when menu is first opened */}
-          {loading && <LoadingSpinner styles={classes.spinner} />}
+        <List className={classes.list} disablePadding>
           {refreshing && <LoadingBar label="Refreshing notifications" />}
           {notifications.map((notification) => (
             <>

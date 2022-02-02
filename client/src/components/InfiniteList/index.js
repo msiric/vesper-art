@@ -35,20 +35,13 @@ const InfiniteList = ({
   const showLoadMore =
     initialized && !loading && !fetching && !error && hasMore;
   const showLinearProgress = type === "masonry" && loading;
+  const showSpinnerProgress = (type !== "masonry" && loading) || fetching;
 
   return (
     <InfiniteScroll
       dataLength={dataLength}
       next={!loading && !fetching ? next : () => []}
       hasMore={!shouldPause && hasMore}
-      loader={
-        !error && (
-          <LoadingSpinner
-            styles={!customPadding && classes.spinner}
-            customPadding={customPadding}
-          />
-        )
-      }
       className={classes.wrapper}
       height={height}
       {...props}
@@ -56,6 +49,12 @@ const InfiniteList = ({
       {children}
       {showLinearProgress && <LinearProgress />}
       {showEmptySection && <EmptySection label={empty} />}
+      {showSpinnerProgress && (
+        <LoadingSpinner
+          styles={!customPadding && classes.spinner}
+          customPadding={customPadding}
+        />
+      )}
       {showLoadMore && (
         <AsyncButton
           type="button"
