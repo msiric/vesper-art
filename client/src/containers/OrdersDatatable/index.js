@@ -3,7 +3,6 @@ import React, { useEffect } from "react";
 import { formatArtworkPrice, formatDate } from "../../../../common/helpers";
 import ArtworkThumbnail from "../../components/ArtworkThumbnail/index";
 import Datatable from "../../components/DataTable/index";
-import EmptySection from "../../components/EmptySection/index";
 import { useUserOrders } from "../../contexts/local/userOrders";
 import { renderUserData } from "../../utils/helpers";
 
@@ -123,7 +122,7 @@ const OrdersDatatable = () => {
         order.review,
         order.created,
       ])}
-      empty={<EmptySection label="You have no orders" loading={loading} />}
+      label="You have no orders"
       loading={loading}
       redirect="orders"
       selectable="none"
@@ -131,7 +130,7 @@ const OrdersDatatable = () => {
       searchable={true}
       pagination={true}
       addOptions={{ enabled: false, title: "", route: "" }}
-      customPadding={true}
+      height={400}
     />
   );
 };

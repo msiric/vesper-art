@@ -1,7 +1,6 @@
 import React from "react";
 import { formatArtworkPrice, formatDate } from "../../../../common/helpers";
 import Datatable from "../../components/DataTable/index";
-import EmptySection from "../../components/EmptySection/index";
 import { useUserStore } from "../../contexts/global/user";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
 import { renderUserData } from "../../utils/helpers";
@@ -79,7 +78,7 @@ const OrderCard = () => {
             ]
           : []),
       ]}
-      empty={<EmptySection label="Order not found" loading={loading} />}
+      label="Order not found"
       loading={loading}
       redirect=""
       selectable="none"

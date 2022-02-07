@@ -19,10 +19,10 @@ const InfiniteList = ({
   fetching,
   initialized,
   error,
-  empty,
-  height,
+  label,
   type,
-  customPadding,
+  height = "auto",
+  loaderHeight = 0,
   shouldPause = false,
   overflow = "visible !important",
   children,
@@ -39,22 +39,17 @@ const InfiniteList = ({
 
   return (
     <InfiniteScroll
+      height={height}
       dataLength={dataLength}
       next={!loading && !fetching ? next : () => []}
       hasMore={!shouldPause && hasMore}
-      className={classes.wrapper}
-      height={height}
+      className={classes.container}
       {...props}
     >
       {children}
       {showLinearProgress && <LinearProgress />}
-      {showEmptySection && <EmptySection label={empty} />}
-      {showSpinnerProgress && (
-        <LoadingSpinner
-          styles={!customPadding && classes.spinner}
-          customPadding={customPadding}
-        />
-      )}
+      {showEmptySection && <EmptySection label={label} />}
+      {showSpinnerProgress && <LoadingSpinner height={loaderHeight} />}
       {showLoadMore && (
         <AsyncButton
           type="button"

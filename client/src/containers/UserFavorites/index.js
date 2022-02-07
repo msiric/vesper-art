@@ -29,7 +29,7 @@ const UserFavorites = ({ userUsername, shouldPause, type, fixed }) => {
         initialized={initialized}
         shouldPause={shouldPause}
         error={error.refetch}
-        empty="No favorites yet"
+        label="No favorites yet"
         type="masonry"
       >
         <Masonry

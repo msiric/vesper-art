@@ -31,7 +31,7 @@ const UserArtwork = ({ userUsername, shouldPause, type, fixed }) => {
         initialized={initialized}
         shouldPause={shouldPause}
         error={error.refetch}
-        empty="No artwork yet"
+        label="No artwork yet"
         type="masonry"
       >
         <Masonry

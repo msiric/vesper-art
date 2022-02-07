@@ -10,6 +10,8 @@ import List from "../../domain/List";
 import Menu from "../../domain/Menu";
 import notificationMenuStyles from "./styles";
 
+const MENU_HEIGHT = 400;
+
 const NotificationsMenu = () => {
   const userId = useUserStore((state) => state.id);
 
@@ -34,7 +36,7 @@ const NotificationsMenu = () => {
     (state) => state.unreadNotification
   );
 
-  const classes = notificationMenuStyles();
+  const classes = notificationMenuStyles({ height: MENU_HEIGHT });
 
   const history = useHistory();
 
@@ -46,9 +48,11 @@ const NotificationsMenu = () => {
       transformOrigin={{ vertical: "top", horizontal: "center" }}
       onClose={closeMenu}
       className={classes.menu}
+      PaperProps={{
+        style: { minHeight: "100%" },
+      }}
     >
       <InfiniteList
-        height={400}
         dataLength={notifications ? notifications.length : 0}
         next={(e) =>
           fetchNotifications({ event: e, userId, shouldFetch: true })
@@ -58,9 +62,11 @@ const NotificationsMenu = () => {
         fetching={fetching}
         initialized={initialized}
         error={error.refetch}
-        empty="No notifications yet"
+        label="No notifications yet"
         type="list"
         overflow="hidden"
+        height={MENU_HEIGHT}
+        loaderHeight={initialized ? 0 : MENU_HEIGHT}
       >
         <List className={classes.list} disablePadding>
           {refreshing && <LoadingBar label="Refreshing notifications" />}

@@ -5,15 +5,11 @@ import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
 import loadingSpinnerStyles from "./styles";
 
-const LoadingSpinner = ({ label, styles, customPadding = false }) => {
-  const classes = loadingSpinnerStyles();
+const LoadingSpinner = ({ label = "", height = 0 }) => {
+  const classes = loadingSpinnerStyles({ height });
 
   return (
-    <Container
-      className={`${classes.container} ${
-        customPadding && classes.customPadding
-      } ${styles}`}
-    >
+    <Container className={classes.container}>
       <Grid container spacing={2}>
         <Grid item xs={12} className={classes.item}>
           <CircularProgress className={classes.circle} />

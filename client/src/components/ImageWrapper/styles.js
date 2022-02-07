@@ -21,9 +21,6 @@ const imageWrapperStyles = makeStyles((muiTheme) => ({
       height: ({ height, loading }) => (loading ? height / 2.25 : "auto"),
     },
   },
-  spinner: {
-    position: "absolute",
-  },
   hiddenWrapper: {
     background: ({ placeholder }) => placeholder,
     height: "100%",

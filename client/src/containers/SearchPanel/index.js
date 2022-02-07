@@ -36,7 +36,7 @@ const SearchPanel = ({ type }) => {
         fetching={fetching}
         initialized={initialized}
         error={error.refetch}
-        empty="No results matched your query"
+        label="No results matched your query"
         type="masonry"
       >
         <Masonry

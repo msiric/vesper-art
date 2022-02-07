@@ -100,7 +100,7 @@ const LicenseSection = () => {
           license.created && formatDate(license.created, "dd/MM/yy HH:mm"),
         ],
       ]}
-      empty={<EmptySection label="License not found" loading={loading} />}
+      label="License not found"
       loading={loading}
       redirect=""
       selectable="none"

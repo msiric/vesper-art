@@ -28,7 +28,7 @@ const ArtworkPanel = ({ type, fixed }) => {
         fetching={fetching}
         initialized={initialized}
         error={error.refetch}
-        empty="No artwork found"
+        label="No artwork found"
         type="masonry"
       >
         <Masonry

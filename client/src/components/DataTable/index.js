@@ -2,6 +2,7 @@ import { Add as AddIcon } from "@material-ui/icons";
 import MUIDataTable from "mui-datatables";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import EmptySection from "../../components/EmptySection/index";
 import IconButton from "../../domain/IconButton";
 import Tooltip from "../../domain/Tooltip";
 import globalStyles from "../../styles/global";
@@ -30,7 +31,7 @@ const DataTable = ({
   title,
   columns,
   data,
-  empty,
+  label,
   loading,
   redirect,
   selectable,
@@ -38,7 +39,7 @@ const DataTable = ({
   searchable,
   pagination,
   addOptions,
-  customPadding,
+  height,
   className,
 }) => {
   const [displayedData, setDisplayedData] = useState([null]);
@@ -76,9 +77,9 @@ const DataTable = ({
     textLabels: {
       body: {
         noMatch: loading ? (
-          <LoadingSpinner customPadding={customPadding} />
+          <LoadingSpinner height={height} label="" />
         ) : (
-          empty
+          <EmptySection label={label} />
         ),
       },
     },

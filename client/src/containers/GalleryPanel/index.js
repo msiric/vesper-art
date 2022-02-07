@@ -61,7 +61,7 @@ const GalleryPanel = ({ formatArtwork }) => {
         fetching={fetching}
         initialized={initialized}
         error={error.refetch}
-        empty="No artwork in your gallery"
+        label="No artwork in your gallery"
         type="masonry"
       >
         {!loading && (

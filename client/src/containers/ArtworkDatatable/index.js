@@ -7,7 +7,6 @@ import { useHistory } from "react-router-dom";
 import { formatArtworkPrice, formatDate } from "../../../../common/helpers";
 import ArtworkThumbnail from "../../components/ArtworkThumbnail/index";
 import Datatable from "../../components/DataTable/index";
-import EmptySection from "../../components/EmptySection/index";
 import { useUserStore } from "../../contexts/global/user";
 import { useUserUploads } from "../../contexts/local/userUploads";
 import Box from "../../domain/Box";
@@ -167,9 +166,7 @@ const ArtworkDatatable = () => {
         artwork.current.created,
         actionsColumn(artwork.id),
       ])}
-      empty={
-        <EmptySection label="You have no published artwork" loading={loading} />
-      }
+      label="You have no published artwork"
       loading={loading}
       redirect="artwork"
       selectable="none"
@@ -181,7 +178,7 @@ const ArtworkDatatable = () => {
         title: "Add artwork",
         route: "artwork/add",
       }}
-      customPadding={true}
+      height={400}
     />
   );
 };

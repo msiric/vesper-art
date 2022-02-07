@@ -1,7 +1,6 @@
 import React from "react";
 import { formatArtworkPrice, formatDate } from "../../../../common/helpers";
 import Datatable from "../../components/DataTable/index";
-import EmptySection from "../../components/EmptySection/index";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
 import { capitalizeWord } from "../../utils/helpers";
 import licenseCardStyles from "./styles";
@@ -86,7 +85,7 @@ const LicenseCard = () => {
             ]
           : []),
       ]}
-      empty={<EmptySection label="License not found" loading={loading} />}
+      label="License not found"
       loading={loading}
       redirect=""
       selectable="none"
