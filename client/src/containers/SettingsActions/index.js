@@ -1,6 +1,5 @@
 import { DeleteForeverOutlined as DeactivateIcon } from "@material-ui/icons";
 import React from "react";
-import SkeletonWrapper from "../../components/SkeletonWrapper/index";
 import SyncButton from "../../components/SyncButton/index";
 import { useUserSettings } from "../../contexts/local/userSettings";
 import Card from "../../domain/Card";
@@ -18,7 +17,9 @@ const SettingsActions = () => {
   return (
     <Card>
       <CardContent>
-        <Typography loading={loading}>Deactivate user</Typography>
+        <Typography className={classes.heading} loading={loading}>
+          Deactivate account
+        </Typography>
         <Typography loading={loading}>
           Deactivating your account will result in all your data being deleted,
           except for essential artwork information (if you have any sold artwork
@@ -28,11 +29,13 @@ const SettingsActions = () => {
         </Typography>
       </CardContent>
       <CardActions className={classes.actions}>
-        <SkeletonWrapper loading={loading}>
-          <SyncButton onClick={toggleModal} startIcon={<DeactivateIcon />}>
-            Deactivate
-          </SyncButton>
-        </SkeletonWrapper>
+        <SyncButton
+          onClick={toggleModal}
+          startIcon={<DeactivateIcon />}
+          loading={loading}
+        >
+          Deactivate
+        </SyncButton>
       </CardActions>
     </Card>
   );
