@@ -79,7 +79,7 @@ const DataTable = ({
         noMatch: loading ? (
           <LoadingSpinner height={height} label="" />
         ) : (
-          <EmptySection label={label} />
+          <EmptySection label={label} height={height} />
         ),
       },
     },

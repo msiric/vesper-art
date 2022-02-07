@@ -1,28 +1,22 @@
 import { HourglassEmptyRounded as EmptyIcon } from "@material-ui/icons";
 import React from "react";
 import Box from "../../domain/Box";
-import Grid from "../../domain/Grid";
+import Container from "../../domain/Container";
 import Typography from "../../domain/Typography";
 import emptySectionStyles from "./styles";
 
-const EmptySection = ({ label, page, loading }) => {
-  const classes = emptySectionStyles();
+const EmptySection = ({ label = "", height = 0, loading }) => {
+  const classes = emptySectionStyles({ height });
 
-  const content = (
-    <Box className={classes.wrapper} loading={loading}>
-      <EmptyIcon className={classes.icon} />
-      <Typography variant="body2" className={classes.label}>
-        {label}
-      </Typography>
-    </Box>
-  );
-
-  return page ? (
-    <Grid item sm={12} className={classes.container}>
-      {content}
-    </Grid>
-  ) : (
-    content
+  return (
+    <Container className={classes.container}>
+      <Box className={classes.wrapper} loading={loading}>
+        <EmptyIcon className={classes.icon} />
+        <Typography variant="body2" className={classes.label}>
+          {label}
+        </Typography>
+      </Box>
+    </Container>
   );
 };
 

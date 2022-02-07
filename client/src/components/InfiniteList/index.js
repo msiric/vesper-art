@@ -23,6 +23,7 @@ const InfiniteList = ({
   type,
   height,
   loaderHeight = 0,
+  emptyHeight = 0,
   shouldPause = false,
   overflow = "visible !important",
   children,
@@ -48,7 +49,7 @@ const InfiniteList = ({
     >
       {children}
       {showLinearProgress && <LinearProgress />}
-      {showEmptySection && <EmptySection label={label} />}
+      {showEmptySection && <EmptySection label={label} height={emptyHeight} />}
       {showSpinnerProgress && <LoadingSpinner height={loaderHeight} />}
       {showLoadMore && (
         <AsyncButton

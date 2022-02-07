@@ -63,6 +63,7 @@ const GalleryPanel = ({ formatArtwork }) => {
         error={error.refetch}
         label="No artwork in your gallery"
         type="masonry"
+        emptyHeight={360}
       >
         {!loading && (
           <SimpleReactLightbox>
