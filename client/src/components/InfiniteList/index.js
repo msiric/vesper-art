@@ -21,7 +21,7 @@ const InfiniteList = ({
   error,
   label,
   type,
-  height = "auto",
+  height,
   loaderHeight = 0,
   shouldPause = false,
   overflow = "visible !important",
