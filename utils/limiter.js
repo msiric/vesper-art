@@ -1,11 +1,25 @@
 import rateLimit from "express-rate-limit";
+import createError from "http-errors";
+import { environment, ENV_OPTIONS } from "../config/secret";
+import { formatError } from "./helpers";
+import { errors } from "./statuses";
 
-const window = 60; // 60 seconds
-const max = 50;
+const sharedConfig = {
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  handler: () => {
+    throw createError(...formatError(errors.maxRequests));
+  },
+};
 
-export const rateLimiter = rateLimit({
-  windowMs: window * 1000, // 24 hrs in milliseconds
-  max: max,
-  message: `You have exceeded the ${max} requests in ${window} seconds!`,
-  headers: true,
+export const commonRateLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: environment !== ENV_OPTIONS.TEST ? 100 : 0, // limit each IP to 100 requests per windowMs if not testing (otherwise disable limiter)
+  ...sharedConfig,
+});
+
+export const authRateLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: environment !== ENV_OPTIONS.TEST ? 5 : 0, // limit each IP to 5 requests per windowMs if not testing (otherwise disable limiter)
+  ...sharedConfig,
 });

@@ -11,10 +11,12 @@ import "reflect-metadata";
 import { featureFlags, statusCodes } from "./common/constants";
 import { domain, environment, ENV_OPTIONS, mongo } from "./config/secret";
 import api from "./routes/api/index";
+import auth from "./routes/auth/index";
 import stripe from "./routes/stripe/index";
 import hooks from "./routes/webhooks/index";
 import { connectToDatabase } from "./utils/database";
 import { handleDelegatedError } from "./utils/helpers";
+import { authRateLimiter, commonRateLimiter } from "./utils/limiter";
 
 const app = express();
 const dirname = path.resolve();
@@ -91,7 +93,8 @@ const dirname = path.resolve();
 
   app.use(express.json({ type: "application/json" }));
 
-  app.use("/api", api);
+  app.use("/auth", authRateLimiter, auth);
+  app.use("/api", commonRateLimiter, api);
   // FEATURE FLAG - stripe
   featureFlags.stripe && app.use("/stripe", stripe);
 

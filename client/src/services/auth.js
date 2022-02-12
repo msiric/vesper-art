@@ -1,19 +1,19 @@
 import { ax } from "../containers/Interceptor";
 
 export const postRecover = {
-  request: async ({ data }) => await ax.post("/api/auth/forgot_password", data),
+  request: async ({ data }) => await ax.post("/auth/forgot_password", data),
   success: { message: "Recovery email successfully sent", variant: "success" },
   error: { message: "Failed to send recovery email", variant: "error" },
 };
 export const postLogin = {
-  request: async ({ data }) => await ax.post("/api/auth/login", data),
+  request: async ({ data }) => await ax.post("/auth/login", data),
   success: { message: "User successfully logged in", variant: "success" },
   error: { message: "Failed to log in user", variant: "error" },
 };
 export const postReset = {
   request: async ({ userId, resetToken, data }) =>
     await ax.post(
-      `/api/auth/reset_password/user/${userId}/token/${resetToken}`,
+      `/auth/reset_password/user/${userId}/token/${resetToken}`,
       data
     ),
   success: { message: "Password successfully reset", variant: "success" },
@@ -21,7 +21,7 @@ export const postReset = {
 };
 export const postRefresh = {
   request: async () =>
-    await ax.post("/api/auth/refresh_token", {
+    await ax.post("/auth/refresh_token", {
       headers: {
         credentials: "include",
       },
@@ -33,18 +33,17 @@ export const postRefresh = {
   error: { message: "Failed to refresh access token", variant: "error" },
 };
 export const postSignup = {
-  request: async ({ data }) => await ax.post("/api/auth/signup", data),
+  request: async ({ data }) => await ax.post("/auth/signup", data),
   success: { message: "User successfully signed up", variant: "success" },
   error: { message: "Failed to sign up user", variant: "error" },
 };
 export const getToken = {
-  request: async ({ tokenId }) =>
-    await ax.get(`/api/auth/verify_token/${tokenId}`),
+  request: async ({ tokenId }) => await ax.get(`/auth/verify_token/${tokenId}`),
   success: { message: "Token successfully verified", variant: "success" },
   error: { message: "Failed to verify token", variant: "error" },
 };
 export const postResend = {
-  request: async ({ data }) => await ax.post("/api/auth/resend_token", data),
+  request: async ({ data }) => await ax.post("/auth/resend_token", data),
   success: {
     message: "Verification token successfully sent",
     variant: "success",
@@ -52,7 +51,7 @@ export const postResend = {
   error: { message: "Failed to send verification token", variant: "error" },
 };
 export const postEmail = {
-  request: async ({ data }) => await ax.post("/api/auth/update_email", data),
+  request: async ({ data }) => await ax.post("/auth/update_email", data),
   success: {
     message: "Email successfully updated",
     variant: "success",

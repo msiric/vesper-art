@@ -4,7 +4,6 @@ import { statusCodes } from "../../common/constants";
 import { handleDelegatedError } from "../../utils/helpers";
 import { errors } from "../../utils/statuses";
 import artwork from "./routers/artwork";
-import auth from "./routers/auth";
 import checkout from "./routers/checkout";
 import discount from "./routers/discount";
 import notification from "./routers/notification";
@@ -25,7 +24,6 @@ router.use("/", verifier);
 router.use("/", notification);
 router.use("/", checkout);
 router.use("/", search);
-router.use("/auth", auth);
 
 router.use((req, res, next) => {
   createError(statusCodes.internalError, errors.internalServerError.message);

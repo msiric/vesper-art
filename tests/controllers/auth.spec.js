@@ -118,9 +118,9 @@ describe("Auth tests", () => {
     await closeConnection(connection);
   });
 
-  describe("/api/auth/signup", () => {
+  describe("/auth/signup", () => {
     it("should create a new user", async () => {
-      const res = await request(app).post("/api/auth/signup").send({
+      const res = await request(app).post("/auth/signup").send({
         userName: "Test User",
         userUsername: "testuser",
         userEmail: "test@test.com",
@@ -133,15 +133,13 @@ describe("Auth tests", () => {
     });
 
     it("should throw a 400 error if user is already authenticated", async () => {
-      const res = await request(app, sellerToken)
-        .post("/api/auth/signup")
-        .send({
-          userName: "Test User",
-          userUsername: "testuser",
-          userEmail: "test@test.com",
-          userPassword: "User1Password",
-          userConfirm: "User1Password",
-        });
+      const res = await request(app, sellerToken).post("/auth/signup").send({
+        userName: "Test User",
+        userUsername: "testuser",
+        userEmail: "test@test.com",
+        userPassword: "User1Password",
+        userConfirm: "User1Password",
+      });
       expect(res.body.message).toEqual(
         logicErrors.alreadyAuthenticated.message
       );
@@ -149,7 +147,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a 409 error if username is already taken", async () => {
-      const res = await request(app).post("/api/auth/signup").send({
+      const res = await request(app).post("/auth/signup").send({
         userName: "Test User",
         userUsername: seller.name,
         userEmail: "test@test.com",
@@ -161,7 +159,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a 409 error if email is already taken", async () => {
-      const res = await request(app).post("/api/auth/signup").send({
+      const res = await request(app).post("/auth/signup").send({
         userName: "Test User",
         userUsername: "testuser",
         userEmail: seller.email,
@@ -174,7 +172,7 @@ describe("Auth tests", () => {
 
     it("should throw a validation error if username is too short", async () => {
       const res = await request(app)
-        .post("/api/auth/signup")
+        .post("/auth/signup")
         .send({
           userName: "Test User",
           userUsername: new Array(ranges.username.min).join("a"),
@@ -190,7 +188,7 @@ describe("Auth tests", () => {
 
     it("should throw a validation error if username is too long", async () => {
       const res = await request(app)
-        .post("/api/auth/signup")
+        .post("/auth/signup")
         .send({
           userName: "Test User",
           userUsername: new Array(ranges.username.max + 2).join("a"),
@@ -205,7 +203,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a validation error if username is invalid (contains anything other than letters, numbers and dots)", async () => {
-      const res = await request(app).post("/api/auth/signup").send({
+      const res = await request(app).post("/auth/signup").send({
         userName: "Test User",
         userUsername: "test-2",
         userEmail: "test@test.com",
@@ -221,7 +219,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a validation error if username is blacklisted", async () => {
-      const res = await request(app).post("/api/auth/signup").send({
+      const res = await request(app).post("/auth/signup").send({
         userName: "Test User",
         userUsername: "administrator",
         userEmail: "test@test.com",
@@ -237,7 +235,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a validation error if email is invalid", async () => {
-      const res = await request(app).post("/api/auth/signup").send({
+      const res = await request(app).post("/auth/signup").send({
         userName: "Test User",
         userUsername: "testuser",
         userEmail: "test@",
@@ -251,7 +249,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a validation error if passwords don't match", async () => {
-      const res = await request(app).post("/api/auth/signup").send({
+      const res = await request(app).post("/auth/signup").send({
         userName: "Test User",
         userUsername: "testuser",
         userEmail: "test@test.com",
@@ -268,7 +266,7 @@ describe("Auth tests", () => {
 
     it("should throw a validation error if password is too short", async () => {
       const res = await request(app)
-        .post("/api/auth/signup")
+        .post("/auth/signup")
         .send({
           userName: "Test User",
           userUsername: "testuser",
@@ -284,7 +282,7 @@ describe("Auth tests", () => {
 
     it("should throw a validation error if password is too long", async () => {
       const res = await request(app)
-        .post("/api/auth/signup")
+        .post("/auth/signup")
         .send({
           userName: "Test User",
           userUsername: "testuser",
@@ -300,7 +298,7 @@ describe("Auth tests", () => {
 
     it("should throw a validation error if name is too long", async () => {
       const res = await request(app)
-        .post("/api/auth/signup")
+        .post("/auth/signup")
         .send({
           userName: new Array(ranges.fullName.max + 2).join("a"),
           userUsername: "testuser",
@@ -313,7 +311,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a validation error if name is missing", async () => {
-      const res = await request(app).post("/api/auth/signup").send({
+      const res = await request(app).post("/auth/signup").send({
         userUsername: "testuser",
         userEmail: "test@test.com",
         userPassword: "User1Password",
@@ -326,7 +324,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a validation error if username is missing", async () => {
-      const res = await request(app).post("/api/auth/signup").send({
+      const res = await request(app).post("/auth/signup").send({
         userName: "Test User",
         userEmail: "test@test.com",
         userPassword: "User1Password",
@@ -341,7 +339,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a validation error if email is missing", async () => {
-      const res = await request(app).post("/api/auth/signup").send({
+      const res = await request(app).post("/auth/signup").send({
         userName: "Test User",
         userUsername: "testuser",
         userPassword: "User1Password",
@@ -354,7 +352,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a validation error if password is missing", async () => {
-      const res = await request(app).post("/api/auth/signup").send({
+      const res = await request(app).post("/auth/signup").send({
         userUsername: "testuser",
         userName: "Test User",
         userEmail: "test@test.com",
@@ -369,7 +367,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a validation error if confirmed password is missing", async () => {
-      const res = await request(app).post("/api/auth/signup").send({
+      const res = await request(app).post("/auth/signup").send({
         userName: "Test User",
         userUsername: "testuser",
         userEmail: "test@test.com",
@@ -384,9 +382,9 @@ describe("Auth tests", () => {
     });
   });
 
-  describe("/api/auth/login", () => {
+  describe("/auth/login", () => {
     it("should throw a 400 error if user is already authenticated", async () => {
-      const res = await request(app, sellerToken).post("/api/auth/login").send({
+      const res = await request(app, sellerToken).post("/auth/login").send({
         userUsername: "testuser",
         userPassword: "User1Password",
       });
@@ -397,7 +395,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a 403 error if user is not verified", async () => {
-      const res = await request(app).post("/api/auth/login").send({
+      const res = await request(app).post("/auth/login").send({
         userUsername: invalidUsers.validVerification.username,
         userPassword: invalidUsers.validVerification.password,
       });
@@ -406,7 +404,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a 404 error if user doesn't exist", async () => {
-      const res = await request(app).post("/api/auth/login").send({
+      const res = await request(app).post("/auth/login").send({
         userUsername: "testuser",
         userPassword: "User1Password",
       });
@@ -415,7 +413,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a 404 error if password is incorrect", async () => {
-      const res = await request(app).post("/api/auth/login").send({
+      const res = await request(app).post("/auth/login").send({
         userUsername: seller.name,
         userPassword: "invalidpassword",
       });
@@ -424,7 +422,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a validation error if username is missing", async () => {
-      const res = await request(app).post("/api/auth/login").send({
+      const res = await request(app).post("/auth/login").send({
         userPassword: "User1Password",
       });
       expect(res.body.message).toEqual(
@@ -436,7 +434,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a validation error if password is missing", async () => {
-      const res = await request(app).post("/api/auth/login").send({
+      const res = await request(app).post("/auth/login").send({
         userUsername: "testuser",
       });
       expect(res.body.message).toEqual(
@@ -448,11 +446,9 @@ describe("Auth tests", () => {
     });
   });
 
-  describe("/api/auth/logout", () => {
+  describe("/auth/logout", () => {
     it("should log the user out", async () => {
-      const res = await request(app, sellerToken)
-        .post("/api/auth/logout")
-        .send();
+      const res = await request(app, sellerToken).post("/auth/logout").send();
       expect(res.body.accessToken).toEqual("");
       expect(res.body.user).toEqual("");
       expect(res.statusCode).toEqual(statusCodes.ok);
@@ -460,23 +456,23 @@ describe("Auth tests", () => {
 
     it("should throw a 401 error if token has expired", async () => {
       const res = await request(app, accessTokens.expiredBuyer)
-        .post("/api/auth/logout")
+        .post("/auth/logout")
         .send();
       expect(res.body.message).toEqual(logicErrors.notAuthenticated.message);
       expect(res.statusCode).toEqual(logicErrors.notAuthenticated.status);
     });
 
     it("should throw a 403 error if user is not authenticated", async () => {
-      const res = await request(app).post("/api/auth/logout").send();
+      const res = await request(app).post("/auth/logout").send();
       expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
       expect(res.statusCode).toEqual(logicErrors.forbiddenAccess.status);
     });
   });
 
-  describe("/api/auth/refresh_token", () => {
+  describe("/auth/refresh_token", () => {
     it("should return a new access token if refresh token is valid", async () => {
       const res = await request(app, sellerToken, sellerCookie)
-        .post("/api/auth/refresh_token")
+        .post("/auth/refresh_token")
         .send();
       expect(res.body.accessToken).toBeTruthy();
       expect(res.statusCode).toEqual(statusCodes.ok);
@@ -484,7 +480,7 @@ describe("Auth tests", () => {
 
     it("should return a 403 error if refresh token is invalid", async () => {
       const res = await request(app, sellerToken, "invalid cookie")
-        .post("/api/auth/refresh_token")
+        .post("/auth/refresh_token")
         .send();
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
       expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
@@ -492,7 +488,7 @@ describe("Auth tests", () => {
 
     it("should return a 403 error if user is not found", async () => {
       const res = await request(app, "", unusedCookie)
-        .post("/api/auth/refresh_token")
+        .post("/auth/refresh_token")
         .send();
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
       expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
@@ -504,19 +500,17 @@ describe("Auth tests", () => {
         validVerificationUserToken,
         validVerificationUserCookie
       )
-        .post("/api/auth/refresh_token")
+        .post("/auth/refresh_token")
         .send();
       expect(res.body.message).toEqual(errors.userNotVerified.message);
       expect(res.statusCode).toEqual(errors.userNotVerified.status);
     });
   });
 
-  describe("/api/auth/verify_token/:tokenId", () => {
+  describe("/auth/verify_token/:tokenId", () => {
     it("should verify user's token", async () => {
       const res = await request(app)
-        .get(
-          `/api/auth/verify_token/${validVerificationUser.verificationToken}`
-        )
+        .get(`/auth/verify_token/${validVerificationUser.verificationToken}`)
         .send();
       expect(res.body.message).toEqual(responses.registerTokenVerified.message);
       expect(res.statusCode).toEqual(responses.registerTokenVerified.status);
@@ -524,9 +518,7 @@ describe("Auth tests", () => {
 
     it("should throw an error if user is authenticated", async () => {
       const res = await request(app, validVerificationUserToken)
-        .get(
-          `/api/auth/verify_token/${validVerificationUser.verificationToken}`
-        )
+        .get(`/auth/verify_token/${validVerificationUser.verificationToken}`)
         .send();
       expect(res.body.message).toEqual(errors.alreadyAuthenticated.message);
       expect(res.statusCode).toEqual(errors.alreadyAuthenticated.status);
@@ -534,19 +526,17 @@ describe("Auth tests", () => {
 
     it("should throw an error if token is expired", async () => {
       const res = await request(app)
-        .get(
-          `/api/auth/verify_token/${expiredVerificationUser.verificationToken}`
-        )
+        .get(`/auth/verify_token/${expiredVerificationUser.verificationToken}`)
         .send();
       expect(res.body.message).toEqual(errors.verificationTokenInvalid.message);
       expect(res.statusCode).toEqual(errors.verificationTokenInvalid.status);
     });
   });
 
-  describe("/api/auth/forgot_password", () => {
+  describe("/auth/forgot_password", () => {
     it("should send reset token", async () => {
       const res = await request(app)
-        .post("/api/auth/forgot_password")
+        .post("/auth/forgot_password")
         .send({ userEmail: seller.email });
       expect(sendEmailMock).toHaveBeenCalled();
       expect(res.body.message).toEqual(responses.passwordReset.message);
@@ -555,7 +545,7 @@ describe("Auth tests", () => {
 
     it("should throw an error if user is authenticated", async () => {
       const res = await request(app, sellerToken)
-        .post("/api/auth/forgot_password")
+        .post("/auth/forgot_password")
         .send({ userEmail: seller.email });
       expect(res.body.message).toEqual(errors.alreadyAuthenticated.message);
       expect(res.statusCode).toEqual(errors.alreadyAuthenticated.status);
@@ -563,7 +553,7 @@ describe("Auth tests", () => {
 
     it("should throw a validation error if email is invalid", async () => {
       const res = await request(app)
-        .post("/api/auth/forgot_password")
+        .post("/auth/forgot_password")
         .send({ userEmail: false });
       expect(res.body.message).toEqual(
         validationErrors.userEmailInvalid.message
@@ -572,7 +562,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a validation error if email is missing", async () => {
-      const res = await request(app).post("/api/auth/forgot_password").send({});
+      const res = await request(app).post("/auth/forgot_password").send({});
       expect(res.body.message).toEqual(
         validationErrors.userEmailRequired.message
       );
@@ -581,18 +571,18 @@ describe("Auth tests", () => {
 
     it("should not send token if user email does not exist", async () => {
       const res = await request(app)
-        .post("/api/auth/forgot_password")
+        .post("/auth/forgot_password")
         .send({ userEmail: "thisuserdoesnotexist@gmail.com" });
       expect(sendEmailMock).not.toHaveBeenCalled();
       expect(res.body.message).toEqual(responses.passwordReset.message);
       expect(res.statusCode).toEqual(responses.passwordReset.status);
     });
   });
-  describe("/api/auth/reset_password/user/:userId/token/:tokenId", () => {
+  describe("/auth/reset_password/user/:userId/token/:tokenId", () => {
     it("should reset password", async () => {
       const res = await request(app)
         .post(
-          `/api/auth/reset_password/user/${validResetUser.id}/token/${invalidUsers.validReset.randomBytes}`
+          `/auth/reset_password/user/${validResetUser.id}/token/${invalidUsers.validReset.randomBytes}`
         )
         .send({
           userPassword: "newpassword123",
@@ -605,7 +595,7 @@ describe("Auth tests", () => {
     it("should throw an error if user is authenticated", async () => {
       const res = await request(app, validResetUserToken)
         .post(
-          `/api/auth/reset_password/user/${validResetUser.id}/token/${invalidUsers.validReset.randomBytes}`
+          `/auth/reset_password/user/${validResetUser.id}/token/${invalidUsers.validReset.randomBytes}`
         )
         .send({
           userPassword: "newpassword123",
@@ -618,7 +608,7 @@ describe("Auth tests", () => {
     it("should throw an error if token has the wrong user", async () => {
       const res = await request(app)
         .post(
-          `/api/auth/reset_password/user/${invalidUsers.expiredReset.id}/token/${invalidUsers.validReset.randomBytes}`
+          `/auth/reset_password/user/${invalidUsers.expiredReset.id}/token/${invalidUsers.validReset.randomBytes}`
         )
         .send({
           userPassword: "newpassword123",
@@ -631,7 +621,7 @@ describe("Auth tests", () => {
     it("should throw an error if user has the wrong token", async () => {
       const res = await request(app)
         .post(
-          `/api/auth/reset_password/user/${invalidUsers.validReset.id}/token/${invalidUsers.expiredReset.randomBytes}`
+          `/auth/reset_password/user/${invalidUsers.validReset.id}/token/${invalidUsers.expiredReset.randomBytes}`
         )
         .send({
           userPassword: "newpassword123",
@@ -644,7 +634,7 @@ describe("Auth tests", () => {
     it("should throw an error if user id is invalid", async () => {
       const res = await request(app)
         .post(
-          `/api/auth/reset_password/user/false/token/${invalidUsers.validReset.randomBytes}`
+          `/auth/reset_password/user/false/token/${invalidUsers.validReset.randomBytes}`
         )
         .send({
           userPassword: "newpassword123",
@@ -657,7 +647,7 @@ describe("Auth tests", () => {
     it("should throw an error if token is expired", async () => {
       const res = await request(app)
         .post(
-          `/api/auth/reset_password/user/${expiredResetUser.id}/token/${invalidUsers.expiredReset.randomBytes}`
+          `/auth/reset_password/user/${expiredResetUser.id}/token/${invalidUsers.expiredReset.randomBytes}`
         )
         .send({
           userPassword: "newpassword123",
@@ -670,7 +660,7 @@ describe("Auth tests", () => {
     it("should throw an error if password is the same as the previous one", async () => {
       const res = await request(app)
         .post(
-          `/api/auth/reset_password/user/${validResetUser.id}/token/${invalidUsers.validReset.randomBytes}`
+          `/auth/reset_password/user/${validResetUser.id}/token/${invalidUsers.validReset.randomBytes}`
         )
         .send({
           userPassword: invalidUsers.validReset.password,
@@ -683,7 +673,7 @@ describe("Auth tests", () => {
     it("should throw a validation error if passwords don't match", async () => {
       const res = await request(app)
         .post(
-          `/api/auth/reset_password/user/${validResetUser.id}/token/${invalidUsers.validReset.randomBytes}`
+          `/auth/reset_password/user/${validResetUser.id}/token/${invalidUsers.validReset.randomBytes}`
         )
         .send({
           userPassword: "User1Password",
@@ -700,7 +690,7 @@ describe("Auth tests", () => {
     it("should throw a validation error if password is too short", async () => {
       const res = await request(app)
         .post(
-          `/api/auth/reset_password/user/${validResetUser.id}/token/${invalidUsers.validReset.randomBytes}`
+          `/auth/reset_password/user/${validResetUser.id}/token/${invalidUsers.validReset.randomBytes}`
         )
         .send({
           userPassword: new Array(ranges.password.min).join("a"),
@@ -715,7 +705,7 @@ describe("Auth tests", () => {
     it("should throw a validation error if password is too long", async () => {
       const res = await request(app)
         .post(
-          `/api/auth/reset_password/user/${validResetUser.id}/token/${invalidUsers.validReset.randomBytes}`
+          `/auth/reset_password/user/${validResetUser.id}/token/${invalidUsers.validReset.randomBytes}`
         )
         .send({
           userPassword: new Array(ranges.password.max + 2).join("a"),
@@ -728,9 +718,9 @@ describe("Auth tests", () => {
     });
   });
 
-  describe("/api/auth/resend_token", () => {
+  describe("/auth/resend_token", () => {
     it("should send resend token", async () => {
-      const res = await request(app).post("/api/auth/resend_token").send({
+      const res = await request(app).post("/auth/resend_token").send({
         userEmail: validVerificationUser.email,
       });
       expect(sendEmailMock).toHaveBeenCalled();
@@ -741,7 +731,7 @@ describe("Auth tests", () => {
     });
 
     it("should not send token if user not found", async () => {
-      const res = await request(app).post("/api/auth/resend_token").send({
+      const res = await request(app).post("/auth/resend_token").send({
         userEmail: "nonExistentEmail@mail.com",
       });
       expect(sendEmailMock).not.toHaveBeenCalled();
@@ -753,7 +743,7 @@ describe("Auth tests", () => {
 
     it("should throw an error if user is authenticated", async () => {
       const res = await request(app, validVerificationUserToken)
-        .post("/api/auth/resend_token")
+        .post("/auth/resend_token")
         .send({
           userEmail: validVerificationUser.email,
         });
@@ -762,7 +752,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw an error if user is verified", async () => {
-      const res = await request(app).post("/api/auth/resend_token").send({
+      const res = await request(app).post("/auth/resend_token").send({
         userEmail: seller.email,
       });
       expect(res.body.message).toEqual(errors.userAlreadyVerified.message);
@@ -770,7 +760,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a validation error if email is invalid", async () => {
-      const res = await request(app).post("/api/auth/resend_token").send({
+      const res = await request(app).post("/auth/resend_token").send({
         userEmail: "invalidEmail",
       });
       expect(res.body.message).toEqual(
@@ -780,7 +770,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a validation error if email is missing", async () => {
-      const res = await request(app).post("/api/auth/resend_token").send({});
+      const res = await request(app).post("/auth/resend_token").send({});
       expect(res.body.message).toEqual(
         validationErrors.userEmailRequired.message
       );
@@ -789,7 +779,7 @@ describe("Auth tests", () => {
 
     it("should throw a validation error if email is too long", async () => {
       const res = await request(app)
-        .post("/api/auth/resend_token")
+        .post("/auth/resend_token")
         .send({
           userEmail: `${new Array(ranges.email.max).join("a")}@test.com`,
         });
@@ -798,9 +788,9 @@ describe("Auth tests", () => {
     });
   });
 
-  describe("/api/auth/update_email", () => {
+  describe("/auth/update_email", () => {
     it("should update email", async () => {
-      const res = await request(app).post("/api/auth/update_email").send({
+      const res = await request(app).post("/auth/update_email").send({
         userEmail: "nonExistentEmail@mail.com",
         userUsername: validUsers.seller.username,
         userPassword: validUsers.seller.password,
@@ -812,7 +802,7 @@ describe("Auth tests", () => {
 
     it("should throw an error if user is authenticated", async () => {
       const res = await request(app, sellerToken)
-        .post("/api/auth/update_email")
+        .post("/auth/update_email")
         .send({
           userEmail: validUsers.seller.email,
           userUsername: validUsers.seller.username,
@@ -823,7 +813,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw an error if user doesn't exist", async () => {
-      const res = await request(app).post("/api/auth/update_email").send({
+      const res = await request(app).post("/auth/update_email").send({
         userEmail: validUsers.seller.email,
         userUsername: "nonExistentUser",
         userPassword: validUsers.seller.password,
@@ -833,7 +823,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw an error if password is wrong", async () => {
-      const res = await request(app).post("/api/auth/update_email").send({
+      const res = await request(app).post("/auth/update_email").send({
         userEmail: validUsers.seller.email,
         userUsername: validUsers.seller.username,
         userPassword: "wrongPassword",
@@ -843,7 +833,7 @@ describe("Auth tests", () => {
     });
 
     it("should not reset email if email is taken", async () => {
-      const res = await request(app).post("/api/auth/update_email").send({
+      const res = await request(app).post("/auth/update_email").send({
         userEmail: invalidUsers.validReset.email,
         userUsername: validUsers.seller.username,
         userPassword: validUsers.seller.password,
@@ -854,7 +844,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a validation error if email is invalid", async () => {
-      const res = await request(app).post("/api/auth/update_email").send({
+      const res = await request(app).post("/auth/update_email").send({
         userEmail: "invalidEmail",
         userUsername: validUsers.seller.username,
         userPassword: validUsers.seller.password,
@@ -866,7 +856,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a validation error if email is missing", async () => {
-      const res = await request(app).post("/api/auth/update_email").send({
+      const res = await request(app).post("/auth/update_email").send({
         userUsername: validUsers.seller.username,
         userPassword: validUsers.seller.password,
       });
@@ -878,7 +868,7 @@ describe("Auth tests", () => {
 
     it("should throw a validation error if email is too long", async () => {
       const res = await request(app)
-        .post("/api/auth/update_email")
+        .post("/auth/update_email")
         .send({
           userEmail: `${new Array(ranges.email.max).join("a")}@test.com`,
           userUsername: validUsers.seller.username,
@@ -890,7 +880,7 @@ describe("Auth tests", () => {
 
     it("should throw a validation error if username is too short", async () => {
       const res = await request(app)
-        .post("/api/auth/update_email")
+        .post("/auth/update_email")
         .send({
           userEmail: validUsers.seller.email,
           userUsername: new Array(ranges.username.min).join("a"),
@@ -904,7 +894,7 @@ describe("Auth tests", () => {
 
     it("should throw a validation error if username is too long", async () => {
       const res = await request(app)
-        .post("/api/auth/update_email")
+        .post("/auth/update_email")
         .send({
           userEmail: validUsers.seller.email,
           userUsername: new Array(ranges.username.max + 2).join("a"),
@@ -917,7 +907,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a validation error if username is invalid (contains anything other than letters, numbers and dots)", async () => {
-      const res = await request(app).post("/api/auth/update_email").send({
+      const res = await request(app).post("/auth/update_email").send({
         userEmail: validUsers.seller.email,
         userUsername: "test-2",
         userPassword: validUsers.seller.password,
@@ -931,7 +921,7 @@ describe("Auth tests", () => {
     });
 
     it("should throw a validation error if username is blacklisted", async () => {
-      const res = await request(app).post("/api/auth/update_email").send({
+      const res = await request(app).post("/auth/update_email").send({
         userEmail: validUsers.seller.email,
         userUsername: "administrator",
         userPassword: validUsers.seller.password,
@@ -946,7 +936,7 @@ describe("Auth tests", () => {
 
     it("should throw a validation error if password is too short", async () => {
       const res = await request(app)
-        .post("/api/auth/update_email")
+        .post("/auth/update_email")
         .send({
           userEmail: validUsers.seller.email,
           userUsername: validUsers.seller.username,
@@ -960,7 +950,7 @@ describe("Auth tests", () => {
 
     it("should throw a validation error if password is too long", async () => {
       const res = await request(app)
-        .post("/api/auth/update_email")
+        .post("/auth/update_email")
         .send({
           userEmail: validUsers.seller.email,
           userUsername: validUsers.seller.username,

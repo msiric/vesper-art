@@ -280,6 +280,11 @@ export const errors = {
     message: "File dimensions are not valid",
     expose: true,
   },
+  maxRequests: {
+    status: statusCodes.tooManyRequests,
+    message: "Too many requests",
+    expose: true,
+  },
 };
 export const responses = {
   artworkCreated: {
