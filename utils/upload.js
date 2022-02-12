@@ -1,25 +1,20 @@
-import gifResize from "@gumlet/gif-resize";
 import fs from "fs";
 import createError from "http-errors";
 import imageSize from "image-size";
 import sharp from "sharp";
-import { statusCodes, upload } from "../common/constants";
+import { upload } from "../common/constants";
 import { rgbToHex } from "../common/helpers";
 import { errors as validationErrors } from "../common/validation";
 import { uploadS3Object } from "../lib/s3";
 import { checkImageOrientation, formatError } from "./helpers";
 import { errors } from "./statuses";
 
-const isGif = (mimeType) => mimeType === "image/gif";
-
 export const userS3Upload = async ({ filePath, fileName, mimeType }) => {
-  const fileMedia = isGif(mimeType)
-    ? await fs.promises.readFile(filePath)
-    : await sharp(filePath, {
-        animated: upload.user.mimeTypes[mimeType].animated,
-      })
-        [upload.user.mimeTypes[mimeType].type]()
-        .toBuffer();
+  const fileMedia = await sharp(filePath, {
+    animated: upload.user.mimeTypes[mimeType].animated,
+  })
+    [upload.user.mimeTypes[mimeType].type]()
+    .toBuffer();
   const {
     dominant: { r, g, b },
   } = await sharp(filePath).stats();
@@ -34,23 +29,17 @@ export const userS3Upload = async ({ filePath, fileName, mimeType }) => {
 };
 
 export const artworkS3Upload = async ({ filePath, fileName, mimeType }) => {
-  const fileMedia = isGif(mimeType)
-    ? await fs.promises.readFile(filePath)
-    : await sharp(filePath, {
-        animated: upload.artwork.mimeTypes[mimeType].animated,
-      })
-        [upload.artwork.mimeTypes[mimeType].type]()
-        .toBuffer();
-  const fileCover = isGif(mimeType)
-    ? await gifResize({
-        width: upload.artwork.fileTransform.width,
-      })(fileMedia)
-    : await sharp(filePath, {
-        animated: upload.artwork.mimeTypes[mimeType].animated,
-      })
-        .resize(upload.artwork.fileTransform.width)
-        [upload.artwork.mimeTypes[mimeType].type]({ quality: 100 })
-        .toBuffer();
+  const fileMedia = await sharp(filePath, {
+    animated: upload.artwork.mimeTypes[mimeType].animated,
+  })
+    [upload.artwork.mimeTypes[mimeType].type]()
+    .toBuffer();
+  const fileCover = await sharp(filePath, {
+    animated: upload.artwork.mimeTypes[mimeType].animated,
+  })
+    .resize(upload.artwork.fileTransform.width)
+    [upload.artwork.mimeTypes[mimeType].type]({ quality: 100 })
+    .toBuffer();
   const {
     dominant: { r, g, b },
   } = await sharp(filePath).stats();
@@ -126,7 +115,7 @@ export const finalizeMediaUpload = async ({
             fileType === "artwork"
               ? await artworkS3Upload({ filePath, fileName, mimeType })
               : await userS3Upload({ filePath, fileName, mimeType });
-          deleteFileLocally({ filePath });
+          await deleteFileLocally({ filePath });
           fileUpload.fileCover = cover;
           fileUpload.fileMedia = media;
           fileUpload.fileDominant = dominant;
@@ -138,17 +127,14 @@ export const finalizeMediaUpload = async ({
           );
           return fileUpload;
         }
-        deleteFileLocally({ filePath });
         throw createError(...formatError(errors.aspectRatioInvalid));
       }
-      deleteFileLocally({ filePath });
       throw createError(...formatError(errors.fileDimensionsInvalid));
-    } else {
-      return fileUpload;
     }
+    return fileUpload;
   } catch (err) {
-    deleteFileLocally({ filePath });
-    throw createError(statusCodes.internalError, err, { expose: true });
+    await deleteFileLocally({ filePath });
+    throw createError(err);
   }
 };
 

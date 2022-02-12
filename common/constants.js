@@ -1,14 +1,3 @@
-const MIME_TYPES = {
-  "image/jpeg": { type: "jpeg", label: "JPG", animated: false },
-  "image/png": { type: "png", label: "PNG", animated: false },
-  // $TODO add support for "image/gif",
-  /*  "image/gif": { type: "gif", label: "GIF", animated: true }, */
-};
-const TRANSFORMED_ARTWORK_WIDTH = 640;
-const ALLOWED_ARTWORK_RATIO = 4;
-
-const ALLOWED_AVATAR_RATIO = 1.5;
-
 export const appName = "Vesper";
 
 export const domainName = "vesperart.co";
@@ -23,10 +12,24 @@ export const featureFlags = {
   payment: true,
   discount: true,
   dashboard: true,
+  gif: true,
 };
 
 export const unavailableMessage =
   "Please note that information regarding purchasing and selling licenses for commercial artwork is not currently applicable. This feature is not yet available and is coming soon.";
+
+export const MIME_TYPES = {
+  "image/jpeg": { type: "jpeg", label: "JPG", animated: false },
+  "image/png": { type: "png", label: "PNG", animated: false },
+  ...(featureFlags.gif && {
+    "image/gif": { type: "gif", label: "GIF", animated: true },
+  }),
+};
+
+export const TRANSFORMED_ARTWORK_WIDTH = 640;
+export const ALLOWED_ARTWORK_RATIO = 4;
+
+export const ALLOWED_AVATAR_RATIO = 1.5;
 
 export const upload = {
   artwork: {
