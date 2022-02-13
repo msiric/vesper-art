@@ -21,6 +21,7 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
         height: 44,
       },
       "& $imageContainer": {
+        transform: "translate3d(0,0,0)", // uses GPU for better blur performance
         filter: "blur(6px)",
         opacity: 0.5,
       },
