@@ -13,8 +13,8 @@ const sharedConfig = {
 };
 
 export const commonRateLimiter = rateLimit({
-  windowMs: 5 * 60 * 1000, // 5 minutes
-  max: environment !== ENV_OPTIONS.TEST ? 100 : 0, // limit each IP to 100 requests per windowMs if not testing (otherwise disable limiter)
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: environment !== ENV_OPTIONS.TEST ? 20 : 0, // limit each IP to 20 requests per windowMs if not testing (otherwise disable limiter)
   ...sharedConfig,
 });
 
