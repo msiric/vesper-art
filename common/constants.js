@@ -21,6 +21,7 @@ export const unavailableMessage =
 export const MIME_TYPES = {
   "image/jpeg": { type: "jpeg", label: "JPG", animated: false },
   "image/png": { type: "png", label: "PNG", animated: false },
+  // FEATURE FLAG - gif
   ...(featureFlags.gif && {
     "image/gif": { type: "gif", label: "GIF", animated: true },
   }),
