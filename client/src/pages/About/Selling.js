@@ -40,6 +40,7 @@ const useSellingStyles = makeStyles((muiTheme) => ({
     },
   },
   label: {
+    marginTop: 8,
     marginBottom: 16,
     [muiTheme.breakpoints.down("xs")]: {
       fontSize: "1.8rem",
@@ -75,8 +76,8 @@ const Selling = () => {
           </Typography>
           <Typography className={classes.paragraph}>
             {`Additionally, you have complete control over the art you are publishing, including the types of licenses you want to include and how much to charge for each type. If you choose to publish your artwork as „available for download“, 
-            you may offer and charge for a personal license, which allows users to use the artwork for display on personal websites and computers, or making image prints or video copies for personal use without charging money, collecting fees, 
-            or receiving any form of remuneration, and/or a commercial license, which allows users to use the artwork for business related activities such as advertising, promotion, creating web pages, integration into product, software or other business related tools. 
+            you may offer and charge for a personal license (which allows users to use the artwork for display on personal websites and computers, or making image prints or video copies for personal use without charging money, collecting fees, 
+            or receiving any form of remuneration) and/or a commercial license (which allows users to use the artwork for business related activities such as advertising, promotion, creating web pages, integration into product, software or other business related tools). 
            `}
           </Typography>
           <Typography className={classes.paragraph}>
@@ -103,6 +104,7 @@ const Selling = () => {
             </Typography>
             <Box className={classes.buttons}>
               <SyncButton
+                variant="text"
                 component={RouterLink}
                 to="/start_buying"
                 startIcon={<BuyingIcon />}

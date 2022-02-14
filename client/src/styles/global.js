@@ -141,6 +141,7 @@ const globalStyles = makeStyles((muiTheme) => ({
       },
     ".MuiTimelineItem-alignAlternate:nth-child(odd) .MuiTimelineItem-content": {
       paddingRight: 0,
+      textAlign: "left",
     },
     "[class*='MUIDataTableSearch-main']": {
       [muiTheme.breakpoints.down("xs")]: {

@@ -62,6 +62,7 @@ const useInstructionsStyles = makeStyles((muiTheme) => ({
     },
   },
   label: {
+    marginTop: 8,
     marginBottom: 16,
     [muiTheme.breakpoints.down("xs")]: {
       fontSize: "1.8rem",
@@ -175,8 +176,8 @@ const HowItWorks = () => {
           }
           <MainHeading text="How it works" />
           <Typography className={classes.paragraph}>
-            {`${appName} is a digital art marketplace that allows art lovers to view, download and purchase art from other artists while protecting both sides 
-            by utilizing a system based on licenses as a means of transparency and non-repudiation while maintaining user anonymity.
+            {`${appName} is a digital art marketplace that allows art lovers to view, download, and purchase art from artists while protecting both sides 
+           with a system based on licenses as a means of transparency and non-repudiation, all the while maintaining user anonymity.
             Get up to speed with how ${appName} works in six simple steps from the perspective of both parties involved`}
           </Typography>
         </Grid>
@@ -229,12 +230,14 @@ const HowItWorks = () => {
             </Typography>
             <Box className={classes.buttons}>
               <SyncButton
+                variant="text"
                 component={RouterLink}
                 to="/start_selling"
                 color="secondary"
                 startIcon={<SellingIcon />}
               >{`Selling on ${appName}`}</SyncButton>
               <SyncButton
+                variant="text"
                 component={RouterLink}
                 to="/start_buying"
                 startIcon={<BuyingIcon />}

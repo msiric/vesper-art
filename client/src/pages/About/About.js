@@ -39,6 +39,7 @@ const useAboutStyling = makeStyles((muiTheme) => ({
     },
   },
   label: {
+    marginTop: 8,
     marginBottom: 16,
     [muiTheme.breakpoints.down("xs")]: {
       fontSize: "1.8rem",
@@ -75,7 +76,7 @@ const About = () => {
             {`Signing up with ${appName} is free and unlocks all the benefits of using the platform. 
             As an artist, you have the option to upload your artwork and be in full control of how it is displayed and interacted with. 
             You can make your artwork „preview only“ which, as the name suggests, allows users to only preview your art without downloading or purchasing it. 
-            Another option is to make your artwork „available for download“, but fine-tune the details regarding the "personal" and "commercial" licenses. 
+            Another option is to make your artwork „available for download“, but fine-tune the details regarding the personal and commercial licenses. 
             `}
           </Typography>
           <Typography className={classes.paragraph}>
@@ -95,7 +96,7 @@ const About = () => {
           </Typography>
           <Typography className={classes.paragraph}>
             {`Thanks to this system, every artwork you ever downloaded/purchased is yours to use within the license's permissions and allows you to freely download the artwork on as many devices as you want as long as you are the one using it.
-            If any disputes arise from either the artist's or collector's side, it can quickly and securely be resolved by verifying the license information from both parties involved by heading to the platform's verifier.
+            If any disputes arise from either the artist's or collector's side, it can quickly and securely be resolved by verifying the license information from both parties involved by using the platform's verifier.
             `}
           </Typography>
         </Grid>
@@ -106,6 +107,7 @@ const About = () => {
             </Typography>
             <Box className={classes.buttons}>
               <SyncButton
+                variant="text"
                 component={RouterLink}
                 to="/start_buying"
                 startIcon={<BuyingIcon />}

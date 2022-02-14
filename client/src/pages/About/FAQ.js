@@ -1,5 +1,8 @@
 import { makeStyles } from "@material-ui/core";
-import { ShoppingBasketOutlined as BuyingIcon } from "@material-ui/icons";
+import {
+  ShoppingBasketOutlined as BuyingIcon,
+  WallpaperOutlined as SellingIcon,
+} from "@material-ui/icons";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
@@ -32,6 +35,7 @@ const useFAQStyling = makeStyles((muiTheme) => ({
     flexDirection: "column",
     width: "100%",
     margin: "0 auto",
+    textAlign: "center",
   },
   actions: {
     display: "flex",
@@ -47,6 +51,7 @@ const useFAQStyling = makeStyles((muiTheme) => ({
     },
   },
   label: {
+    marginTop: 8,
     marginBottom: 16,
     [muiTheme.breakpoints.down("xs")]: {
       fontSize: "1.8rem",
@@ -168,10 +173,18 @@ const FAQ = () => {
         <Grid item sm={12} className={classes.wrapper}>
           <Box className={classes.actions}>
             <Typography variant="h4" className={classes.label}>
-              {`Learn about buying on ${appName}`}
+              {`Learn more about how ${appName} works`}
             </Typography>
             <Box className={classes.buttons}>
               <SyncButton
+                variant="text"
+                component={RouterLink}
+                to="/start_selling"
+                color="secondary"
+                startIcon={<SellingIcon />}
+              >{`Selling on ${appName}`}</SyncButton>
+              <SyncButton
+                variant="text"
                 component={RouterLink}
                 to="/start_buying"
                 startIcon={<BuyingIcon />}

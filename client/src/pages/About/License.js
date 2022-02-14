@@ -35,6 +35,7 @@ const useLicenseStyles = makeStyles((muiTheme) => ({
     },
   },
   label: {
+    marginTop: 8,
     marginBottom: 16,
     [muiTheme.breakpoints.down("xs")]: {
       fontSize: "1.8rem",
@@ -75,18 +76,18 @@ const LicenseInformation = () => {
           </Typography>
           <Typography className={classes.paragraph}>
             {`Every user that signs up to ${appName} has to provide their full name which is unalterable and automatically prefilled for every future generated license.
-            This helps identify every user and the licenses said user owns, but doesn't reveal any sensitive information unless said user explicitly shares the identifer value to do so, as explained below:
+            This helps identify every user and the licenses each respective user owns, but doesn't reveal any sensitive information about any of the users unless a specific license's identifier is shared, as explained below:
             `}
           </Typography>
           <Typography className={classes.paragraph}>
-            {`Every generated license contains a license fingerprint, an assignor identifier and an assignee identifier. These values are used by either the artist or the collector to verify the license information.
-            Entering the license fingerprint on the platform's verifier will reveal basic information about the license, the buyer (collector) and the seller (artist) of the artwork in question.
+            {`Every generated license contains a license fingerprint, an assignor identifier and an assignee identifier. These values are used by either the artist or the collector to verify an order's license information.
+            Entering the license fingerprint on the platform's verifier will reveal basic information about the license, the collector and the artist of the artwork in question.
             `}
           </Typography>
           <Typography className={classes.paragraph}>
             {`In addition to the above, both the artist (license assignor) and the collector (license assignee) will receive identifiers that are unique to that specific license.
             These identifiers are different for each license and reveal the full name of their respective owner. They should be kept secret and not shared with anyone since they are used to display sensitive license information.
-            When an identifier is entered in the platform's verifier alongside the license fingerprint, complete license information is revealed, including that of the identifier's owner.
+            When an identifier is entered in the platform's verifier alongside the license fingerprint, complete license information is revealed, including that of the owner's full name.
             If a dispute about a specific license or order ever arises, you can then share your identifier with the other party in order to verify additional license information and prove the authenticity of your order.
             `}
           </Typography>

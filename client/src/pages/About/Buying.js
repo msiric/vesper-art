@@ -39,6 +39,7 @@ const useBuyingStyles = makeStyles((muiTheme) => ({
     },
   },
   label: {
+    marginTop: 8,
     marginBottom: 16,
     [muiTheme.breakpoints.down("xs")]: {
       fontSize: "1.8rem",
@@ -74,14 +75,14 @@ const Buying = () => {
           </Typography>
           <Typography className={classes.paragraph}>
             {`Artists can upload art as „preview only“, which allows you to only view the artwork without downloading or purchasing it, or as „available for download“, which allows you to download the artwork for free or purchase it, depending on the artist's preferences. 
-            If an artwork is published as „available for download“, the artist may offer a personal license, which allows you to use the artwork for display on personal websites and computers, or making image prints or video copies for personal use without charging money, 
-            collecting fees, or receiving any form of remuneration, and/or a commercial license, which allows you to use the artwork for business related activities such as advertising, promotion, creating web pages, integration into product, software or other business related tools. 
+            If an artwork is published as „available for download“, the artist may offer a personal license (which allows you to use the artwork for display on personal websites and computers, or making image prints or video copies for personal use without charging money, 
+            collecting fees, or receiving any form of remuneration) and/or a commercial license (which allows you to use the artwork for business related activities such as advertising, promotion, creating web pages, integration into product, software or other business related tools). 
             `}
           </Typography>
           <Typography className={classes.paragraph}>
-            {`A license can be offered free of charge, which allows you to download the artwork for free, compared to a commercial license, which you will have to purchase in order to use the artwork. 
+            {`A license can be offered free of charge, which allows you to download the artwork for free, compared to a commercial license, which you will have to purchase in order to make use of your artwork. 
             In both cases, you will have to fill out the necessary license information in order to receive both the digital file of the artwork you picked and the license that comes with it. 
-            This allows you to prove that you are the legitimate owner of the artwork and that you can use it as specified in the license's permissions, so make sure you store it somewhere safe. 
+            This allows you to prove that you legitimately acquired said artwork and that you can use it as specified in the license's permissions, so make sure you store it somewhere safe. 
            `}
           </Typography>
           <Typography className={classes.paragraph}>
@@ -99,6 +100,7 @@ const Buying = () => {
             </Typography>
             <Box className={classes.buttons}>
               <SyncButton
+                variant="text"
                 component={RouterLink}
                 to="/start_selling"
                 startIcon={<SellingIcon />}

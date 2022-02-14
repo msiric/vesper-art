@@ -51,8 +51,7 @@ const HomeBanner = () => {
         <CardContent className={classes.content}>
           <Box className={classes.wrapper}>
             <Typography className={classes.bannerHeading}>
-              Browse, share and collect digital art the way it's intended to be
-              done
+              Browse, share and collect digital art the way it's intended
             </Typography>
           </Box>
           <Box className={classes.bannerActions}>
