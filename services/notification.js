@@ -1,5 +1,5 @@
-import { Notification } from "../../entities/Notification";
-import { NOTIFICATION_SELECTION } from "../../utils/selectors";
+import { Notification } from "../entities/Notification";
+import { NOTIFICATION_SELECTION } from "../utils/selectors";
 
 export const fetchExistingNotifications = async ({ userId, connection }) => {
   const foundNotifications = await connection

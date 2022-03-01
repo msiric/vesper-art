@@ -1,6 +1,6 @@
-import { User } from "../../entities/User";
-import { sendRefreshToken, updateAccessToken } from "../../utils/auth";
-import { USER_SELECTION } from "../../utils/selectors";
+import { User } from "../entities/User";
+import { sendRefreshToken, updateAccessToken } from "../utils/auth";
+import { USER_SELECTION } from "../utils/selectors";
 
 export const addNewUser = async ({
   userId,

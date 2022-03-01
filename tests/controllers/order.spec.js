@@ -4,7 +4,7 @@ import {
   fetchUserByUsername,
   fetchUserPurchases,
   fetchUserSales,
-} from "../../services/postgres/user";
+} from "../../services/user";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import { USER_SELECTION } from "../../utils/selectors";
 import { errors } from "../../utils/statuses";

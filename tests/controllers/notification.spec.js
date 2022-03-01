@@ -1,7 +1,7 @@
 import app from "../../app";
 import { statusCodes } from "../../common/constants";
-import { fetchExistingNotifications } from "../../services/postgres/notification";
-import { fetchUserByUsername } from "../../services/postgres/user";
+import { fetchExistingNotifications } from "../../services/notification";
+import { fetchUserByUsername } from "../../services/user";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import { USER_SELECTION } from "../../utils/selectors";
 import { errors, responses } from "../../utils/statuses";

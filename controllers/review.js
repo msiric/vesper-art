@@ -2,9 +2,9 @@ import createError from "http-errors";
 import { isObjectEmpty } from "../common/helpers";
 import { reviewValidation } from "../common/validation";
 import socketApi from "../lib/socket";
-import { addNewNotification } from "../services/postgres/notification";
-import { addOrderReview, fetchUserPurchase } from "../services/postgres/order";
-import { addNewReview } from "../services/postgres/review";
+import { addNewNotification } from "../services/notification";
+import { addOrderReview, fetchUserPurchase } from "../services/order";
+import { addNewReview } from "../services/review";
 import { formatError, formatResponse, generateUuids } from "../utils/helpers";
 import { errors, responses } from "../utils/statuses";
 

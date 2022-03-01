@@ -1,5 +1,5 @@
-import { ArtworkVisibility } from "../../entities/Artwork";
-import { Comment } from "../../entities/Comment";
+import { ArtworkVisibility } from "../entities/Artwork";
+import { Comment } from "../entities/Comment";
 
 const VISIBILITY_STATUS = ArtworkVisibility.visible;
 

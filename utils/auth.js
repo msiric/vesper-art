@@ -2,7 +2,7 @@ import createError from "http-errors";
 import jwt from "jsonwebtoken";
 import { auth, cookieKeys } from "../common/constants";
 import { tokens } from "../config/secret";
-import { fetchUserByAuth } from "../services/postgres/user";
+import { fetchUserByAuth } from "../services/user";
 import { formatError, formatTokenData, verifyTokenValidity } from "./helpers";
 import { errors } from "./statuses";
 

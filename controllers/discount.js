@@ -1,10 +1,7 @@
 import createError from "http-errors";
 import { isObjectEmpty } from "../common/helpers";
 import { discountValidation } from "../common/validation";
-import {
-  addNewDiscount,
-  fetchDiscountByCode,
-} from "../services/postgres/discount";
+import { addNewDiscount, fetchDiscountByCode } from "../services/discount";
 import { formatError, formatResponse } from "../utils/helpers";
 import { errors, responses } from "../utils/statuses";
 

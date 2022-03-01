@@ -10,7 +10,7 @@ import { postReview } from "../../../controllers/review";
 import {
   isAuthenticated,
   requestHandler as handler,
-} from "../../../utils/helpers";
+} from "../../../middleware/index";
 
 const router = express.Router();
 

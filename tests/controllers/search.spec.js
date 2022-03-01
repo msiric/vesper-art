@@ -1,8 +1,8 @@
 import app from "../../app";
 import { statusCodes } from "../../common/constants";
 import { errors as validationErrors, ranges } from "../../common/validation";
-import { fetchAllArtworks } from "../../services/postgres/artwork";
-import { fetchUserByUsername } from "../../services/postgres/user";
+import { fetchAllArtworks } from "../../services/artwork";
+import { fetchUserByUsername } from "../../services/user";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import { USER_SELECTION } from "../../utils/selectors";
 import { validUsers } from "../fixtures/entities";

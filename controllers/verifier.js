@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import { isObjectEmpty } from "../common/helpers";
 import { fingerprintValidation } from "../common/validation";
-import { fetchLicenseByFingerprint } from "../services/postgres/license";
+import { fetchLicenseByFingerprint } from "../services/license";
 import { formatError } from "../utils/helpers";
 import { errors } from "../utils/statuses";
 

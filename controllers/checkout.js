@@ -12,11 +12,11 @@ import {
   orderValidation,
 } from "../common/validation";
 import socketApi from "../lib/socket";
-import { fetchVersionDetails } from "../services/postgres/artwork";
-import { addNewLicense } from "../services/postgres/license";
-import { addNewNotification } from "../services/postgres/notification";
-import { addNewOrder } from "../services/postgres/order";
-import { fetchArtworkOrders, fetchUserById } from "../services/postgres/user";
+import { fetchVersionDetails } from "../services/artwork";
+import { addNewLicense } from "../services/license";
+import { addNewNotification } from "../services/notification";
+import { addNewOrder } from "../services/order";
+import { fetchArtworkOrders, fetchUserById } from "../services/user";
 import { formatError, formatResponse, generateUuids } from "../utils/helpers";
 import { USER_SELECTION } from "../utils/selectors";
 import { errors, responses } from "../utils/statuses";

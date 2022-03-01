@@ -1,12 +1,12 @@
-import { upload } from "../../common/constants";
-import { Artwork } from "../../entities/Artwork";
-import { Comment } from "../../entities/Comment";
-import { Cover } from "../../entities/Cover";
-import { Favorite } from "../../entities/Favorite";
-import { Media } from "../../entities/Media";
-import { Review } from "../../entities/Review";
-import { Version } from "../../entities/Version";
-import { calculateRating, resolveSubQuery } from "../../utils/helpers";
+import { upload } from "../common/constants";
+import { Artwork } from "../entities/Artwork";
+import { Comment } from "../entities/Comment";
+import { Cover } from "../entities/Cover";
+import { Favorite } from "../entities/Favorite";
+import { Media } from "../entities/Media";
+import { Review } from "../entities/Review";
+import { Version } from "../entities/Version";
+import { calculateRating, resolveSubQuery } from "../utils/helpers";
 import {
   ARTWORK_SELECTION,
   AVATAR_SELECTION,
@@ -17,7 +17,7 @@ import {
   REVIEW_SELECTION,
   USER_SELECTION,
   VERSION_SELECTION,
-} from "../../utils/selectors";
+} from "../utils/selectors";
 
 export const fetchArtworkById = async ({ artworkId, connection }) => {
   const foundArtwork = await connection

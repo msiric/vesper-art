@@ -13,7 +13,7 @@ import {
 import {
   isAuthenticated,
   requestHandler as handler,
-} from "../../../utils/helpers";
+} from "../../../middleware/index";
 
 // $TODO no automated tests
 const router = express.Router();

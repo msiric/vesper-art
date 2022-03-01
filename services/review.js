@@ -1,4 +1,4 @@
-import { Review } from "../../entities/Review";
+import { Review } from "../entities/Review";
 
 export const addNewReview = async ({
   reviewId,

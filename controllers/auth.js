@@ -17,7 +17,7 @@ import {
   resetUserPassword,
   resetVerificationToken,
   revokeAccessToken,
-} from "../services/postgres/auth";
+} from "../services/auth";
 import {
   editUserEmail,
   fetchUserByAuth,
@@ -27,7 +27,7 @@ import {
   fetchUserIdByUsername,
   fetchUserIdByVerificationToken,
   fetchUserResetTokenById,
-} from "../services/postgres/user";
+} from "../services/user";
 import {
   createAccessToken,
   createRefreshToken,

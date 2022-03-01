@@ -2,7 +2,7 @@ import app from "../../app";
 import { statusCodes } from "../../common/constants";
 import { errors as validationErrors, ranges } from "../../common/validation";
 import { getOrderDetails } from "../../controllers/order";
-import { fetchUserByUsername } from "../../services/postgres/user";
+import { fetchUserByUsername } from "../../services/user";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import { USER_SELECTION } from "../../utils/selectors";
 import { errors } from "../../utils/statuses";

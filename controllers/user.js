@@ -13,14 +13,14 @@ import {
   deactivateArtworkVersion,
   deactivateExistingArtwork,
   removeArtworkVersion,
-} from "../services/postgres/artwork";
-import { logUserOut } from "../services/postgres/auth";
+} from "../services/artwork";
+import { logUserOut } from "../services/auth";
 import {
   fetchOrdersByArtwork,
   fetchOrdersByBuyer,
   fetchOrdersBySeller,
-} from "../services/postgres/order";
-import { fetchStripeBalance } from "../services/postgres/stripe";
+} from "../services/order";
+import { fetchStripeBalance } from "../services/stripe";
 import {
   addNewIntent,
   addUserAvatar,
@@ -49,7 +49,7 @@ import {
   fetchUserUploadsWithMedia,
   removeExistingIntent,
   removeUserAvatar,
-} from "../services/postgres/user";
+} from "../services/user";
 import { sendEmail } from "../utils/email";
 import {
   formatEmailContent,

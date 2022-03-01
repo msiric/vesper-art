@@ -1,19 +1,19 @@
-import { addHours, format, isAfter, isBefore, isEqual } from "date-fns";
+import { addDays, format, isAfter, isBefore, isEqual } from "date-fns";
 import path from "path";
 import app from "../../app";
 import { countries, statusCodes } from "../../common/constants";
 import { errors as validationErrors, ranges } from "../../common/validation";
 import { ArtworkVisibility } from "../../entities/Artwork";
 import * as s3Utils from "../../lib/s3";
-import * as artworkServices from "../../services/postgres/artwork";
-import { fetchAllArtworks } from "../../services/postgres/artwork";
-import * as authServices from "../../services/postgres/auth";
-import * as userServices from "../../services/postgres/user";
+import * as artworkServices from "../../services/artwork";
+import { fetchAllArtworks } from "../../services/artwork";
+import * as authServices from "../../services/auth";
+import * as userServices from "../../services/user";
 import {
   fetchUserByUsername,
   fetchUserPurchases,
-  fetchUserSales,
-} from "../../services/postgres/user";
+  fetchUserSales
+} from "../../services/user";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import * as emailUtils from "../../utils/email";
 import { resolveDateRange } from "../../utils/helpers";
@@ -26,11 +26,12 @@ import {
   findSingleOrderedArtwork,
   findUniqueOrders,
   findUnorderedArtwork,
-  logUserIn,
+  logUserIn
 } from "../utils/helpers";
 import { request } from "../utils/request";
 
 const MEDIA_LOCATION = path.resolve(__dirname, "../../../tests/media");
+const DATE_FORMAT = "MM/dd/yyyy";
 
 jest.useFakeTimers();
 jest.setTimeout(3 * 60 * 1000);
@@ -175,10 +176,10 @@ describe("User tests", () => {
       findMultiOrderedArtwork(entities.Order)
     );
     uniqueOrders = findUniqueOrders(entities.Order);
-    firstOrderDate = format(new Date(sellerSales[0].created), "MM/dd/yyyy");
+    firstOrderDate = format(new Date(sellerSales[0].created), DATE_FORMAT);
     lastOrderDate = format(
       new Date(sellerSales[sellerSales.length - 1].created),
-      "MM/dd/yyyy"
+      DATE_FORMAT
     );
     ({ startDate, endDate } = resolveDateRange({
       start: sellerSales[0].created,
@@ -801,7 +802,7 @@ describe("User tests", () => {
     });
 
     it("should throw an error if start param is in the future", async () => {
-      const start = format(addHours(new Date(), 1), "dd/MM/yyyy");
+      const start = format(addDays(new Date(), 1), DATE_FORMAT);
       const end = lastOrderDate;
       const res = await request(app, buyerToken).get(
         `/api/users/${buyer.id}/purchases?start=${start}&end=${end}`
@@ -812,7 +813,7 @@ describe("User tests", () => {
 
     it("should throw an error if end param is in the future", async () => {
       const start = firstOrderDate;
-      const end = format(addHours(new Date(), 1), "dd/MM/yyyy");
+      const end = format(addDays(new Date(), 1), DATE_FORMAT);
       const res = await request(app, buyerToken).get(
         `/api/users/${buyer.id}/purchases?start=${start}&end=${end}`
       );
@@ -883,7 +884,7 @@ describe("User tests", () => {
     });
 
     it("should throw an error if start param is in the future", async () => {
-      const start = format(addHours(new Date(), 1), "dd/MM/yyyy");
+      const start = format(addDays(new Date(), 1), DATE_FORMAT);
       const end = lastOrderDate;
       const res = await request(app, sellerToken).get(
         `/api/users/${seller.id}/sales?start=${start}&end=${end}`
@@ -894,7 +895,7 @@ describe("User tests", () => {
 
     it("should throw an error if end param is in the future", async () => {
       const start = firstOrderDate;
-      const end = format(addHours(new Date(), 1), "dd/MM/yyyy");
+      const end = format(addDays(new Date(), 1), DATE_FORMAT);
       const res = await request(app, sellerToken).get(
         `/api/users/${seller.id}/sales?start=${start}&end=${end}`
       );

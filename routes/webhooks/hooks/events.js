@@ -1,7 +1,6 @@
 import express from "express";
 import { receiveWebhookEvent } from "../../../controllers/stripe";
-import { requestHandler as handler } from "../../../utils/helpers";
-
+import { requestHandler as handler } from "../../../middleware/index";
 const router = express.Router();
 
 // $TODO no automated tests

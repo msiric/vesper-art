@@ -1,4 +1,4 @@
-import { stripe } from "../../lib/stripe";
+import { stripe } from "../lib/stripe";
 
 export const constructStripeEvent = async ({
   stripeBody,

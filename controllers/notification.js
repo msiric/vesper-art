@@ -4,7 +4,7 @@ import {
   editUnreadNotification,
   fetchExistingNotifications,
   removeAllNotifications,
-} from "../services/postgres/notification";
+} from "../services/notification";
 import { formatError, formatResponse } from "../utils/helpers";
 import { errors, responses } from "../utils/statuses";
 

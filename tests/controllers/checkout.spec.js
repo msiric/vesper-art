@@ -4,11 +4,8 @@ import { licenseErrors } from "../../common/helpers";
 import { errors as validationErrors, ranges } from "../../common/validation";
 import { ArtworkVisibility } from "../../entities/Artwork";
 import { LicenseType, LicenseUsage } from "../../entities/License";
-import { fetchAllArtworks } from "../../services/postgres/artwork";
-import {
-  fetchUserByUsername,
-  fetchUserPurchases,
-} from "../../services/postgres/user";
+import { fetchAllArtworks } from "../../services/artwork";
+import { fetchUserByUsername, fetchUserPurchases } from "../../services/user";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import { USER_SELECTION } from "../../utils/selectors";
 import { errors, responses } from "../../utils/statuses";

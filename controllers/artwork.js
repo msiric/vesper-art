@@ -26,13 +26,10 @@ import {
   removeArtworkVersion,
   removeExistingFavorite,
   updateArtworkVersion,
-} from "../services/postgres/artwork";
-import {
-  fetchOrderByVersion,
-  fetchOrdersByArtwork,
-} from "../services/postgres/order";
-import { fetchStripeAccount } from "../services/postgres/stripe";
-import { fetchUserById } from "../services/postgres/user";
+} from "../services/artwork";
+import { fetchOrderByVersion, fetchOrdersByArtwork } from "../services/order";
+import { fetchStripeAccount } from "../services/stripe";
+import { fetchUserById } from "../services/user";
 import {
   formatArtworkPrices,
   formatError,

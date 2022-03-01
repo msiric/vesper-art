@@ -1,7 +1,7 @@
 import app from "../../app";
 import { statusCodes } from "../../common/constants";
 import { errors as validationErrors, ranges } from "../../common/validation";
-import { fetchUserByUsername } from "../../services/postgres/user";
+import { fetchUserByUsername } from "../../services/user";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import * as emailUtils from "../../utils/email";
 import { USER_SELECTION } from "../../utils/selectors";

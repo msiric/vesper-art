@@ -1,12 +1,12 @@
 import createError from "http-errors";
 import { isObjectEmpty } from "../common/helpers";
 import { getSignedS3Object } from "../lib/s3";
-import { fetchOrderDetails, fetchOrderMedia } from "../services/postgres/order";
+import { fetchOrderDetails, fetchOrderMedia } from "../services/order";
 import {
   fetchArtworkOrders,
   fetchUserPurchases,
   fetchUserSales,
-} from "../services/postgres/user";
+} from "../services/user";
 import { formatError } from "../utils/helpers";
 import { errors } from "../utils/statuses";
 

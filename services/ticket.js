@@ -1,4 +1,4 @@
-import { Ticket } from "../../entities/Ticket";
+import { Ticket } from "../entities/Ticket";
 
 export const addNewTicket = async ({
   ticketId,

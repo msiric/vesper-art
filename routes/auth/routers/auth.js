@@ -15,7 +15,7 @@ import {
   isAuthenticated,
   isNotAuthenticated,
   requestHandler as handler,
-} from "../../../utils/helpers";
+} from "../../../middleware/index";
 
 const router = express.Router();
 

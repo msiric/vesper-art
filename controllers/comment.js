@@ -2,14 +2,14 @@ import createError from "http-errors";
 import { isObjectEmpty } from "../common/helpers";
 import { commentValidation } from "../common/validation";
 import socketApi from "../lib/socket";
-import { fetchArtworkById } from "../services/postgres/artwork";
+import { fetchArtworkById } from "../services/artwork";
 import {
   addNewComment,
   editExistingComment,
   fetchCommentById,
   removeExistingComment,
-} from "../services/postgres/comment";
-import { addNewNotification } from "../services/postgres/notification";
+} from "../services/comment";
+import { addNewNotification } from "../services/notification";
 import { formatError, formatResponse, generateUuids } from "../utils/helpers";
 import { errors, responses } from "../utils/statuses";
 

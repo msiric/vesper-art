@@ -1,12 +1,12 @@
-import { Artwork } from "../../entities/Artwork";
-import { Avatar } from "../../entities/Avatar";
-import { Favorite } from "../../entities/Favorite";
-import { Intent } from "../../entities/Intent";
-import { Notification } from "../../entities/Notification";
-import { Order } from "../../entities/Order";
-import { Review } from "../../entities/Review";
-import { User } from "../../entities/User";
-import { calculateRating, resolveSubQuery } from "../../utils/helpers";
+import { Artwork } from "../entities/Artwork";
+import { Avatar } from "../entities/Avatar";
+import { Favorite } from "../entities/Favorite";
+import { Intent } from "../entities/Intent";
+import { Notification } from "../entities/Notification";
+import { Order } from "../entities/Order";
+import { Review } from "../entities/Review";
+import { User } from "../entities/User";
+import { calculateRating, resolveSubQuery } from "../utils/helpers";
 import {
   ARTWORK_SELECTION,
   AVATAR_SELECTION,
@@ -20,7 +20,7 @@ import {
   REVIEW_SELECTION,
   USER_SELECTION,
   VERSION_SELECTION,
-} from "../../utils/selectors";
+} from "../utils/selectors";
 
 export const fetchUserIdByCreds = async ({
   userUsername,

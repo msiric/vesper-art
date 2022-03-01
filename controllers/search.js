@@ -1,8 +1,5 @@
 import { searchValidation } from "../common/validation";
-import {
-  fetchArtworkResults,
-  fetchUserResults,
-} from "../services/postgres/search";
+import { fetchArtworkResults, fetchUserResults } from "../services/search";
 
 export const getResults = async ({
   searchQuery,

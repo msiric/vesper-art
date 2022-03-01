@@ -18,11 +18,11 @@ import {
 } from "../common/validation";
 import { domain, stripe as stripeConfig } from "../config/secret";
 import socketApi from "../lib/socket";
-import { fetchVersionDetails } from "../services/postgres/artwork";
-import { fetchDiscountById } from "../services/postgres/discount";
-import { addNewLicense } from "../services/postgres/license";
-import { addNewNotification } from "../services/postgres/notification";
-import { addNewOrder } from "../services/postgres/order";
+import { fetchVersionDetails } from "../services/artwork";
+import { fetchDiscountById } from "../services/discount";
+import { addNewLicense } from "../services/license";
+import { addNewNotification } from "../services/notification";
+import { addNewOrder } from "../services/order";
 import {
   constructStripeEvent,
   constructStripeIntent,
@@ -33,7 +33,7 @@ import {
   issueStripeRefund,
   retrieveStripeIntent,
   updateStripeIntent,
-} from "../services/postgres/stripe";
+} from "../services/stripe";
 import {
   addNewIntent,
   editUserStripe,
@@ -41,7 +41,7 @@ import {
   fetchIntentByParents,
   fetchUserById,
   removeExistingIntent,
-} from "../services/postgres/user";
+} from "../services/user";
 import { formatError, formatResponse, generateUuids } from "../utils/helpers";
 import { calculateTotalCharge } from "../utils/payment";
 import { USER_SELECTION } from "../utils/selectors";
