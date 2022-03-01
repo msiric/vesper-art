@@ -286,6 +286,7 @@ export const errors = {
     expose: true,
   },
 };
+
 export const responses = {
   artworkCreated: {
     status: statusCodes.ok,

@@ -15,9 +15,9 @@ import {
   evaluateTransaction,
   releaseTransaction,
   rollbackTransaction,
+  USER_SELECTION,
 } from "../utils/database";
 import { generateUuids, hashString } from "../utils/helpers";
-import { USER_SELECTION } from "../utils/selectors";
 import { entities } from "./entities";
 
 const dirname = path.resolve();

@@ -2,9 +2,12 @@ import app from "../../app";
 import { statusCodes } from "../../common/constants";
 import { errors as validationErrors, ranges } from "../../common/validation";
 import { fetchUserByUsername } from "../../services/user";
-import { closeConnection, connectToDatabase } from "../../utils/database";
+import {
+  closeConnection,
+  connectToDatabase,
+  USER_SELECTION,
+} from "../../utils/database";
 import * as emailUtils from "../../utils/email";
-import { USER_SELECTION } from "../../utils/selectors";
 import { errors, errors as logicErrors, responses } from "../../utils/statuses";
 import { invalidUsers, validUsers } from "../fixtures/entities";
 import { accessTokens, logUserIn, unusedCookie } from "../utils/helpers";

@@ -42,9 +42,9 @@ import {
   fetchUserById,
   removeExistingIntent,
 } from "../services/user";
+import { USER_SELECTION } from "../utils/database";
 import { formatError, formatResponse, generateUuids } from "../utils/helpers";
 import { calculateTotalCharge } from "../utils/payment";
-import { USER_SELECTION } from "../utils/selectors";
 import { errors, responses } from "../utils/statuses";
 
 export const isIntentPending = (intent) => {

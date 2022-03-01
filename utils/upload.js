@@ -6,8 +6,9 @@ import { upload } from "../common/constants";
 import { rgbToHex } from "../common/helpers";
 import { errors as validationErrors } from "../common/validation";
 import { uploadS3Object } from "../lib/s3";
-import { checkImageOrientation, formatError } from "./helpers";
+import { formatError } from "./helpers";
 import { errors } from "./statuses";
+import { checkImageOrientation } from "./upload";
 
 export const userS3Upload = async ({ filePath, fileName, mimeType }) => {
   const fileMedia = await sharp(filePath, {
@@ -158,4 +159,14 @@ export const dimensionsFilter = ({ fileHeight, fileWidth, fileType }) => {
   )
     return false;
   return true;
+};
+
+export const checkImageOrientation = (width, height) => {
+  if (width > height) {
+    return "landscape";
+  } else if (width < height) {
+    return "portrait";
+  } else {
+    return "square";
+  }
 };

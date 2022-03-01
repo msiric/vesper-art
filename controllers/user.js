@@ -50,9 +50,9 @@ import {
   removeExistingIntent,
   removeUserAvatar,
 } from "../services/user";
-import { sendEmail } from "../utils/email";
+import { AVATAR_SELECTION, USER_SELECTION } from "../utils/database";
+import { formatEmailContent, sendEmail } from "../utils/email";
 import {
-  formatEmailContent,
   formatError,
   formatResponse,
   generateUuids,
@@ -60,7 +60,6 @@ import {
   hashString,
   verifyHash,
 } from "../utils/helpers";
-import { AVATAR_SELECTION, USER_SELECTION } from "../utils/selectors";
 import { errors, responses } from "../utils/statuses";
 import { finalizeMediaUpload } from "../utils/upload";
 import { deleteUserNotifications } from "./notification";

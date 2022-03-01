@@ -6,7 +6,6 @@ import { Favorite } from "../entities/Favorite";
 import { Media } from "../entities/Media";
 import { Review } from "../entities/Review";
 import { Version } from "../entities/Version";
-import { calculateRating, resolveSubQuery } from "../utils/helpers";
 import {
   ARTWORK_SELECTION,
   AVATAR_SELECTION,
@@ -14,10 +13,12 @@ import {
   COVER_SELECTION,
   FAVORITE_SELECTION,
   MEDIA_SELECTION,
+  resolveSubQuery,
   REVIEW_SELECTION,
   USER_SELECTION,
   VERSION_SELECTION,
-} from "../utils/selectors";
+} from "../utils/database";
+import { calculateRating } from "../utils/helpers";
 
 export const fetchArtworkById = async ({ artworkId, connection }) => {
   const foundArtwork = await connection

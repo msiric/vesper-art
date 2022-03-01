@@ -1,5 +1,5 @@
 import { Discount } from "../entities/Discount";
-import { DISCOUNT_SELECTION } from "../utils/selectors";
+import { DISCOUNT_SELECTION } from "../utils/database";
 
 export const fetchDiscountByCode = async ({ discountCode, connection }) => {
   const foundDiscount = await connection

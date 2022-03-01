@@ -8,8 +8,11 @@ import socketApi from "../../lib/socket";
 import * as artworkServices from "../../services/artwork";
 import { fetchAllArtworks } from "../../services/artwork";
 import { fetchUserByUsername } from "../../services/user";
-import { closeConnection, connectToDatabase } from "../../utils/database";
-import { USER_SELECTION } from "../../utils/selectors";
+import {
+  closeConnection,
+  connectToDatabase,
+  USER_SELECTION,
+} from "../../utils/database";
 import { errors, responses } from "../../utils/statuses";
 import { entities, validUsers } from "../fixtures/entities";
 import {

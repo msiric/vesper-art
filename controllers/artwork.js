@@ -30,15 +30,15 @@ import {
 import { fetchOrderByVersion, fetchOrdersByArtwork } from "../services/order";
 import { fetchStripeAccount } from "../services/stripe";
 import { fetchUserById } from "../services/user";
+import { USER_SELECTION } from "../utils/database";
 import {
-  formatArtworkPrices,
   formatError,
   formatResponse,
   formattedArtworkKeys,
   generateUuids,
   verifyVersionValidity,
 } from "../utils/helpers";
-import { USER_SELECTION } from "../utils/selectors";
+import { formatArtworkPrices } from "../utils/payment";
 import { errors, responses } from "../utils/statuses";
 import { finalizeMediaUpload } from "../utils/upload";
 

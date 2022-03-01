@@ -33,9 +33,8 @@ import {
   createRefreshToken,
   sendRefreshToken,
 } from "../utils/auth";
-import { sendEmail } from "../utils/email";
+import { formatEmailContent, sendEmail } from "../utils/email";
 import {
-  formatEmailContent,
   formatError,
   formatResponse,
   formatTokenData,

@@ -3,8 +3,11 @@ import { statusCodes } from "../../common/constants";
 import { errors as validationErrors, ranges } from "../../common/validation";
 import { getOrderDetails } from "../../controllers/order";
 import { fetchUserByUsername } from "../../services/user";
-import { closeConnection, connectToDatabase } from "../../utils/database";
-import { USER_SELECTION } from "../../utils/selectors";
+import {
+  closeConnection,
+  connectToDatabase,
+  USER_SELECTION,
+} from "../../utils/database";
 import { errors } from "../../utils/statuses";
 import { entities, validUsers } from "../fixtures/entities";
 import { logUserIn, unusedFingerprint } from "../utils/helpers";

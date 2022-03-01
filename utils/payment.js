@@ -29,3 +29,11 @@ export const calculateTotalCharge = ({
     licensePrice: licenseValue.intValue,
   };
 };
+
+export const formatArtworkPrices = (data) => {
+  return {
+    ...data,
+    artworkPersonal: currency(data.artworkPersonal).intValue,
+    artworkCommercial: currency(data.artworkCommercial).intValue,
+  };
+};

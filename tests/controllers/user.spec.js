@@ -12,12 +12,15 @@ import * as userServices from "../../services/user";
 import {
   fetchUserByUsername,
   fetchUserPurchases,
-  fetchUserSales
+  fetchUserSales,
 } from "../../services/user";
-import { closeConnection, connectToDatabase } from "../../utils/database";
+import {
+  closeConnection,
+  connectToDatabase,
+  USER_SELECTION,
+} from "../../utils/database";
 import * as emailUtils from "../../utils/email";
 import { resolveDateRange } from "../../utils/helpers";
-import { USER_SELECTION } from "../../utils/selectors";
 import { errors, responses } from "../../utils/statuses";
 import { entities, validUsers } from "../fixtures/entities";
 import {
@@ -26,7 +29,7 @@ import {
   findSingleOrderedArtwork,
   findUniqueOrders,
   findUnorderedArtwork,
-  logUserIn
+  logUserIn,
 } from "../utils/helpers";
 import { request } from "../utils/request";
 

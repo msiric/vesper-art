@@ -3,8 +3,11 @@ import { statusCodes } from "../../common/constants";
 import { errors as validationErrors, ranges } from "../../common/validation";
 import { fetchAllArtworks } from "../../services/artwork";
 import { fetchUserByUsername } from "../../services/user";
-import { closeConnection, connectToDatabase } from "../../utils/database";
-import { USER_SELECTION } from "../../utils/selectors";
+import {
+  closeConnection,
+  connectToDatabase,
+  USER_SELECTION,
+} from "../../utils/database";
 import { validUsers } from "../fixtures/entities";
 import { logUserIn } from "../utils/helpers";
 import { request } from "../utils/request";

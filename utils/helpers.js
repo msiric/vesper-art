@@ -1,18 +1,11 @@
 import argon2 from "argon2";
 import crypto from "crypto";
-import currency from "currency.js";
 import { addHours, endOfDay, isBefore, isValid, startOfDay } from "date-fns";
 import escapeHTML from "escape-html";
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
 import * as uuidJs from "uuid";
-import {
-  appName,
-  appPalette,
-  featureFlags,
-  generatedData,
-  statusCodes,
-} from "../common/constants";
+import { featureFlags, generatedData, statusCodes } from "../common/constants";
 import { trimAllSpaces } from "../common/helpers";
 import { domain, uuid } from "../config/secret";
 import { errors } from "./statuses";
@@ -83,24 +76,6 @@ export const sanitizePayload = (req, res, next) => {
   }
 };
 
-export const verifyTokenValidity = (
-  publicToken,
-  privateToken,
-  shouldValidateExpiry = true
-) => {
-  try {
-    jwt.verify(publicToken, privateToken, {
-      ignoreExpiration: true,
-    });
-  } catch (err) {
-    throw createError(...formatError(errors.forbiddenAccess));
-  }
-  const data = jwt.decode(publicToken);
-  if (shouldValidateExpiry && Date.now() >= data.exp * 1000)
-    throw createError(...formatError(errors.notAuthenticated));
-  return { data };
-};
-
 export const sanitizeParams = (req, res, next) => {
   const isValid = sanitizeUrl(req.params, VALID_PARAMS);
   if (!isValid) throw createError(...formatError(errors.routeParameterInvalid));
@@ -165,16 +140,6 @@ export const sanitizeDates = (data) => {
   return data;
 };
 
-export const checkImageOrientation = (width, height) => {
-  if (width > height) {
-    return "landscape";
-  } else if (width < height) {
-    return "portrait";
-  } else {
-    return "square";
-  }
-};
-
 export const generateUuids = ({ ...args }) => {
   const generatedUuids = {};
   for (let item in args) {
@@ -226,22 +191,6 @@ export const generateLicenseIdentifiers = () => {
   });
   return { licenseAssigneeIdentifier, licenseAssignorIdentifier };
 };
-
-export const resolveSubQuery = (
-  queryBuilder,
-  alias,
-  entity,
-  cursor,
-  threshold
-) =>
-  cursor
-    ? queryBuilder
-        .subQuery()
-        .select(`${alias}.serial`)
-        .from(entity, alias)
-        .where(`${alias}.id = :id`, { id: cursor })
-        .getQuery()
-    : threshold;
 
 export const resolveDateRange = ({ start, end }) => {
   if (start && end) {
@@ -329,12 +278,22 @@ export const formattedArtworkKeys = {
   artworkVisibility: "visibility",
 };
 
-export const formatArtworkPrices = (data) => {
-  return {
-    ...data,
-    artworkPersonal: currency(data.artworkPersonal).intValue,
-    artworkCommercial: currency(data.artworkCommercial).intValue,
-  };
+export const verifyTokenValidity = (
+  publicToken,
+  privateToken,
+  shouldValidateExpiry = true
+) => {
+  try {
+    jwt.verify(publicToken, privateToken, {
+      ignoreExpiration: true,
+    });
+  } catch (err) {
+    throw createError(...formatError(errors.forbiddenAccess));
+  }
+  const data = jwt.decode(publicToken);
+  if (shouldValidateExpiry && Date.now() >= data.exp * 1000)
+    throw createError(...formatError(errors.notAuthenticated));
+  return { data };
 };
 
 export const verifyVersionValidity = ({ data, foundUser, foundAccount }) => {
@@ -356,36 +315,7 @@ export const verifyVersionValidity = ({ data, foundUser, foundAccount }) => {
   return;
 };
 
-export const formatEmailContent = ({
-  replacementValues,
-  replacementAttachments,
-}) => {
-  const formattedProps = {
-    logo: `cid:logo@${appName}.com`,
-    banner: `cid:banner@${appName}.com`,
-    primary: appPalette.primary.main,
-    secondary: "#1f1f1f",
-    app: appName,
-    date: new Date().getFullYear(),
-    ...replacementValues,
-  };
-  const formattedAttachments = [
-    {
-      filename: "logo.png",
-      path: "common/assets/logo.png",
-      cid: `logo@${appName}.com`,
-    },
-    {
-      filename: "banner.jpg",
-      path: "common/assets/banner.jpg",
-      cid: `banner@${appName}.com`,
-    },
-    ...replacementAttachments,
-  ];
-  return { formattedProps, formattedAttachments };
-};
-
-export const hashString = async (givenString) => await argon2.hash(givenString);
-
 export const verifyHash = async (storedHash, givenString) =>
   await argon2.verify(storedHash, givenString);
+
+export const hashString = async (givenString) => await argon2.hash(givenString);

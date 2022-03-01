@@ -2,8 +2,11 @@ import app from "../../app";
 import { statusCodes } from "../../common/constants";
 import { fetchExistingNotifications } from "../../services/notification";
 import { fetchUserByUsername } from "../../services/user";
-import { closeConnection, connectToDatabase } from "../../utils/database";
-import { USER_SELECTION } from "../../utils/selectors";
+import {
+  closeConnection,
+  connectToDatabase,
+  USER_SELECTION,
+} from "../../utils/database";
 import { errors, responses } from "../../utils/statuses";
 import { validUsers } from "../fixtures/entities";
 import { logUserIn, unusedUuid } from "../utils/helpers";

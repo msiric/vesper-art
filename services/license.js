@@ -1,14 +1,14 @@
 import { isObjectEmpty } from "../common/helpers";
 import { License } from "../entities/License";
 import {
-  generateLicenseFingerprint,
-  generateLicenseIdentifiers,
-} from "../utils/helpers";
-import {
   ARTWORK_SELECTION,
   LICENSE_SELECTION,
   USER_SELECTION,
-} from "../utils/selectors";
+} from "../utils/database";
+import {
+  generateLicenseFingerprint,
+  generateLicenseIdentifiers,
+} from "../utils/helpers";
 
 export const fetchLicenseByFingerprint = async ({
   licenseFingerprint,

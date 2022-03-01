@@ -6,7 +6,6 @@ import { Notification } from "../entities/Notification";
 import { Order } from "../entities/Order";
 import { Review } from "../entities/Review";
 import { User } from "../entities/User";
-import { calculateRating, resolveSubQuery } from "../utils/helpers";
 import {
   ARTWORK_SELECTION,
   AVATAR_SELECTION,
@@ -17,10 +16,12 @@ import {
   MEDIA_SELECTION,
   NOTIFICATION_SELECTION,
   ORDER_SELECTION,
+  resolveSubQuery,
   REVIEW_SELECTION,
   USER_SELECTION,
   VERSION_SELECTION,
-} from "../utils/selectors";
+} from "../utils/database";
+import { calculateRating } from "../utils/helpers";
 
 export const fetchUserIdByCreds = async ({
   userUsername,

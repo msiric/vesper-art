@@ -17,8 +17,8 @@ import { addNewLicense } from "../services/license";
 import { addNewNotification } from "../services/notification";
 import { addNewOrder } from "../services/order";
 import { fetchArtworkOrders, fetchUserById } from "../services/user";
+import { USER_SELECTION } from "../utils/database";
 import { formatError, formatResponse, generateUuids } from "../utils/helpers";
-import { USER_SELECTION } from "../utils/selectors";
 import { errors, responses } from "../utils/statuses";
 
 export const getCheckout = async ({ userId, versionId, connection }) => {

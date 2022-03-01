@@ -6,8 +6,11 @@ import { ArtworkVisibility } from "../../entities/Artwork";
 import { LicenseType, LicenseUsage } from "../../entities/License";
 import { fetchAllArtworks } from "../../services/artwork";
 import { fetchUserByUsername, fetchUserPurchases } from "../../services/user";
-import { closeConnection, connectToDatabase } from "../../utils/database";
-import { USER_SELECTION } from "../../utils/selectors";
+import {
+  closeConnection,
+  connectToDatabase,
+  USER_SELECTION,
+} from "../../utils/database";
 import { errors, responses } from "../../utils/statuses";
 import { validUsers } from "../fixtures/entities";
 import { logUserIn, unusedUuid } from "../utils/helpers";

@@ -1,7 +1,6 @@
 import { isObjectEmpty } from "../common/helpers";
 import { Order } from "../entities/Order";
 import { Review } from "../entities/Review";
-import { calculateRating, resolveDateRange } from "../utils/helpers";
 import {
   ARTWORK_SELECTION,
   AVATAR_SELECTION,
@@ -13,7 +12,8 @@ import {
   REVIEW_SELECTION,
   USER_SELECTION,
   VERSION_SELECTION,
-} from "../utils/selectors";
+} from "../utils/database";
+import { calculateRating, resolveDateRange } from "../utils/helpers";
 
 export const fetchOrderByVersion = async ({
   artworkId,

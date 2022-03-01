@@ -9,8 +9,8 @@ import {
   evaluateTransaction,
   releaseTransaction,
   rollbackTransaction,
+  USER_SELECTION,
 } from "../../utils/database";
-import { USER_SELECTION } from "../../utils/selectors";
 import { entities, validUsers } from "./entities";
 
 const dirname = path.resolve();
