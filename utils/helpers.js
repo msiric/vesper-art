@@ -46,6 +46,18 @@ const VALID_QUERIES = {
   end: { isValid: (value) => isPastDate(value) },
 };
 
+export const ARTWORK_KEYS = {
+  artworkTitle: "title",
+  artworkType: "type",
+  artworkAvailability: "availability",
+  artworkLicense: "license",
+  artworkUse: "use",
+  artworkPersonal: "personal",
+  artworkCommercial: "commercial",
+  artworkDescription: "description",
+  artworkVisibility: "visibility",
+};
+
 export const isValidCursor = (value) =>
   value === "" ||
   (validateUuid(value) && validateVersion(value) === uuid.version);
@@ -264,18 +276,6 @@ export const formatTokenData = ({ user }) => {
   };
 
   return { tokenPayload, userInfo };
-};
-
-export const formattedArtworkKeys = {
-  artworkTitle: "title",
-  artworkType: "type",
-  artworkAvailability: "availability",
-  artworkLicense: "license",
-  artworkUse: "use",
-  artworkPersonal: "personal",
-  artworkCommercial: "commercial",
-  artworkDescription: "description",
-  artworkVisibility: "visibility",
 };
 
 export const verifyTokenValidity = (

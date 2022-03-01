@@ -32,9 +32,9 @@ import { fetchStripeAccount } from "../services/stripe";
 import { fetchUserById } from "../services/user";
 import { USER_SELECTION } from "../utils/database";
 import {
+  ARTWORK_KEYS,
   formatError,
   formatResponse,
-  formattedArtworkKeys,
   generateUuids,
   verifyVersionValidity,
 } from "../utils/helpers";
@@ -188,7 +188,7 @@ export const updateArtwork = async ({
     const shouldUpdate = isFormAltered(
       { ...formattedData, artworkVisibility: null },
       { ...foundArtwork.current, visibility: null },
-      formattedArtworkKeys
+      ARTWORK_KEYS
     );
     const visibilityChanged =
       formattedData.artworkVisibility !== foundArtwork.visibility;
