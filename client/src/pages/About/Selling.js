@@ -91,7 +91,7 @@ const Selling = () => {
               (1 - payment.appFee) * 100
             }% of the total order value while the rest goes to the platform. For example, if you price your artwork's personal or commercial license at $100, you will receive $${
               (1 - payment.appFee) * 100
-            }% once the license has been purchased. Your funds will appear in your Stripe account after being processed.`}
+            } once the license has been purchased. Your funds will appear in your Stripe account shortly after being processed.`}
           </Typography>
           <Typography className={classes.paragraph}>
             {`For more information, see the Terms of Service.`}
