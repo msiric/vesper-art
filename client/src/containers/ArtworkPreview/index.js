@@ -29,6 +29,7 @@ const ArtworkPreview = ({ paramId }) => {
           source={version.cover.source}
           placeholder={version.cover.dominant}
           addOverlay={true}
+          shouldBlur={true}
           loading={loading}
         />
       </Box>

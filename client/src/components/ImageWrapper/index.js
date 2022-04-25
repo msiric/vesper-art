@@ -9,15 +9,15 @@ const ImageWrapper = ({
   height,
   source,
   placeholder,
-  cover,
   caption = "",
   addOverlay = false,
   shouldCover = false,
+  shouldBlur = false,
   loading = false,
 }) => {
   const downloaded = useProgressiveImage(source);
 
-  const classes = imageWrapperStyles({ height, loading, placeholder });
+  const classes = imageWrapperStyles({ height, loading, placeholder, source });
 
   return loading ? (
     <Box className={classes.wrapper} loading={true} width="100%" />
@@ -35,6 +35,7 @@ const ImageWrapper = ({
       </Box>
     ) : (
       <Box className={`${classes.wrapper} ${addOverlay && classes.overlay}`}>
+        {shouldBlur && <Box className={classes.blur} />}
         <img
           className={`${classes.media} ${shouldCover && classes.coverParent}`}
           src={source}
