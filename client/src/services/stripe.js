@@ -8,16 +8,16 @@ export const getUser = {
 export const postIntent = {
   request: async ({
     versionId,
-    artworkUsage,
-    artworkCompany,
-    artworkType,
+    licenseUsage,
+    licenseCompany,
+    licenseType,
     discountId,
   }) =>
     await ax.post(`/stripe/intent/${versionId}`, {
       discountId,
-      artworkUsage,
-      artworkCompany,
-      artworkType,
+      licenseUsage,
+      licenseCompany,
+      licenseType,
     }),
   success: { message: "Intent successfully saved", variant: "success" },
   error: { message: "Failed to save intent", variant: "error" },
