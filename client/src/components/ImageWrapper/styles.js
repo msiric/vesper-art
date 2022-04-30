@@ -15,7 +15,6 @@ const imageWrapperStyles = makeStyles((muiTheme) => ({
     display: "flex",
     justifyContent: "center",
     overflow: "hidden",
-    padding: 20,
     borderRadius: muiTheme.shape.borderRadius,
     height: ({ height, loading }) => (loading ? height : "auto"),
     [muiTheme.breakpoints.down("sm")]: {
