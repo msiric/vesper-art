@@ -78,7 +78,6 @@ const CommentCard = ({
       >
         <ListItemAvatar>
           <Avatar
-            alt={comment.owner.name}
             src={comment.owner.avatar ? comment.owner.avatar.source : null}
             component={renderRedirectLink({
               active: comment.owner.active,

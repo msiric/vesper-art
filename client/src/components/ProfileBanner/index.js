@@ -31,7 +31,6 @@ const ProfileBanner = ({ profile, loading }) => {
           <Box className={classes.avatarWrapper}>
             <Avatar
               variant="circle"
-              alt={profile.name}
               src={profile.avatar ? profile.avatar.source : null}
               title={profile.name}
               loading={loading}
