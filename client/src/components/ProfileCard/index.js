@@ -33,7 +33,6 @@ const ProfileCard = ({ user, loading }) => {
             isUsername: false,
           })}
           to={`/user/${user.name}`}
-          alt={user.name}
           src={user.avatar ? user.avatar.source : null}
           title={user.name}
           loading={loading}
