@@ -5,12 +5,12 @@ import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
 import loadingSpinnerStyles from "./styles";
 
-const LoadingSpinner = ({ label = "", height = 0 }) => {
-  const classes = loadingSpinnerStyles({ height });
+const LoadingSpinner = ({ label = "", height, margin }) => {
+  const classes = loadingSpinnerStyles({ height, margin });
 
   return (
     <Container className={classes.container}>
-      <Grid container spacing={2}>
+      <Grid container>
         <Grid item xs={12} className={classes.item}>
           <CircularProgress className={classes.circle} />
           {label && <Typography className={classes.label}>{label}</Typography>}

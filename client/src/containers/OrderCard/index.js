@@ -13,7 +13,7 @@ const OrderCard = () => {
   const seller = useOrderDetails((state) => state.order.data.seller);
   const loading = useOrderDetails((state) => state.order.loading);
 
-  const isSeller = () => seller.id === userId;
+  const isSeller = seller.id === userId;
 
   const classes = orderCardStyles();
 
@@ -50,7 +50,7 @@ const OrderCard = () => {
           },
         },
         {
-          name: isSeller() ? "Earned" : "Spent",
+          name: isSeller ? "Earned" : "Spent",
           options: {
             sort: false,
             customBodyRender: (value) =>
@@ -72,7 +72,7 @@ const OrderCard = () => {
                 order.buyer.name,
                 order.seller.name,
                 order.discount,
-                isSeller() ? order.earned : order.spent,
+                isSeller ? order.earned : order.spent,
                 order.created && formatDate(order.created, "dd/MM/yy HH:mm"),
               ],
             ]

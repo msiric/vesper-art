@@ -33,12 +33,16 @@ const ArtworkPreview = ({ paramId }) => {
           loading={loading}
         />
       </Box>
-      <Box>
-        <Typography loading={loading} className={classes.title}>{`${
-          version.title
-        }, ${new Date(version.created).getFullYear()}`}</Typography>
+      <Box className={classes.imageDetails}>
+        <Typography loading={loading} className={classes.title}>
+          {!loading
+            ? `${version.title}, ${new Date(version.created).getFullYear()}`
+            : "Fetching artwork title"}
+        </Typography>
         <Typography loading={loading} className={classes.description}>
-          {version.description || "No description"}
+          {!loading
+            ? version.description || "No description"
+            : "Fetching artwork description containing detailed artwork information"}
         </Typography>
         <Divider />
         <Box className={classes.disclaimerWrapper}>
@@ -54,7 +58,9 @@ const ArtworkPreview = ({ paramId }) => {
             variant="body2"
             loading={loading}
             className={classes.disclaimer}
-          >{`The original artwork dimensions (in pixels) are: ${version.media.width}x${version.media.height}`}</Typography>
+          >{`The original artwork dimensions (in pixels) are: ${
+            version.media.width || 0
+          }x${version.media.height || 0}`}</Typography>
         </Box>
       </Box>
     </Card>

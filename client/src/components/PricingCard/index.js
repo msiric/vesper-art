@@ -26,13 +26,15 @@ const PricingCard = ({
   versionId,
   price,
   isSeller,
+  isAvailable,
   heading,
-  list,
   license,
-  handlePurchase,
-  handleModalOpen,
   loading,
   submitting,
+  list = [],
+  noPriceFormat = "Free",
+  handlePurchase = () => null,
+  handleModalOpen = () => null,
 }) => {
   const classes = pricingCardStyles();
 
@@ -47,7 +49,11 @@ const PricingCard = ({
           )}
           <Box className={classes.priceWrapper}>
             <Typography className={classes.price}>
-              {formatArtworkPrice({ price, prefix: "", freeFormat: "Free" })}
+              {formatArtworkPrice({
+                price,
+                prefix: "",
+                freeFormat: noPriceFormat,
+              })}
             </Typography>
           </Box>
         </Box>
@@ -73,7 +79,7 @@ const PricingCard = ({
         </Box>
       </CardContent>
       <Box className={classes.actionsWrapper}>
-        {!isSeller() ? (
+        {!isSeller ? (
           price ? (
             <SyncButton
               startIcon={<PurchaseIcon />}
@@ -88,6 +94,7 @@ const PricingCard = ({
               startIcon={<DownloadIcon />}
               onClick={handleModalOpen}
               submitting={submitting}
+              disabled={!isAvailable}
             >
               Download
             </AsyncButton>

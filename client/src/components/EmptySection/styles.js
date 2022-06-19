@@ -8,7 +8,7 @@ const emptySectionStyles = makeStyles((muiTheme) => ({
     width: "100%",
     maxWidth: "100%",
     position: "relative",
-    minHeight: ({ height }) => (!!height ? height : "100%"),
+    minHeight: ({ height }) => (height !== undefined ? height : "100%"),
   },
   wrapper: {
     display: "flex",

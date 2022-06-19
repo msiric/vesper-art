@@ -3,6 +3,9 @@ import { makeStyles } from "@material-ui/core/styles";
 const artworkInfoStyles = makeStyles((muiTheme) => ({
   content: {
     padding: 0,
+    "&:last-child": {
+      paddingBottom: 0,
+    },
   },
   wrapper: {
     display: "flex",

@@ -38,7 +38,6 @@ const CommentSection = ({
   const artworkOwnerId = useArtworkDetails(
     (state) => state.artwork.data.owner.id
   );
-
   const loading = useArtworkDetails((state) => state.artwork.loading);
 
   const comments = useArtworkComments((state) => state.comments.data);
@@ -103,7 +102,7 @@ const CommentSection = ({
 
   return (
     <Card>
-      <CardContent>
+      <CardContent className={classes.wrapper}>
         <MainHeading text="Comments" className={classes.heading} />
         <FormProvider control={control}>
           <form
@@ -148,6 +147,7 @@ const CommentSection = ({
           error={error.refetch}
           label="No comments yet"
           type="list"
+          loaderMargin="32px 0"
         >
           <List ref={commentsRef} className={classes.list} disablePadding>
             <Box>

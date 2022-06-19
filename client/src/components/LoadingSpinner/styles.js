@@ -8,7 +8,8 @@ const loadingSpinnerStyles = makeStyles((muiTheme) => ({
     width: "100%",
     maxWidth: "100%",
     position: "relative",
-    height: ({ height }) => (!!height ? height : "auto"),
+    height: ({ height }) => (height !== undefined ? height : "auto"),
+    margin: ({ margin }) => (margin !== undefined ? margin : "auto"),
   },
   item: {
     display: "flex",
@@ -16,7 +17,7 @@ const loadingSpinnerStyles = makeStyles((muiTheme) => ({
     alignItems: "center",
     height: "100%",
     width: "100%",
-    padding: "32px 0",
+    padding: "12px 0",
     flexDirection: "column",
     top: "50%",
     left: "50%",

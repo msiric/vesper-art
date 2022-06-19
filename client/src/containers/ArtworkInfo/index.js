@@ -1,23 +1,17 @@
-import {
-  EditOutlined as EditIcon,
-  GetAppOutlined as DownloadIcon,
-} from "@material-ui/icons";
+import { GetAppOutlined as DownloadIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { Link as RouterLink, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { isFormAltered, isLicenseValid } from "../../../../common/helpers";
 import { licenseValidation } from "../../../../common/validation";
 import LicenseAlert from "../../components/LicenseAlert";
 import PricingCard from "../../components/PricingCard/index";
 import PromptModal from "../../components/PromptModal/index";
 import SwipeCard from "../../components/SwipeCard/index";
-import SyncButton from "../../components/SyncButton";
 import { useUserStore } from "../../contexts/global/user";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
-import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import CardContent from "../../domain/CardContent";
-import Typography from "../../domain/Typography";
 import LicenseForm from "../../forms/LicenseForm/index";
 import { useLicenseValidator } from "../../hooks/useLicenseValidator";
 import artworkInfoStyles from "./styles";
@@ -68,7 +62,7 @@ const ArtworkInfo = () => {
 
   const watchedValues = watch();
 
-  const isSeller = () => userId === artwork.owner.id;
+  const isSeller = userId === artwork.owner.id;
 
   const licenseStatus = isLicenseValid({
     data: getValues(),
@@ -114,8 +108,8 @@ const ArtworkInfo = () => {
                       versionId={artwork.current.id}
                       price={artwork.current.personal}
                       isSeller={isSeller}
+                      isAvailable={true}
                       heading="Personal license. Use for personal projects, websites, social media and other non-commercial activities."
-                      list={[]}
                       license="personal"
                       handlePurchase={({ versionId, license }) =>
                         purchaseArtwork({ history, versionId, license })
@@ -141,8 +135,8 @@ const ArtworkInfo = () => {
                       versionId={artwork.current.id}
                       price={artwork.current.commercial}
                       isSeller={isSeller}
+                      isAvailable={true}
                       heading="Commercial license. Use for advertising, promotion, product integration and other commercial activities."
-                      list={[]}
                       license="commercial"
                       handlePurchase={({ versionId, license }) =>
                         purchaseArtwork({ history, versionId, license })
@@ -181,24 +175,18 @@ const ArtworkInfo = () => {
                   iterable: false,
                   content: null,
                   component: (
-                    <Box className={classes.wrapper}>
-                      <Typography
-                        variant="subtitle1"
-                        className={classes.heading}
-                      >
-                        This artwork cannot be purchased or downloaded since it
-                        is preview only
-                      </Typography>
-                      {!artworkLoading && isSeller() && (
-                        <SyncButton
-                          component={RouterLink}
-                          to={`/artwork/${artwork.id}/edit`}
-                          startIcon={<EditIcon />}
-                        >
-                          Edit artwork
-                        </SyncButton>
-                      )}
-                    </Box>
+                    <PricingCard
+                      artworkId={artwork.id}
+                      versionId={artwork.current.id}
+                      price={0}
+                      isSeller={isSeller}
+                      isAvailable={false}
+                      heading="This artwork cannot be purchased or downloaded since it is preview only"
+                      list={[]}
+                      license=""
+                      noPriceFormat="Preview"
+                      submitting={ordersLoading}
+                    />
                   ),
                   error: null,
                   loading: artworkLoading,

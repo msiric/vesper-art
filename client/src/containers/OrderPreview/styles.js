@@ -5,14 +5,20 @@ const orderPreviewStyles = makeStyles((muiTheme) => ({
     display: "flex",
     flexDirection: "column",
     height: "100%",
-    padding: 16,
+    padding: 12,
   },
-  wrapper: {
+  previewWrapper: {
     display: "flex",
     justifyContent: "center",
     height: "100%",
     maxHeight: 700,
     marginBottom: 12,
+  },
+  detailsWrapper: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "flex-start",
   },
   title: {
     wordBreak: "break-word",

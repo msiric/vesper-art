@@ -5,7 +5,7 @@ import Container from "../../domain/Container";
 import Typography from "../../domain/Typography";
 import emptySectionStyles from "./styles";
 
-const EmptySection = ({ label = "", height = 0, loading }) => {
+const EmptySection = ({ label = "", height, loading }) => {
   const classes = emptySectionStyles({ height });
 
   return (

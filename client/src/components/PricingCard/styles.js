@@ -5,6 +5,7 @@ const pricingCardStyles = makeStyles((muiTheme) => ({
     width: "100%",
     height: "100%",
     boxShadow: "none",
+    padding: "0 12px 12px",
   },
   content: {
     padding: "0 32px",
@@ -18,7 +19,7 @@ const pricingCardStyles = makeStyles((muiTheme) => ({
     alignItems: "flex-end",
   },
   price: {
-    fontSize: 48,
+    fontSize: 36,
   },
   infoWrapper: {
     display: "flex",

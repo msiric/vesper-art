@@ -4,11 +4,13 @@ const swipeCardStyles = makeStyles((muiTheme) => ({
   container: {
     height: "100%",
     width: "100%",
+    display: "flex",
+    flexDirection: "column",
     "&> div": {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      height: "calc(100% - 48px)",
+      height: "100%",
     },
     "&> div> div": {
       height: "100%",
@@ -19,7 +21,7 @@ const swipeCardStyles = makeStyles((muiTheme) => ({
     },
   },
   bar: {
-    marginBottom: 10,
+    display: "flex",
   },
   wrapper: {
     display: "flex",

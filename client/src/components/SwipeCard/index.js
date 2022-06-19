@@ -59,7 +59,7 @@ const SwipeCard = ({ tabs, handleTabsChange, margin, loading }) => {
             ))}
         </SwipeableViews>
       ) : (
-        <LoadingSpinner />
+        <LoadingSpinner margin="32px 0" />
       )}
     </Box>
   );

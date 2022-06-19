@@ -16,7 +16,7 @@ const OrderPreview = () => {
 
   return (
     <Card className={classes.container}>
-      <Box className={classes.wrapper}>
+      <Box className={classes.previewWrapper}>
         <ImageWrapper
           height={version.cover.height || 500}
           source={version.cover.source}
@@ -25,12 +25,16 @@ const OrderPreview = () => {
           loading={loading}
         />
       </Box>
-      <Box>
-        <Typography className={classes.title} loading={loading}>{`${
-          version.title
-        }, ${new Date(version.created).getFullYear()}`}</Typography>
+      <Box className={classes.detailsWrapper}>
+        <Typography className={classes.title} loading={loading}>
+          {!loading
+            ? `${version.title}, ${new Date(version.created).getFullYear()}`
+            : "Fetching artwork title"}
+        </Typography>
         <Typography variant="body2" loading={loading}>
-          {version.description || "No description"}
+          {!loading
+            ? version.description || "No description"
+            : "Fetching artwork description containing detailed artwork information"}
         </Typography>
       </Box>
     </Card>

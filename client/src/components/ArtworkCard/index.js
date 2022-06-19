@@ -142,7 +142,7 @@ const ArtworkCard = ({
           />
         </Box>
         <Box>
-          <Typography noWrap className={classes.price}>
+          <Typography noWrap className={classes.price} loading={loading}>
             {item.data.availability === "available"
               ? item.data.license === "commercial"
                 ? item.data.use === "included"
