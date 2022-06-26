@@ -7,7 +7,8 @@ import {
 } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { countries } from "../../../../common/constants";
+import { useHistory } from "react-router-dom";
+import { appName, countries } from "../../../../common/constants";
 import { originValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import HelpBox from "../../components/HelpBox/index";
@@ -32,6 +33,8 @@ const useOnboardingStyles = makeStyles((muiTheme) => ({
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
+    maxWidth: 750,
+    margin: "0 auto",
   },
   icon: {
     fontSize: 150,
@@ -48,7 +51,7 @@ const useOnboardingStyles = makeStyles((muiTheme) => ({
     marginBottom: 16,
   },
   list: {
-    margin: "18px 0",
+    margin: "36px 0",
     width: "100%",
   },
   form: {
@@ -66,11 +69,31 @@ const useOnboardingStyles = makeStyles((muiTheme) => ({
   },
 }));
 
+const onboardingItems = [
+  { icon: <LabelIcon />, label: "Start the onboarding process with Stripe" },
+  {
+    icon: <LabelIcon />,
+    label:
+      "Fill in the necessary information and upload the required documentation",
+  },
+  {
+    icon: <LabelIcon />,
+    label: `Wait for Stripe to verify the provided details and get redirected back to ${appName}`,
+  },
+  {
+    icon: <LabelIcon />,
+    label:
+      "Take full control of your artwork and start earning money for each placed order",
+  },
+];
+
 const Onboarding = () => {
   const userId = useUserStore((state) => state.id);
   const userEmail = useUserStore((state) => state.email);
   const userAddress = useUserStore((state) => state.businessAddress);
   const stripeId = useUserStore((state) => state.stripeId);
+
+  const history = useHistory();
 
   const globalClasses = globalStyles();
   const classes = useOnboardingStyles();
@@ -91,21 +114,6 @@ const Onboarding = () => {
     defaultValues: setDefaultValues(),
     resolver: yupResolver(originValidation),
   });
-
-  const onboardingItems = [
-    { icon: <LabelIcon />, label: "Complete the onboarding process" },
-    { icon: <LabelIcon />, label: "Upload your artwork" },
-    {
-      icon: <LabelIcon />,
-      label:
-        "Set how much you want to charge for personal and commercial licenses",
-    },
-    {
-      icon: <LabelIcon />,
-      label:
-        "Transfer your earnings from your dashboard to your Stripe account",
-    },
-  ];
 
   const onSubmit = async (values) => {
     try {
@@ -132,6 +140,10 @@ const Onboarding = () => {
 
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
+  if (userId && stripeId) {
+    history.push("/onboarded");
+  }
+
   return (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
@@ -143,69 +155,58 @@ const Onboarding = () => {
             />
             <CardContent className={classes.content}>
               <MonetizationIcon className={classes.icon} />
-              {stripeId ? (
-                <Typography className={classes.heading} variant="subtitle1">
-                  You already went through the onboarding process
+              <Box className={classes.wrapper}>
+                <Typography className={classes.heading} variant="h4">
+                  Complete the onboarding process and start getting paid
                 </Typography>
-              ) : (
-                <Box className={classes.wrapper}>
-                  <Typography className={classes.heading} variant="h4">
-                    Start getting paid
-                  </Typography>
-                  <Typography className={classes.text} color="textSecondary">
-                    We use Stripe to make sure you get paid on time and to keep
-                    your personal bank and details secure. Click on continue to
-                    set up your payments on Stripe.
-                  </Typography>
-                  <ListItems className={classes.list} items={onboardingItems} />
-                  {/* $TODO Refactor supportedCountries */}
-                  {userAddress ? (
-                    countries[userAddress] &&
-                    countries[userAddress].supported ? (
-                      <Typography
-                        color="textSecondary"
-                        className={classes.label}
-                      >
-                        Please confirm your registered business address
-                      </Typography>
-                    ) : (
-                      <Typography
-                        color="textSecondary"
-                        className={classes.label}
-                      >
-                        Your currently saved registered business address is not
-                        supported for Stripe payments
-                      </Typography>
-                    )
+                <Typography className={classes.text} color="textSecondary">
+                  Stripe is used to make sure you get paid on time and to keep
+                  your bank information and details secure. This will link your
+                  accounts and allow for a seamless experience between the two
+                  platforms while ensuring the highest levels of security,
+                  privacy and compliance.
+                </Typography>
+                <ListItems className={classes.list} items={onboardingItems} />
+                {/* $TODO Refactor supportedCountries */}
+                {userAddress ? (
+                  countries[userAddress] && countries[userAddress].supported ? (
+                    <Typography color="textSecondary" className={classes.label}>
+                      Please confirm your registered business address
+                    </Typography>
                   ) : (
                     <Typography color="textSecondary" className={classes.label}>
-                      Please select your registered business address
+                      Your currently saved registered business address is not
+                      supported for Stripe payments
                     </Typography>
-                  )}
-                  <FormProvider control={control}>
-                    <form
-                      className={classes.form}
-                      onSubmit={handleSubmit(onSubmit)}
+                  )
+                ) : (
+                  <Typography color="textSecondary" className={classes.label}>
+                    Please select your registered business address
+                  </Typography>
+                )}
+                <FormProvider control={control}>
+                  <form
+                    className={classes.form}
+                    onSubmit={handleSubmit(onSubmit)}
+                  >
+                    <OnboardingForm
+                      errors={errors}
+                      getValues={getValues}
+                      setValue={setValue}
+                    />
+                    <AsyncButton
+                      type="submit"
+                      fullWidth
+                      padding
+                      submitting={formState.isSubmitting}
+                      disabled={isDisabled}
+                      startIcon={<OnboardIcon />}
                     >
-                      <OnboardingForm
-                        errors={errors}
-                        getValues={getValues}
-                        setValue={setValue}
-                      />
-                      <AsyncButton
-                        type="submit"
-                        fullWidth
-                        padding
-                        submitting={formState.isSubmitting}
-                        disabled={isDisabled}
-                        startIcon={<OnboardIcon />}
-                      >
-                        Continue
-                      </AsyncButton>
-                    </form>
-                  </FormProvider>
-                </Box>
-              )}
+                      Continue
+                    </AsyncButton>
+                  </form>
+                </FormProvider>
+              </Box>
             </CardContent>
           </Card>
         </Grid>
