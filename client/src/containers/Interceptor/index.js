@@ -94,9 +94,9 @@ const Interceptor = () => {
 
   const interceptTraffic = (token) => {
     if (token) {
-      ax.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      ax.defaults.headers.common.Authorization = `Bearer ${token}`;
     } else {
-      delete ax.defaults.headers.common["Authorization"];
+      delete ax.defaults.headers.common.Authorization;
     }
 
     ax.interceptors.response.use(
@@ -139,9 +139,9 @@ const Interceptor = () => {
           updateEvents({
             notifications: { count: data.user.notifications },
           });
-          const config = error.config;
+          const { config } = error;
           config._retry = true;
-          config.headers["Authorization"] = `Bearer ${data.accessToken}`;
+          config.headers.Authorization = `Bearer ${data.accessToken}`;
 
           return ax(config);
         }
@@ -204,8 +204,8 @@ const Interceptor = () => {
       socket.instance.on("sendNotification", handleSocketNotification);
       socket.instance.on("expiredToken", handleSocketRefresh);
       socket.instance.on("connect", handleNotificationRefresh);
-    } else {
-      if (socket && socket.instance) socket.instance.emit("disconnectUser");
+    } else if (socket && socket.instance) {
+      socket.instance.emit("disconnectUser");
     }
   };
 

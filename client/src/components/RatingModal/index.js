@@ -6,7 +6,7 @@ import {
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { reviewValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index";
+import AsyncButton from "../AsyncButton/index";
 import Backdrop from "../../domain/Backdrop";
 import Box from "../../domain/Box";
 import Divider from "../../domain/Divider";

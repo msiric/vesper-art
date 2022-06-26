@@ -5,7 +5,7 @@ import React, { forwardRef } from "react";
 const StyledGrid = withStyles({})(MaterialGrid);
 
 const Grid = forwardRef((props, ref) => {
-  return <StyledGrid ref={ref} {...props}></StyledGrid>;
+  return <StyledGrid ref={ref} {...props} />;
 });
 
 export default Grid;

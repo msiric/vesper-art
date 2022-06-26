@@ -73,7 +73,7 @@ const ArtworkModifier = ({ paramId }) => {
     reset,
   } = useForm({
     defaultValues: setDefaultValues(),
-    resolver: resolver,
+    resolver,
   });
 
   const history = useHistory();

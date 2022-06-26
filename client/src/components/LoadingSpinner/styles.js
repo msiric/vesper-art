@@ -21,8 +21,8 @@ const loadingSpinnerStyles = makeStyles((muiTheme) => ({
     flexDirection: "column",
     top: "50%",
     left: "50%",
-    transform: ({ height }) => (!!height ? "translate(-50%, -50%)" : "none"),
-    position: ({ height }) => (!!height ? "absolute" : "static"),
+    transform: ({ height }) => (height ? "translate(-50%, -50%)" : "none"),
+    position: ({ height }) => (height ? "absolute" : "static"),
   },
   circle: {
     "&>svg": {

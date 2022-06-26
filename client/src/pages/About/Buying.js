@@ -90,7 +90,7 @@ const Buying = () => {
             which will be displayed on the checkout page before you confirm your payment. This allows the platform to keep operating and offering its services to the users.`}
           </Typography>
           <Typography className={classes.paragraph}>
-            {`For more information, see the Terms of Service.`}
+            For more information, see the Terms of Service.
           </Typography>
         </Grid>
         <Grid item sm={12} className={classes.wrapper}>

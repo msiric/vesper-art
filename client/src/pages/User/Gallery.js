@@ -41,7 +41,7 @@ const Gallery = () => {
   const formatArtwork = (artwork) => {
     const artworkIds = {};
     const uniqueElements = [];
-    for (let item in artwork) {
+    for (const item in artwork) {
       if (!artworkIds[artwork[item].cover]) {
         const { r, g, b } = hexToRgb(artwork[item].dominant);
         uniqueElements.push({

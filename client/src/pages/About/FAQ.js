@@ -91,13 +91,13 @@ const FAQ = () => {
             Account management
           </Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`Is my personal information safe?`}
+            Is my personal information safe?
           </Typography>
           <Typography className={classes.paragraph}>
             {`Your privacy is important and taken seriously on ${appName}. You can read the Privacy Policy for more information. The Privacy Policy is part of the website's Terms of Service.`}
           </Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`How do I change/reset my password?`}
+            How do I change/reset my password?
           </Typography>
           <Typography className={classes.paragraph}>
             {`Go to the Settings page and under the password section enter and save the new password.
@@ -105,16 +105,17 @@ const FAQ = () => {
             On the Login page, click on the „Trouble logging in?“ link and follow the instructions to reset your password.`}
           </Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`How do I close my account?`}
+            How do I close my account?
           </Typography>
           <Typography className={classes.paragraph}>
-            {`Similarly to changing the password, you can also deactivate your account on the Settings page.`}
+            Similarly to changing the password, you can also deactivate your
+            account on the Settings page.
           </Typography>
           <Typography variant="h5" className={classes.heading}>
             Payments and withdrawals
           </Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`How long does it take for me to receive revenues from an order?`}
+            How long does it take for me to receive revenues from an order?
           </Typography>
           <Typography className={classes.paragraph}>
             {`All transactions are processed by ${appName}'s partner, Stripe. 
@@ -122,25 +123,30 @@ const FAQ = () => {
             Head to your Stripe's dashboard and verify the current status of your funds at any time. `}
           </Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`Are there any fees when withdrawing revenue?`}
+            Are there any fees when withdrawing revenue?
           </Typography>
           <Typography className={classes.paragraph}>
-            {`Stripe charges a fee of 0.25% of the payout volume + 25¢ for withdrawing your funds to your bank account.`}
+            Stripe charges a fee of 0.25% of the payout volume + 25¢ for
+            withdrawing your funds to your bank account.
           </Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
             {`Do I have to pay taxes on income earned on ${appName}?`}
           </Typography>
           <Typography className={classes.paragraph}>
-            {`It is the sole responsibility of artists to verify their personal tax obligation, report, and pay taxes according to the laws of the state and/or country of residence, as applicable and required by local law and regulations.`}
+            It is the sole responsibility of artists to verify their personal
+            tax obligation, report, and pay taxes according to the laws of the
+            state and/or country of residence, as applicable and required by
+            local law and regulations.
           </Typography>
           <Typography variant="h5" className={classes.heading}>
             Platform-specific questions
           </Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`What are artwork licenses and what is their purpose?`}
+            What are artwork licenses and what is their purpose?
           </Typography>
           <Typography className={`${classes.paragraph} ${classes.linkLabel}`}>
-            {`You can find all the necessary information regarding the licenses and the way they work`}
+            You can find all the necessary information regarding the licenses
+            and the way they work
           </Typography>
           <Link
             component={RouterLink}
@@ -150,7 +156,8 @@ const FAQ = () => {
             here.
           </Link>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`How do I become an artist on the platform and start uploading my artwork?`}
+            How do I become an artist on the platform and start uploading my
+            artwork?
           </Typography>
           <Typography className={`${classes.paragraph} ${classes.linkLabel}`}>
             {`You can learn more about becoming an artist on ${appName} and uploading your art by clicking on`}
@@ -163,7 +170,8 @@ const FAQ = () => {
             this link.
           </Link>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`Why are some artwork only available for preview while others are downloadable free of charge?`}
+            Why are some artwork only available for preview while others are
+            downloadable free of charge?
           </Typography>
           <Typography className={classes.paragraph}>
             {`This depends solely on the artist. If an artist chooses to upload their artwork as „preview only“, then you can only preview the art without the option of downloading or buying it. 

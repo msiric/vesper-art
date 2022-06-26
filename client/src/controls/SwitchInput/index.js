@@ -28,7 +28,7 @@ const Input = ({
             checked={value}
             onChange={(e, value) => setValue(name, value)}
             inputProps={{
-              name: name,
+              name,
               id: name,
             }}
             color="primary"

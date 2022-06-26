@@ -73,16 +73,19 @@ const PrivacyPolicy = () => {
             By accessing the website you agree to this Privacy Policy and its Terms of Use.`}
           </Typography>
           <Typography variant="h5" className={classes.heading}>
-            {`Personal Information Collected`}
+            Personal Information Collected
           </Typography>
           <Typography className={classes.paragraph}>
-            {`Information may be collected that is reasonably capable of identifying you as an individual (Personal Information). Personal Information does not include anonymous or aggregate information that does not identify you as an individual.`}
+            Information may be collected that is reasonably capable of
+            identifying you as an individual (Personal Information). Personal
+            Information does not include anonymous or aggregate information that
+            does not identify you as an individual.
           </Typography>
           <Typography className={classes.paragraph}>
-            {`Creating a User Account:`}
+            Creating a User Account:
           </Typography>
           <ListItems
-            noPadding={true}
+            noPadding
             items={[
               {
                 label: `If you sign up to use the Platform, you are required to provide your full name. Additionally, you might provide your location, website and biographical information.`,
@@ -91,10 +94,10 @@ const PrivacyPolicy = () => {
             ]}
           />
           <Typography className={classes.paragraph}>
-            {`Visiting the Site:`}
+            Visiting the Site:
           </Typography>
           <ListItems
-            noPadding={true}
+            noPadding
             items={[
               {
                 label: `Basic analytics data is collected when you access or use the Platform through Cookies. See more about the Cookies Policy below for more information about the Cookies used and data collected.`,
@@ -103,13 +106,13 @@ const PrivacyPolicy = () => {
             ]}
           />
           <Typography variant="h5" className={classes.heading}>
-            {`What Is Done With The Collected Information`}
+            What Is Done With The Collected Information
           </Typography>
           <Typography className={classes.paragraph}>
-            {`Personal Information is collected in order to:`}
+            Personal Information is collected in order to:
           </Typography>
           <ListItems
-            noPadding={true}
+            noPadding
             items={[
               {
                 label: `make the Platform work and enable you to list, collect and purchase/sell digital art;`,
@@ -133,10 +136,9 @@ const PrivacyPolicy = () => {
               },
             ]}
           />
-          <Typography
-            variant="h5"
-            className={classes.heading}
-          >{`Cookies`}</Typography>
+          <Typography variant="h5" className={classes.heading}>
+            Cookies
+          </Typography>
           <Typography className={classes.paragraph}>
             {`Basic analytics data is collected through Cookies when you access or use the Platform. 
             A Cookie is a small piece of data or text file stored on the local hard disk of your computer or mobile device. 
@@ -144,13 +146,11 @@ const PrivacyPolicy = () => {
             Others may remain on your browser and may collect and store data for a period of time after you have left the Platform.`}
           </Typography>
           <Typography variant="h5" className={classes.heading}>
-            {`How are Cookies used`}
+            How are Cookies used
           </Typography>
-          <Typography className={classes.paragraph}>
-            {`Functionality:`}
-          </Typography>
+          <Typography className={classes.paragraph}>Functionality:</Typography>
           <ListItems
-            noPadding={true}
+            noPadding
             items={[
               {
                 label: `the Platform uses Cookies to ensure the Platform functions properly, including authentication and page loads.`,
@@ -159,10 +159,10 @@ const PrivacyPolicy = () => {
             ]}
           />
           <Typography className={classes.paragraph}>
-            {`Google Analytics:`}
+            Google Analytics:
           </Typography>
           <ListItems
-            noPadding={true}
+            noPadding
             items={[
               {
                 label: `Google Analytics is used to understand how users interact with the Platform.`,
@@ -170,27 +170,32 @@ const PrivacyPolicy = () => {
               },
             ]}
           />
-          <Typography
-            variant="h5"
-            className={classes.heading}
-          >{`Your Rights`}</Typography>
+          <Typography variant="h5" className={classes.heading}>
+            Your Rights
+          </Typography>
           <Typography className={classes.paragraph}>
             {`You may reach out at info@${domainName} to erase, update or correct any Personal Information that was collected about you.`}
           </Typography>
           <Typography variant="h5" className={classes.heading}>
-            {`Minors and Children`}
+            Minors and Children
           </Typography>
           <Typography className={classes.paragraph}>
-            {`The Platform is not intended for use by children under the age of 18, and Personal Information is not knowingly collected from children under the age of 13. If this does happen, said information will be deleted.`}
+            The Platform is not intended for use by children under the age of
+            18, and Personal Information is not knowingly collected from
+            children under the age of 13. If this does happen, said information
+            will be deleted.
           </Typography>
           <Typography variant="h5" className={classes.heading}>
-            {`Third-Party Links and Services`}
+            Third-Party Links and Services
           </Typography>
           <Typography className={classes.paragraph}>
-            {`This Policy only applies to this Platform and does not apply to third-party websites or services. It is encouraged that you review the privacy policies of those third-party sites to learn about their practices or what rights you may have.`}
+            This Policy only applies to this Platform and does not apply to
+            third-party websites or services. It is encouraged that you review
+            the privacy policies of those third-party sites to learn about their
+            practices or what rights you may have.
           </Typography>
           <Typography variant="h5" className={classes.heading}>
-            {`Changes to this Policy`}
+            Changes to this Policy
           </Typography>
           <Typography className={classes.paragraph}>
             {`The commitment to preserving your privacy will not change, but the Platform may evolve. The effective date of each version is identified above. 

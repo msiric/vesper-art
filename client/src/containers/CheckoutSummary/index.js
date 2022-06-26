@@ -56,7 +56,7 @@ const CheckoutSummary = ({
           : "No license selected"
       }
       amount="Price"
-      animate={true}
+      animate
       price={state.values.price}
       loading={loading}
     />,
@@ -66,7 +66,7 @@ const CheckoutSummary = ({
       description="Fixed fee"
       amount="Amount"
       prefix="+"
-      animate={true}
+      animate
       price={state.values.fee}
       loading={loading}
     />,
@@ -78,7 +78,7 @@ const CheckoutSummary = ({
           description={`${discount.name} (${discount.discount * 100}%)`}
           amount="Amount"
           prefix="-"
-          animate={true}
+          animate
           price={state.values.discount}
           loading={loading}
         />
@@ -93,7 +93,7 @@ const CheckoutSummary = ({
           : "No license selected"
       }
       amount="Total"
-      animate={true}
+      animate
       price={state.values.total}
       loading={loading}
     />,
@@ -185,7 +185,7 @@ const CheckoutSummary = ({
         <Grid item xs={12} className={classes.card}>
           <CheckoutCard version={version} loading={loading} />
         </Grid>
-        <ListItems items={summaryItems} custom={true}></ListItems>
+        <ListItems items={summaryItems} custom />
       </CardContent>
       {/* // FEATURE FLAG - discount */}
       {step.current === 2 && featureFlags.discount && (

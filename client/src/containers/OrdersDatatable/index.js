@@ -126,9 +126,9 @@ const OrdersDatatable = () => {
       loading={loading}
       redirect="orders"
       selectable="none"
-      hoverable={true}
-      searchable={true}
-      pagination={true}
+      hoverable
+      searchable
+      pagination
       addOptions={{ enabled: false, title: "", route: "" }}
       height={400}
     />

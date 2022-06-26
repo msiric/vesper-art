@@ -48,7 +48,7 @@ const ReviewCard = ({ paramId, highlightRef }) => {
         <SubHeading text="Review" loading={loading} />
         {loading || review ? (
           <Box className={classes.wrapper}>
-            <Rating value={review.rating} readOnly={true} loading={loading} />
+            <Rating value={review.rating} readOnly loading={loading} />
           </Box>
         ) : (
           <Box>

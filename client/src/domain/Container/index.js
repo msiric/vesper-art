@@ -5,7 +5,7 @@ import React, { forwardRef } from "react";
 const StyledContainer = withStyles({})(MaterialContainer);
 
 const Container = forwardRef((props, ref) => {
-  return <StyledContainer ref={ref} {...props}></StyledContainer>;
+  return <StyledContainer ref={ref} {...props} />;
 });
 
 export default Container;

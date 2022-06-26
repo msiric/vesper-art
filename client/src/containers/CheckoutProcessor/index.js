@@ -21,7 +21,7 @@ import CheckoutStepper from "../../components/CheckoutStepper";
 import LicenseAlert from "../../components/LicenseAlert";
 import ListItems from "../../components/ListItems";
 import SyncButton from "../../components/SyncButton";
-import CheckoutSummary from "../../containers/CheckoutSummary/index";
+import CheckoutSummary from "../CheckoutSummary/index";
 import { useUserStore } from "../../contexts/global/user";
 import { useOrderCheckout } from "../../contexts/local/orderCheckout";
 import Box from "../../domain/Box";

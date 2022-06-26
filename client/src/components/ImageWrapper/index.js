@@ -20,7 +20,7 @@ const ImageWrapper = ({
   const classes = imageWrapperStyles({ height, loading, placeholder, source });
 
   return loading ? (
-    <Box className={classes.wrapper} loading={true} width="100%" />
+    <Box className={classes.wrapper} loading width="100%" />
   ) : downloaded ? (
     redirect ? (
       <Box

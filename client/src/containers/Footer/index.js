@@ -169,7 +169,7 @@ const Footer = () => {
               <Link component={RouterLink} to="/privacy_policy">
                 Privacy Policy
               </Link>
-              <Link component={RouterLink} to={"/terms_of_service"}>
+              <Link component={RouterLink} to="/terms_of_service">
                 Terms of Service
               </Link>
             </Grid>

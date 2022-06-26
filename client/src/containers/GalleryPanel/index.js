@@ -80,7 +80,7 @@ const GalleryPanel = ({ formatArtwork }) => {
                       source={item.media}
                       placeholder={item.dominant}
                       caption={item.caption}
-                      shouldCover={true}
+                      shouldCover
                       loading={loading}
                     />
                   </Card>

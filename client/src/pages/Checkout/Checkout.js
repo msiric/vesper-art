@@ -37,7 +37,7 @@ const Checkout = ({ location }) => {
     ordersRedirect
   ) ? (
     <Container key={location.key}>
-      <MainHeading text={"Checkout"} />
+      <MainHeading text="Checkout" />
       <CheckoutContent />
     </Container>
   ) : (

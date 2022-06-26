@@ -148,8 +148,7 @@ const initActions = (set, get) => ({
     }));
   },
   fetchNotifications: async ({ event, userId, shouldFetch = false }) => {
-    const notifications = get().notifications;
-    const initialized = notifications.initialized;
+    const { notifications } = get();
     const target = shouldFetch ? notifications.anchor : event.currentTarget;
     if (notifications.initialized && !shouldFetch) {
       set((state) => ({
@@ -182,10 +181,7 @@ const initActions = (set, get) => ({
           notifications: {
             ...state.notifications,
             items: [...state.notifications.items, ...data.notifications],
-            hasMore:
-              data.notifications.length < state.notifications.limit
-                ? false
-                : true,
+            hasMore: !(data.notifications.length < state.notifications.limit),
             cursor: resolvePaginationId(data.notifications),
             loading: false,
             fetching: false,
@@ -195,8 +191,8 @@ const initActions = (set, get) => ({
         }));
       } catch (err) {
         console.log("error", err);
-        const resetEvents = get().resetEvents;
-        initialized
+        const { resetEvents } = get();
+        notifications.initialized
           ? set((state) => ({
               ...state,
               notifications: {
@@ -212,7 +208,7 @@ const initActions = (set, get) => ({
   },
   refreshNotifications: async ({ userId }) => {
     try {
-      const notifications = get().notifications;
+      const { notifications } = get();
       set((state) => ({
         ...state,
         notifications: {
@@ -235,7 +231,7 @@ const initActions = (set, get) => ({
       }));
     } catch (err) {
       console.log("error", err);
-      const disconnectMenu = get().disconnectMenu;
+      const { disconnectMenu } = get();
       disconnectMenu();
     }
   },
@@ -316,7 +312,7 @@ const initActions = (set, get) => ({
     }
   },
   addNotification: ({ notification, cursor, count = 1 }) => {
-    const initialized = get().notifications.initialized;
+    const { initialized } = get().notifications;
     if (initialized) {
       set((state) => {
         return {
@@ -325,7 +321,7 @@ const initActions = (set, get) => ({
             ...state.notifications,
             items: [notification, ...state.notifications.items],
             count: state.notifications.count + count,
-            cursor: cursor,
+            cursor,
           },
         };
       });
@@ -342,7 +338,7 @@ const initActions = (set, get) => ({
     }
   },
   toggleSearch: () => {
-    const search = get().search;
+    const { search } = get();
     set((state) => ({
       ...state,
       search: search === "artwork" ? "users" : "artwork",
@@ -351,7 +347,7 @@ const initActions = (set, get) => ({
   searchQuery: ({ values, history }) => {
     try {
       if (values.searchQuery.trim()) {
-        const search = get().search;
+        const { search } = get();
         history.push(`/search?q=${values.searchQuery}&t=${search}`);
       }
     } catch (err) {

@@ -73,7 +73,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                     <UserArtwork
                       userUsername={userUsername}
                       type="artwork"
-                      fixed={true}
+                      fixed
                       shouldPause={tabs.value !== 0}
                     />
                   </Box>
@@ -99,7 +99,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                     <UserFavorites
                       userUsername={userUsername}
                       type="favorite"
-                      fixed={true}
+                      fixed
                       shouldPause={tabs.value !== 1}
                     />
                   </Box>

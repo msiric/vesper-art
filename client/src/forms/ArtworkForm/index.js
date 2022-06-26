@@ -46,7 +46,7 @@ const ArtworkForm = ({
         width="100%"
         noEmpty={false}
         editable={editable}
-        isDynamic={true}
+        isDynamic
         loading={loading}
       />
       {editable && (

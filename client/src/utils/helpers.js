@@ -6,7 +6,7 @@ import Redirect from "../pages/Home/Redirect";
 import Retry from "../pages/Home/Retry";
 
 export const deleteEmptyValues = (values) => {
-  for (let value in values) {
+  for (const value in values) {
     if (
       typeof values[value] !== "boolean" &&
       isNaN(values[value]) &&
@@ -50,7 +50,7 @@ export const displayValidLicense = (use, type) => {
 export const containsErrors = (...errors) => errors.some((error) => error);
 
 export const renderError = (...errors) => {
-  for (let error of errors) {
+  for (const error of errors) {
     if (error.retry) {
       return (
         <Retry
@@ -66,7 +66,7 @@ export const renderError = (...errors) => {
 };
 
 export const renderUserData = ({ data, isUsername = false, fallback = "/" }) =>
-  data ? data : isUsername ? "[deleted]" : fallback;
+  data || (isUsername ? "[deleted]" : fallback);
 
 export const renderRedirectLink = ({ active, isUsername = false }) =>
   active ? RouterLink : isUsername ? "p" : "div";

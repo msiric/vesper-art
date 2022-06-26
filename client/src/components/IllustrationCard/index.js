@@ -22,7 +22,7 @@ const IllustrationCard = ({
         <Typography className={classes.paragraph}>{paragraph}</Typography>
       </Box>
       <Box className={`${classes.wrapper} ${reverseOrder && classes.reverse}`}>
-        <Box>{body ? body : null}</Box>
+        <Box>{body || null}</Box>
         <Card className={`${classes.label} ${illustrationClass}`}>
           {illustration}
         </Card>

@@ -27,13 +27,9 @@ const ArtworkActions = () => {
     <Card className={classes.container}>
       <CardContent className={classes.content}>
         <Box className={classes.counter}>
-          <Box
-            loading={loading}
-            customRadius={true}
-            className={classes.incrementer}
-          >
+          <Box loading={loading} customRadius className={classes.incrementer}>
             <FavoritedIcon fontSize="large" className={classes.icon} />
-            <IncrementCounter newValue={favorites}></IncrementCounter>
+            <IncrementCounter newValue={favorites} />
           </Box>
         </Box>
       </CardContent>

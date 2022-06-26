@@ -62,8 +62,8 @@ const Input = ({
   const handleImageChange = (e) => {
     if (editable) {
       e.preventDefault();
-      let reader = new FileReader();
-      let file = e.target.files[0];
+      const reader = new FileReader();
+      const file = e.target.files[0];
       if (file) {
         setState((prevState) => ({
           ...prevState,
@@ -73,7 +73,7 @@ const Input = ({
         reader.onloadend = async () => {
           setState({
             loading: false,
-            file: file,
+            file,
             imagePreviewUrl: reader.result,
           });
           setValue(name, file);

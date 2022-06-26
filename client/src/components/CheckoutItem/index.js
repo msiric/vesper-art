@@ -2,7 +2,7 @@ import AnimatedNumber from "animated-number-react";
 import React from "react";
 import NumberFormat from "react-number-format";
 import { formatArtworkPrice } from "../../../../common/helpers";
-import SkeletonWrapper from "../../components/SkeletonWrapper/index";
+import SkeletonWrapper from "../SkeletonWrapper/index";
 import Box from "../../domain/Box";
 import ListItem from "../../domain/ListItem";
 import ListItemText from "../../domain/ListItemText";
@@ -50,10 +50,10 @@ const CheckoutItem = ({
               ) : (
                 <NumberFormat
                   value={price}
-                  displayType={"text"}
-                  thousandSeparator={true}
+                  displayType="text"
+                  thousandSeparator
                   decimalScale={2}
-                  prefix={"$"}
+                  prefix="$"
                   className={classes.price}
                 />
               )}

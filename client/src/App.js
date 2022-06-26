@@ -313,19 +313,19 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => {
                 </Suspense>
               </AuthLayout>
             );
-          } else {
-            return (
-              <Redirect
-                to={{
-                  pathname: "/",
-                  state: {
-                    from: props.location,
-                  },
-                }}
-              />
-            );
           }
-        } else if (rest.type === "protected") {
+          return (
+            <Redirect
+              to={{
+                pathname: "/",
+                state: {
+                  from: props.location,
+                },
+              }}
+            />
+          );
+        }
+        if (rest.type === "protected") {
           if (!rest.token) {
             return (
               <Redirect

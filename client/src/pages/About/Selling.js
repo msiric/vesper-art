@@ -94,7 +94,7 @@ const Selling = () => {
             } once the license has been purchased. Your funds will appear in your Stripe account shortly after being processed.`}
           </Typography>
           <Typography className={classes.paragraph}>
-            {`For more information, see the Terms of Service.`}
+            For more information, see the Terms of Service.
           </Typography>
         </Grid>
         <Grid item sm={12} className={classes.wrapper}>

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import HelpBox from "../../components/HelpBox";
+import HelpBox from "../HelpBox";
 import Box from "../../domain/Box";
 import Typography from "../../domain/Typography";
 import licenseAlertStyles from "./styles";
@@ -18,7 +18,7 @@ const LicenseAlert = ({ licenseStatus }) => {
             : licenseStatus.state.message
         }
         margin="8px 0"
-      ></HelpBox>
+      />
       <Box className={classes.alert}>
         <Typography
           className={classes.link}

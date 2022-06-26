@@ -108,7 +108,7 @@ const ArtworkInfo = () => {
                       versionId={artwork.current.id}
                       price={artwork.current.personal}
                       isSeller={isSeller}
-                      isAvailable={true}
+                      isAvailable
                       heading="Personal license. Use for personal projects, websites, social media and other non-commercial activities."
                       license="personal"
                       handlePurchase={({ versionId, license }) =>
@@ -135,7 +135,7 @@ const ArtworkInfo = () => {
                       versionId={artwork.current.id}
                       price={artwork.current.commercial}
                       isSeller={isSeller}
-                      isAvailable={true}
+                      isAvailable
                       heading="Commercial license. Use for advertising, promotion, product integration and other commercial activities."
                       license="commercial"
                       handlePurchase={({ versionId, license }) =>
@@ -231,7 +231,7 @@ const ArtworkInfo = () => {
             <LicenseForm
               version={artwork.current}
               userName={userName}
-              isFree={true}
+              isFree
               watchables={{
                 licenseUsage: watchedValues.licenseUsage,
               }}

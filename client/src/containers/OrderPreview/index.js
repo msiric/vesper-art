@@ -21,7 +21,7 @@ const OrderPreview = () => {
           height={version.cover.height || 500}
           source={version.cover.source}
           placeholder={version.cover.dominant}
-          shouldBlur={true}
+          shouldBlur
           loading={loading}
         />
       </Box>

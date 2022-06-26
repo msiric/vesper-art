@@ -5,7 +5,7 @@ import React, { forwardRef } from "react";
 const StyledCircularProgress = withStyles({})(MaterialCircularProgress);
 
 const CircularProgress = forwardRef((props, ref) => {
-  return <StyledCircularProgress ref={ref} {...props}></StyledCircularProgress>;
+  return <StyledCircularProgress ref={ref} {...props} />;
 });
 
 export default CircularProgress;

@@ -55,7 +55,7 @@ const EditUserForm = ({
           defaultValue={userName}
           variant="outlined"
           margin="dense"
-          disabled={true}
+          disabled
           inputProps={{ readOnly: true }}
           fullWidth
           loading={loading}

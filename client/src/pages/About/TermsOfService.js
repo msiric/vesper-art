@@ -76,7 +76,7 @@ const TermsOfService = () => {
           }
           <Typography variant="h4">Terms of service</Typography>
           <Typography variant="h5" className={classes.heading}>
-            {`Introduction`}
+            Introduction
           </Typography>
           <Typography className={classes.paragraph}>
             {`Please read these Terms of Service (Terms) carefully. 
@@ -88,30 +88,30 @@ const TermsOfService = () => {
             including visitors to the ${appName} website (Site). If you choose to register as a member of the Service, you agree to be bound by the additional terms set forth in the "Additional Terms" section.`}
           </Typography>
           <Typography variant="h5" className={classes.heading}>
-            {`General Terms`}
+            General Terms
           </Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`1. Availability`}
+            1. Availability
           </Typography>
           <Typography
             className={classes.paragraph}
           >{`This Service is provided by ${appName} on an "AS IS" and "AS AVAILABLE" basis and ${appName} reserves the right to modify, suspend or discontinue the Service, in its sole discretion, at any time and without notice. 
           You agree that ${appName} is and will not be liable to you for any modification, suspension or discontinuance of the Service.`}</Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`2. Privacy`}
+            2. Privacy
           </Typography>
           <Typography
             className={classes.paragraph}
           >{`${appName} has a firm commitment to safeguarding your privacy. Please review ${appName}'s Privacy Policy. The terms of ${appName}'s privacy policy are incorporated into, and form a part of, these Terms.`}</Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`3. Trademarks`}
+            3. Trademarks
           </Typography>
           <Typography
             className={classes.paragraph}
           >{`All brand, product and service names used in this Service which identify ${appName} or third parties and their products and services are proprietary marks of ${appName} and/or the relevant third parties. 
           Nothing in this Service shall be deemed to confer on any person any license or right on the part of ${appName} or any third party with respect to any such image, logo or name.`}</Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`4. Copyright`}
+            4. Copyright
           </Typography>
           <Typography
             className={classes.paragraph}
@@ -121,7 +121,7 @@ const TermsOfService = () => {
           ownership rights in your works or other materials posted by you to ${appName} (Your Content). You agree not to distribute any part of the Service other than Your Content in any medium other than as permitted in 
           these Terms of Service or by use of functions on the Service provided. You agree not to alter or modify any part of the Service unless expressly permitted to do so or by use of functions on the Service provided.`}</Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`5. External Links`}
+            5. External Links
           </Typography>
           <Typography
             className={classes.paragraph}
@@ -129,7 +129,7 @@ const TermsOfService = () => {
           or the Content, products, or services on or available from such websites or resources. Links to such websites or resources do not imply any endorsement by ${appName} of such websites or resources or the Content, 
           products, or services available from such websites or resources. You acknowledge sole responsibility for and assume all risk arising from your use of any such websites or resources.`}</Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`6. Third Party Software`}
+            6. Third Party Software
           </Typography>
           <Typography
             className={classes.paragraph}
@@ -137,7 +137,7 @@ const TermsOfService = () => {
           agreement to use such software will be solely between you and the third party provider. By downloading third party software, you acknowledge and agree that the software is provided on an "AS IS" basis without warranty of any kind. 
           In no event shall ${appName} be liable for claims or damages of any nature, whether direct or indirect, arising from or related to any third-party software downloaded through the Service.`}</Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`7. Conduct`}
+            7. Conduct
           </Typography>
           <Typography
             className={classes.paragraph}
@@ -147,7 +147,7 @@ const TermsOfService = () => {
           and hold harmless ${appName}, its officers, directors, employees and agents, from and against any claims, liabilities, damages, losses, and expenses, including, without limitation, reasonable legal 
           and expert fees, arising out of or in any way connected with your access to or use of the Services, or your violation of these Terms.`}</Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`8. Disclaimer of Warranty and Limitation of Liability`}
+            8. Disclaimer of Warranty and Limitation of Liability
           </Typography>
           <Typography
             className={`${classes.paragraph} ${classes.uppercase}`}
@@ -161,7 +161,7 @@ const TermsOfService = () => {
           THE EXCLUSION OF OR LIMITATIONS ON CERTAIN WARRANTIES OR DAMAGES. THEREFORE, SOME OF THE ABOVE EXCLUSIONS OR LIMITATIONS MAY NOT APPLY TO YOU. IN NO EVENT SHALL ${appName}'S AGGREGATE LIABILITY TO YOU 
           EXCEED THE AMOUNTS PAID BY YOU TO ${appName} PURSUANT TO THIS AGREEMENT.`}</Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`9. Amendment of the Terms`}
+            9. Amendment of the Terms
           </Typography>
           <Typography
             className={classes.paragraph}
@@ -169,7 +169,7 @@ const TermsOfService = () => {
           by receiving an email to the address you have provided to ${appName} for your account. For all other users, the revised terms will be posted on the Site. If you continue to use the Service after the effective 
           date of the revised Terms, you will be deemed to have accepted those changes. If you do not agree to the revised Terms, your sole remedy shall be to discontinue using the Service.`}</Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`10. General`}
+            10. General
           </Typography>
           <Typography
             className={classes.paragraph}
@@ -178,10 +178,10 @@ const TermsOfService = () => {
           the right to assign its rights and/or delegate its obligations under these Terms, in whole or in part, to any person or business entity. You may not assign your rights or delegate your obligations under these 
           Terms without the prior written consent of ${appName}.`}</Typography>
           <Typography variant="h5" className={classes.heading}>
-            {`Additional Terms`}
+            Additional Terms
           </Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`11. Registration`}
+            11. Registration
           </Typography>
           <Typography
             className={classes.paragraph}
@@ -190,7 +190,7 @@ const TermsOfService = () => {
           this information is kept accurate and up to date at all times. This is especially important with respect to your email address, since that is the primary way in which ${appName} will communicate with you about your 
           account and your orders.`}</Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`12. Password`}
+            12. Password
           </Typography>
           <Typography
             className={classes.paragraph}
@@ -198,7 +198,7 @@ const TermsOfService = () => {
           You agree that you shall be solely responsible for any activities or actions under your password, whether or not you have authorized such activities or actions. 
           You shall immediately notify ${appName} of any unauthorized use of your password.`}</Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`13. Copyright in Your Content`}
+            13. Copyright in Your Content
           </Typography>
           <Typography
             className={classes.paragraph}
@@ -207,14 +207,14 @@ const TermsOfService = () => {
           third parties will be able to copy, distribute and display your Content using readily available tools on their computers for this purpose although other than by linking to your Content on ${appName} any use 
           by a third party of your Content could violate paragraph "Copyright" of these Terms and Conditions unless the third party receives permission from you by license.`}</Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`14. Monitoring Content`}
+            14. Monitoring Content
           </Typography>
           <Typography
             className={classes.paragraph}
           >{`${appName} has no ability to control the Content you may upload, post or otherwise transmit using the Service and does not have any obligation to monitor such Content for any purpose. 
           You acknowledge that you are solely responsible for all Content and material you upload, post or otherwise transmit using the Service.`}</Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`15. Storage Policy`}
+            15. Storage Policy
           </Typography>
           <Typography
             className={classes.paragraph}
@@ -225,7 +225,7 @@ const TermsOfService = () => {
           shall have no responsibility or liability for the deletion or failure to store any Content maintained on the Service and you are solely responsible for creating back-ups of Your Content. 
           You further acknowledge that ${appName} reserves the right to modify its storage policies from time to time, with or without notice to you.`}</Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`16. Conduct`}
+            16. Conduct
           </Typography>
           <Typography
             className={classes.paragraph}
@@ -236,7 +236,7 @@ const TermsOfService = () => {
           You agree not to use the Service:
           `}</Typography>
           <ListItems
-            noPadding={true}
+            noPadding
             items={[
               {
                 label: `for any unlawful purposes;`,
@@ -269,7 +269,7 @@ const TermsOfService = () => {
             ]}
           />
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`17. Commercial Activities`}
+            17. Commercial Activities
           </Typography>
           <Typography
             className={classes.paragraph}
@@ -280,14 +280,14 @@ const TermsOfService = () => {
           of the Service with respect to commercial activities including payment for and delivery of goods and/or services and any terms related to the commercial activities including conditions, 
           warranties or representations and so forth are solely between you and the other member.`}</Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`18. Suspension and Termination of Access and Membership`}
+            18. Suspension and Termination of Access and Membership
           </Typography>
           <Typography
             className={classes.paragraph}
           >{`You agree that ${appName} may at any time, and without notice, suspend or terminate any part of the Service, or refuse to fulfill any order, or any part of any order or terminate your 
           membership and delete any Content stored on the ${appName} Site, in ${appName}'s sole discretion, if you fail to comply with the Terms or applicable law.`}</Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`19. Purchasing And Downloading Artwork`}
+            19. Purchasing And Downloading Artwork
           </Typography>
           <Typography
             className={classes.paragraph}
@@ -295,7 +295,7 @@ const TermsOfService = () => {
           All payments are to be made in US dollars and prices are subject to change at any time. Platform fees will be added to your order during the checkout process.
           `}</Typography>
           <Typography className={`${classes.paragraph} ${classes.bold}`}>
-            {`20. Personal and Commercial Licenses`}
+            20. Personal and Commercial Licenses
           </Typography>
           <Typography
             className={classes.paragraph}

@@ -23,7 +23,7 @@ const RangeInput = ({
       onAccept={(date) => handleChange(date)}
       inputFormat="dd/MM/yyyy"
       autoOk={false}
-      disableFuture={true}
+      disableFuture
       loading={loading}
       renderInput={(startProps, endProps) => (
         <>

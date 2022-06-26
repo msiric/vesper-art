@@ -22,7 +22,7 @@ const ProfileBanner = ({ profile, loading }) => {
           <ShareButton
             link={`/user/${profile.name}`}
             type="profile"
-            shouldResize={true}
+            shouldResize
           />
         </Box>
       </Box>

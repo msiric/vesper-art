@@ -188,7 +188,7 @@ const PaymentForm = ({ secret, version, loading }) => {
           }}
           onChange={onChange}
           stripeElement={CardNumberElement}
-          variant={"outlined"}
+          variant="outlined"
           margin="dense"
           loading={loading}
           fullWidth
@@ -206,7 +206,7 @@ const PaymentForm = ({ secret, version, loading }) => {
           }}
           onChange={onChange}
           stripeElement={CardExpiryElement}
-          variant={"outlined"}
+          variant="outlined"
           margin="dense"
           loading={loading}
           fullWidth
@@ -224,7 +224,7 @@ const PaymentForm = ({ secret, version, loading }) => {
           }}
           onChange={onChange}
           stripeElement={CardCvcElement}
-          variant={"outlined"}
+          variant="outlined"
           margin="dense"
           loading={loading}
           fullWidth

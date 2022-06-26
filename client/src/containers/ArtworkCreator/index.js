@@ -125,7 +125,7 @@ const ArtworkCreator = () => {
                 artworkLicense: watchedValues.artworkLicense,
                 artworkUse: watchedValues.artworkUse,
               }}
-              editable={true}
+              editable
               loading={loading}
             />
           </CardContent>

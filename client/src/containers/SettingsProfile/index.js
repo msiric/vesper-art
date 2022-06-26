@@ -73,7 +73,7 @@ const SettingsProfile = () => {
               getValues={getValues}
               setValue={setValue}
               trigger={trigger}
-              editable={true}
+              editable
               loading={loading}
               userName={user.fullName}
             />

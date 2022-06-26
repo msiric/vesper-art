@@ -108,8 +108,8 @@ const ArtworkCard = ({
           placeholder={
             item.data.cover ? item.data.cover.dominant : item.data.dominant
           }
-          addOverlay={true}
-          shouldCover={true}
+          addOverlay
+          shouldCover
           loading={loading}
         />
       </Box>
@@ -117,7 +117,7 @@ const ArtworkCard = ({
         <Box className={classes.buttonWrapper} loading={loading}>
           {item.owner.id === userId ? (
             <IconButton
-              aria-label={"Edit artwork"}
+              aria-label="Edit artwork"
               component={RouterLink}
               to={`/artwork/${artwork.id}/edit`}
               className={classes.button}
