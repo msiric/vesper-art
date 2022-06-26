@@ -2,13 +2,13 @@ import React from "react";
 import Masonry from "react-masonry-css";
 import { useHistory } from "react-router-dom";
 import SimpleReactLightbox, { SRLWrapper } from "simple-react-lightbox";
-import { breakpointsFixedWidth } from "../../common/constants";
 import ImageWrapper from "../../components/ImageWrapper/index";
 import InfiniteList from "../../components/InfiniteList";
 import { useUserStore } from "../../contexts/global/user";
 import { useUserGallery } from "../../contexts/local/userGallery";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
+import { breakpointsFixedWidth } from "../../shared/constants";
 import { artepunktTheme } from "../../styles/theme";
 import galleryPanelStyles from "./styles";
 

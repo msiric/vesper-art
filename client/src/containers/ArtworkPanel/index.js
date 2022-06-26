@@ -1,10 +1,10 @@
 import React from "react";
 import Masonry from "react-masonry-css";
-import { breakpointsFullWidth } from "../../common/constants";
 import ArtworkCard from "../../components/ArtworkCard/index";
 import InfiniteList from "../../components/InfiniteList/index";
 import { useHomeArtwork } from "../../contexts/local/homeArtwork";
 import Box from "../../domain/Box";
+import { breakpointsFullWidth } from "../../shared/constants";
 import artworkPanelStyles from "./styles";
 
 const ArtworkPanel = ({ type, fixed }) => {

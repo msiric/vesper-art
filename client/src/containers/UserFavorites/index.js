@@ -1,10 +1,10 @@
 import React from "react";
 import Masonry from "react-masonry-css";
-import { breakpointsFixedWidth } from "../../common/constants";
 import ArtworkCard from "../../components/ArtworkCard/index";
 import InfiniteList from "../../components/InfiniteList/index";
 import { useUserArtwork } from "../../contexts/local/userArtwork";
 import Box from "../../domain/Box";
+import { breakpointsFixedWidth } from "../../shared/constants";
 import userFavoritesStyles from "./styles";
 
 const UserFavorites = ({ userUsername, shouldPause, type, fixed }) => {

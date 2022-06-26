@@ -17,9 +17,9 @@ import {
 import React from "react";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { appName } from "../../../../common/constants";
-import { socialLinks } from "../../common/constants";
 import LogoItem from "../../components/LogoItem";
 import IconButton from "../../domain/IconButton";
+import { socialLinks } from "../../shared/constants";
 import footerStyles from "./styles";
 
 const Footer = () => {

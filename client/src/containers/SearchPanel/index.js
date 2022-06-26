@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import Masonry from "react-masonry-css";
 import { useLocation } from "react-router-dom";
-import { breakpointsFullWidth } from "../../common/constants";
 import ArtworkCard from "../../components/ArtworkCard/index";
 import InfiniteList from "../../components/InfiniteList/index";
 import ProfileCard from "../../components/ProfileCard/index";
 import { useSearchResults } from "../../contexts/local/searchResults";
 import Box from "../../domain/Box";
+import { breakpointsFullWidth } from "../../shared/constants";
 import searchPanelStyles from "./styles";
 
 const SearchPanel = ({ type }) => {
