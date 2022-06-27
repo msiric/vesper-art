@@ -1,5 +1,4 @@
 module.exports = {
-  singleQuote: true,
   jsxBracketSameLine: false,
   useTabs: false,
   eslintIntegration: false,
@@ -11,6 +10,7 @@ module.exports = {
   embeddedLanguageFormatting: 'auto',
   htmlWhitespaceSensitivity: 'css',
   insertPragma: false,
+  singleQuote: false,
   jsxSingleQuote: false,
   tsxSingleQuote: false,
   printWidth: 80,
