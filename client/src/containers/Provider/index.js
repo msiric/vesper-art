@@ -61,9 +61,6 @@ const Provider = () => {
       }}
     >
       <SnackbarProvider
-        classes={{
-          containerAnchorOriginTopCenter: classes.alert,
-        }}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "left",

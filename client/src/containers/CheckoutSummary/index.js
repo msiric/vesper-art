@@ -213,7 +213,6 @@ const CheckoutSummary = ({
                 <AsyncButton
                   type="submit"
                   fullWidth
-                  submitting={formState.isSubmitting}
                   loading={loading}
                   submitting={submitting}
                   disabled={isDisabled || paying}
