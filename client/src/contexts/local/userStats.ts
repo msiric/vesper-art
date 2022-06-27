@@ -92,7 +92,7 @@ const initActions = (set) => ({
         end: new Date(dateTo),
       });
       const graphData = {};
-      for (let date of datesArray) {
+      for (const date of datesArray) {
         graphData[format(date, "dd/MM/yyyy")] = {
           pl: 0,
           cl: 0,

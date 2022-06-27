@@ -50,7 +50,7 @@ const initActions = (set) => ({
   },
   updateProfile: async ({ userId, values }) => {
     const formData = new FormData();
-    for (let value of Object.keys(values)) {
+    for (const value of Object.keys(values)) {
       formData.append(value, values[value]);
     }
     await patchUser.request({

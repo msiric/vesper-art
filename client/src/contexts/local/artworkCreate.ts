@@ -50,7 +50,7 @@ const initActions = (set, get) => ({
   createArtwork: async ({ values }) => {
     const data = deleteEmptyValues(formatArtworkValues(values));
     const formData = new FormData();
-    for (let value of Object.keys(data)) {
+    for (const value of Object.keys(data)) {
       if (Array.isArray(data[value])) {
         formData.append(value, JSON.stringify(data[value]));
       } else {

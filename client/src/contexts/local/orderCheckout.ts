@@ -132,7 +132,7 @@ const initActions = (set, get) => ({
       cardExpiry: "Card's expiration date",
       cardCvc: "Card's CVC",
     };
-    for (let element of stripeElements) {
+    for (const element of stripeElements) {
       if (!element._implementation._complete) {
         invalidInput = true;
         const elementInfo = element._implementation;
