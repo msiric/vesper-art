@@ -16,6 +16,7 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "animated-number-react": "^0.1.1",
+    "cross-env": "^7.0.3",
     "customize-cra": "^1.0.0",
     "date-fns": "^2.14.0",
     "install": "^0.13.0",
@@ -47,7 +48,7 @@
   },
   "scripts": {
     "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
+    "build": "cross-env SKIP_PREFLIGHT_CHECK=true react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-app-rewired eject",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx}",
