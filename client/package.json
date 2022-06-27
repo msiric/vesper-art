@@ -51,10 +51,8 @@
     "test": "react-app-rewired test",
     "eject": "react-app-rewired eject",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx}",
-    "lint": "eslint --fix --ext .js,.jsx ."
-  },
-  "eslintConfig": {
-    "extends": "react-app"
+    "lint": "eslint . --ext .js,.ts,.jsx,.tsx",
+    "lint:fix": "eslint . --ext .js,.ts,.jsx,.tsx --fix"
   },
   "browserslist": {
     "production": [
