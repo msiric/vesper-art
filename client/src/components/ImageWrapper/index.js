@@ -13,15 +13,17 @@ const ImageWrapper = ({
   addOverlay = false,
   shouldCover = false,
   shouldBlur = false,
+  isBlocked = false,
   loading = false,
+  callbackFn = () => null,
 }) => {
-  const downloaded = useProgressiveImage(source);
+  const downloaded = useProgressiveImage(source, callbackFn);
 
   const classes = imageWrapperStyles({ height, loading, placeholder, source });
 
   return loading ? (
     <Box className={classes.wrapper} loading width="100%" />
-  ) : downloaded ? (
+  ) : downloaded && !isBlocked ? (
     redirect ? (
       <Box
         component={RouterLink}

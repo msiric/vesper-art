@@ -23,7 +23,9 @@ const GalleryPanel = ({ formatArtwork }) => {
   const hasMore = useUserGallery((state) => state[display].hasMore);
   const error = useUserGallery((state) => state[display].error);
   const elements = useUserGallery((state) => state.elements);
+
   const fetchUser = useUserGallery((state) => state.fetchUser);
+  const loadArtwork = useUserGallery((state) => state.loadArtwork);
 
   const history = useHistory();
 
@@ -81,7 +83,9 @@ const GalleryPanel = ({ formatArtwork }) => {
                       placeholder={item.dominant}
                       caption={item.caption}
                       shouldCover
+                      isBlocked={elements.some((element) => !element.loaded)}
                       loading={loading}
+                      callbackFn={loadArtwork}
                     />
                   </Card>
                 ))}

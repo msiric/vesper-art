@@ -55,7 +55,6 @@ const initActions = (set, get) => ({
       }));
       const display = get().display;
       const selection = get()[display];
-      const elements = get().elements;
       const { data } =
         display === "purchases"
           ? await getOwnership.request({
@@ -98,6 +97,7 @@ const initActions = (set, get) => ({
             display === "purchases"
               ? item.version.cover.width
               : item.current.cover.width,
+          loaded: false,
         };
         return object;
       }, {});
@@ -135,6 +135,14 @@ const initActions = (set, get) => ({
     set(() => ({
       ...initialState,
       display: selection,
+    }));
+  },
+  loadArtwork: ({ source }) => {
+    set((state) => ({
+      ...state,
+      elements: state.elements.map((element) =>
+        element.media === source ? { ...element, loaded: true } : element
+      ),
     }));
   },
   resetGallery: () => {
