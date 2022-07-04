@@ -20,6 +20,7 @@ const GalleryPanel = ({ formatArtwork }) => {
   const loading = useUserGallery((state) => state[display].loading);
   const fetching = useUserGallery((state) => state[display].fetching);
   const initialized = useUserGallery((state) => state[display].initialized);
+  const limit = useUserGallery((state) => state[display].limit);
   const hasMore = useUserGallery((state) => state[display].hasMore);
   const error = useUserGallery((state) => state[display].error);
   const elements = useUserGallery((state) => state.elements);
@@ -29,7 +30,7 @@ const GalleryPanel = ({ formatArtwork }) => {
 
   const history = useHistory();
 
-  const classes = galleryPanelStyles();
+  const classes = galleryPanelStyles({loading});
 
   const options = {
     buttons: {
@@ -66,16 +67,17 @@ const GalleryPanel = ({ formatArtwork }) => {
         label="No artwork in your gallery"
         type="masonry"
         emptyHeight={360}
+        childrenCount={limit}
       >
-        {!loading && (
-          <SimpleReactLightbox>
-            <SRLWrapper options={options}>
-              <Masonry
-                breakpointCols={breakpointsFixedWidth}
-                className={classes.masonry}
-                columnClassName={classes.column}
-              >
-                {elements.map((item) => (
+        <SimpleReactLightbox>
+          <SRLWrapper options={options}>
+            <Masonry
+              breakpointCols={breakpointsFixedWidth}
+              className={classes.masonry}
+              columnClassName={classes.column}
+            >
+              {(loading ? Array.from(Array(limit).keys()) : elements).map(
+                (item) => (
                   <Card className={classes.card} key={item.id}>
                     <ImageWrapper
                       height={item.height}
@@ -88,11 +90,11 @@ const GalleryPanel = ({ formatArtwork }) => {
                       callbackFn={loadArtwork}
                     />
                   </Card>
-                ))}
-              </Masonry>
-            </SRLWrapper>
-          </SimpleReactLightbox>
-        )}
+                )
+              )}
+            </Masonry>
+          </SRLWrapper>
+        </SimpleReactLightbox>
       </InfiniteList>
     </Box>
   );

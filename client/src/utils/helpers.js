@@ -1,6 +1,12 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { auth, featureFlags, statusCodes } from "../../../common/constants";
+import {
+  ALLOWED_ARTWORK_RATIO,
+  auth,
+  featureFlags,
+  statusCodes,
+  TRANSFORMED_ARTWORK_WIDTH,
+} from "../../../common/constants";
 import { isFormAltered } from "../../../common/helpers";
 import Redirect from "../pages/Home/Redirect";
 import Retry from "../pages/Home/Retry";
@@ -98,4 +104,14 @@ export const isFormDisabled = (currentValues, defaultValues, formState) => {
   const isFormInvalid = formState.isSubmitting;
   // || !formState.isValid;
   return !isFormAltered(currentValues, defaultValues) || isFormInvalid;
+};
+
+export const randomizeHeight = () => {
+  const minimumHeight =
+    (TRANSFORMED_ARTWORK_WIDTH - 450) / (ALLOWED_ARTWORK_RATIO / 3);
+  const maximumHeight =
+    (TRANSFORMED_ARTWORK_WIDTH - 450) * (ALLOWED_ARTWORK_RATIO / 3);
+  return Math.floor(
+    Math.random() * (maximumHeight - minimumHeight + 1) + minimumHeight
+  );
 };

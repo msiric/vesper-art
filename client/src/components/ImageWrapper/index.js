@@ -2,6 +2,7 @@ import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import Box from "../../domain/Box";
 import useProgressiveImage from "../../hooks/useProgressiveImage";
+import { randomizeHeight } from "../../utils/helpers";
 import imageWrapperStyles from "./styles";
 
 const ImageWrapper = ({
@@ -22,7 +23,12 @@ const ImageWrapper = ({
   const classes = imageWrapperStyles({ height, loading, placeholder, source });
 
   return loading ? (
-    <Box className={classes.wrapper} loading width="100%" />
+    <Box
+      height={randomizeHeight()}
+      className={classes.wrapper}
+      loading
+      width="100%"
+    />
   ) : downloaded && !isBlocked ? (
     redirect ? (
       <Box

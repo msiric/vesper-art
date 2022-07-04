@@ -25,9 +25,10 @@ const galleryPanelStyles = makeStyles((muiTheme) => ({
     backgroundClip: "padding-box",
     "&>div": {
       marginBottom: 24,
-      cursor: "pointer",
+      cursor: ({ loading }) => (loading ? "auto" : "pointer"),
       "&:hover": {
-        boxShadow: "0px 0px 20px 5px rgba(0,0,0,0.75)",
+        boxShadow: ({ loading }) =>
+          loading ? muiTheme.shadows[6] : "0px 0px 20px 5px rgba(0,0,0,0.75)",
       },
     },
   },
