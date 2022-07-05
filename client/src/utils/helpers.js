@@ -115,3 +115,6 @@ export const randomizeHeight = () => {
     Math.random() * (maximumHeight - minimumHeight + 1) + minimumHeight
   );
 };
+
+export const determineLoadingState = (loading, count, elements) =>
+  loading ? Array.from(Array(count).keys()) : elements;

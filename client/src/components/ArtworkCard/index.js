@@ -35,36 +35,45 @@ const ArtworkCard = ({
 
   const classes = artworkCardStyles();
 
-  const item =
-    type === "version"
-      ? {
-          id: artwork.id ? artwork.artwork.id : "",
-          data: artwork.id ? artwork : {},
-          owner: artwork.id ? artwork.artwork.owner : {},
-          favorites: artwork.id ? artwork.artwork.favorites : [],
-          src: artwork.id ? artwork.cover.source : "",
-          height: artwork.id ? artwork.cover.height : "",
-          width: artwork.id ? artwork.cover.width : "",
-        }
-      : type === "favorite"
-      ? {
-          id: artwork.id ? artwork.artwork.id : "",
-          data: artwork.id ? artwork.artwork.current : {},
-          owner: artwork.id ? artwork.artwork.owner : {},
-          favorites: artwork.id ? artwork.artwork.favorites : [],
-          src: artwork.id ? artwork.artwork.current.cover.source : "",
-          height: artwork.id ? artwork.artwork.current.cover.height : "",
-          width: artwork.id ? artwork.artwork.current.cover.width : "",
-        }
-      : {
-          id: artwork.id ? artwork.id : "",
-          data: artwork.id ? artwork.current : {},
-          owner: artwork.id ? artwork.owner : {},
-          favorites: artwork.id ? artwork.favorites : [],
-          src: artwork.id ? artwork.current.cover.source : "",
-          height: artwork.id ? artwork.current.cover.height : "",
-          width: artwork.id ? artwork.current.cover.width : "",
-        };
+  const item = loading
+    ? {
+        id: "",
+        data: { cover: {} },
+        owner: {},
+        favorites: [],
+        src: "",
+        height: "",
+        width: "",
+      }
+    : type === "version"
+    ? {
+        id: artwork.id ? artwork.artwork.id : "",
+        data: artwork.id ? artwork : {},
+        owner: artwork.id ? artwork.artwork.owner : {},
+        favorites: artwork.id ? artwork.artwork.favorites : [],
+        src: artwork.id ? artwork.cover.source : "",
+        height: artwork.id ? artwork.cover.height : "",
+        width: artwork.id ? artwork.cover.width : "",
+      }
+    : type === "favorite"
+    ? {
+        id: artwork.id ? artwork.artwork.id : "",
+        data: artwork.id ? artwork.artwork.current : {},
+        owner: artwork.id ? artwork.artwork.owner : {},
+        favorites: artwork.id ? artwork.artwork.favorites : [],
+        src: artwork.id ? artwork.artwork.current.cover.source : "",
+        height: artwork.id ? artwork.artwork.current.cover.height : "",
+        width: artwork.id ? artwork.artwork.current.cover.width : "",
+      }
+    : {
+        id: artwork.id ? artwork.id : "",
+        data: artwork.id ? artwork.current : {},
+        owner: artwork.id ? artwork.owner : {},
+        favorites: artwork.id ? artwork.favorites : [],
+        src: artwork.id ? artwork.current.cover.source : "",
+        height: artwork.id ? artwork.current.cover.height : "",
+        width: artwork.id ? artwork.current.cover.width : "",
+      };
 
   return (
     <Card className={classes.container}>

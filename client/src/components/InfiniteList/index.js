@@ -2,7 +2,6 @@ import { AutorenewRounded as RefetchIcon } from "@material-ui/icons";
 import React from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Box from "../../domain/Box";
-import LinearProgress from "../../domain/LinearProgress";
 import Typography from "../../domain/Typography";
 import AsyncButton from "../AsyncButton";
 import EmptySection from "../EmptySection";
@@ -20,7 +19,6 @@ const InfiniteList = ({
   initialized,
   error,
   label,
-  type,
   height,
   loaderHeight,
   loaderMargin,
@@ -36,8 +34,7 @@ const InfiniteList = ({
     initialized && !loading && !fetching && !dataLength && !error;
   const showLoadMore =
     initialized && !loading && !fetching && !error && hasMore;
-  const showLinearProgress = type === "masonry" && loading;
-  const showSpinnerProgress = (type !== "masonry" && loading) || fetching;
+  const showSpinnerProgress = loading || fetching;
 
   return (
     <InfiniteScroll
@@ -49,7 +46,6 @@ const InfiniteList = ({
       {...props}
     >
       {children}
-      {showLinearProgress && <LinearProgress />}
       {showEmptySection && <EmptySection label={label} height={emptyHeight} />}
       {showSpinnerProgress && (
         <LoadingSpinner height={loaderHeight} margin={loaderMargin} />

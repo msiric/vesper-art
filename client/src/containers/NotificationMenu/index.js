@@ -1,3 +1,4 @@
+import { determineLoadingState } from "@utils/helpers";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import InfiniteList from "../../components/InfiniteList/index";
@@ -22,6 +23,7 @@ const NotificationsMenu = () => {
   const hasMore = useEventsStore((state) => state.notifications.hasMore);
   const anchor = useEventsStore((state) => state.notifications.anchor);
   const loading = useEventsStore((state) => state.notifications.loading);
+  const limit = useEventsStore((state) => state.notifications.limit);
   const fetching = useEventsStore((state) => state.notifications.fetching);
   const refreshing = useEventsStore((state) => state.notifications.refreshing);
   const isUpdating = useEventsStore((state) => state.notifications.isUpdating);
@@ -70,20 +72,22 @@ const NotificationsMenu = () => {
       >
         <List className={classes.list} disablePadding>
           {refreshing && <LoadingBar label="Refreshing notifications" />}
-          {notifications.map((notification) => (
-            <>
-              <Divider />
-              <NotificationItem
-                notification={notification}
-                handleRedirectClick={redirectUser}
-                handleReadClick={readNotification}
-                handleUnreadClick={unreadNotification}
-                isUpdating={isUpdating}
-                closeMenu={closeMenu}
-              />
-              <Divider />
-            </>
-          ))}
+          {determineLoadingState(loading, limit, notifications).map(
+            (notification) => (
+              <>
+                <Divider />
+                <NotificationItem
+                  notification={notification}
+                  handleRedirectClick={redirectUser}
+                  handleReadClick={readNotification}
+                  handleUnreadClick={unreadNotification}
+                  isUpdating={isUpdating}
+                  closeMenu={closeMenu}
+                />
+                <Divider />
+              </>
+            )
+          )}
         </List>
       </InfiniteList>
     </Menu>

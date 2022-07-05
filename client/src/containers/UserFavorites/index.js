@@ -1,3 +1,4 @@
+import { determineLoadingState } from "@utils/helpers";
 import React from "react";
 import Masonry from "react-masonry-css";
 import ArtworkCard from "../../components/ArtworkCard/index";
@@ -12,6 +13,7 @@ const UserFavorites = ({ userUsername, shouldPause, type, fixed }) => {
   const initialized = useUserArtwork((state) => state.favorites.initialized);
   const hasMore = useUserArtwork((state) => state.favorites.hasMore);
   const loading = useUserArtwork((state) => state.favorites.loading);
+  const limit = useUserArtwork((state) => state.favorites.limit);
   const fetching = useUserArtwork((state) => state.favorites.fetching);
   const error = useUserArtwork((state) => state.favorites.error);
   const fetchFavorites = useUserArtwork((state) => state.fetchFavorites);
@@ -37,7 +39,7 @@ const UserFavorites = ({ userUsername, shouldPause, type, fixed }) => {
           className={classes.masonry}
           columnClassName={classes.column}
         >
-          {elements.map((artwork) => (
+          {determineLoadingState(loading, limit, elements).map((artwork) => (
             <ArtworkCard
               artwork={artwork}
               type={type}

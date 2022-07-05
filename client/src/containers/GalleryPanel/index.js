@@ -1,3 +1,4 @@
+import { determineLoadingState } from "@utils/helpers";
 import React from "react";
 import Masonry from "react-masonry-css";
 import { useHistory } from "react-router-dom";
@@ -30,7 +31,7 @@ const GalleryPanel = ({ formatArtwork }) => {
 
   const history = useHistory();
 
-  const classes = galleryPanelStyles({loading});
+  const classes = galleryPanelStyles({ loading });
 
   const options = {
     buttons: {
@@ -76,22 +77,20 @@ const GalleryPanel = ({ formatArtwork }) => {
               className={classes.masonry}
               columnClassName={classes.column}
             >
-              {(loading ? Array.from(Array(limit).keys()) : elements).map(
-                (item) => (
-                  <Card className={classes.card} key={item.id}>
-                    <ImageWrapper
-                      height={item.height}
-                      source={item.media}
-                      placeholder={item.dominant}
-                      caption={item.caption}
-                      shouldCover
-                      isBlocked={elements.some((element) => !element.loaded)}
-                      loading={loading}
-                      callbackFn={loadArtwork}
-                    />
-                  </Card>
-                )
-              )}
+              {determineLoadingState(loading, limit, elements).map((item) => (
+                <Card className={classes.card} key={item.id}>
+                  <ImageWrapper
+                    height={item.height}
+                    source={item.media}
+                    placeholder={item.dominant}
+                    caption={item.caption}
+                    shouldCover
+                    isBlocked={elements.some((element) => !element.loaded)}
+                    loading={loading}
+                    callbackFn={loadArtwork}
+                  />
+                </Card>
+              ))}
             </Masonry>
           </SRLWrapper>
         </SimpleReactLightbox>

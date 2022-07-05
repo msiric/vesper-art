@@ -25,7 +25,7 @@ import Divider from "../../domain/Divider";
 import List from "../../domain/List";
 import CommentForm from "../../forms/CommentForm/index";
 import useVisibleElement from "../../hooks/useVisibleElement";
-import { isFormDisabled } from "../../utils/helpers";
+import { determineLoadingState, isFormDisabled } from "../../utils/helpers";
 import commentSectionStyles from "./styles";
 
 const CommentSection = ({
@@ -41,6 +41,7 @@ const CommentSection = ({
   const loading = useArtworkDetails((state) => state.artwork.loading);
 
   const comments = useArtworkComments((state) => state.comments.data);
+  const limit = useArtworkComments((state) => state.comments.limit);
   const initialized = useArtworkComments((state) => state.comments.initialized);
   const fetching = useArtworkComments((state) => state.comments.fetching);
   const error = useArtworkComments((state) => state.comments.error);
@@ -151,20 +152,22 @@ const CommentSection = ({
         >
           <List ref={commentsRef} className={classes.list} disablePadding>
             <Box>
-              {comments.map((comment) => (
-                <CommentCard
-                  artworkId={artworkId}
-                  artworkOwnerId={artworkOwnerId}
-                  comment={comment}
-                  edits={edits}
-                  queryRef={query ? query.ref : null}
-                  highlightRef={highlightRef}
-                  handleCommentClose={closeComment}
-                  handleCommentEdit={updateComment}
-                  handlePopoverOpen={openPopover}
-                  loading={false}
-                />
-              ))}
+              {determineLoadingState(loading, limit, comments).map(
+                (comment) => (
+                  <CommentCard
+                    artworkId={artworkId}
+                    artworkOwnerId={artworkOwnerId}
+                    comment={comment}
+                    edits={edits}
+                    queryRef={query ? query.ref : null}
+                    highlightRef={highlightRef}
+                    handleCommentClose={closeComment}
+                    handleCommentEdit={updateComment}
+                    handlePopoverOpen={openPopover}
+                    loading={loading}
+                  />
+                )
+              )}
             </Box>
             {highlight.element && (
               <CommentCard

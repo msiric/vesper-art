@@ -1,3 +1,4 @@
+import { determineLoadingState } from "@utils/helpers";
 import React from "react";
 import Masonry from "react-masonry-css";
 import ArtworkCard from "../../components/ArtworkCard/index";
@@ -12,6 +13,7 @@ const ArtworkPanel = ({ type, fixed }) => {
   const initialized = useHomeArtwork((state) => state.artwork.initialized);
   const hasMore = useHomeArtwork((state) => state.artwork.hasMore);
   const loading = useHomeArtwork((state) => state.artwork.loading);
+  const limit = useHomeArtwork((state) => state.artwork.limit);
   const fetching = useHomeArtwork((state) => state.artwork.fetching);
   const error = useHomeArtwork((state) => state.artwork.error);
   const fetchArtwork = useHomeArtwork((state) => state.fetchArtwork);
@@ -36,7 +38,7 @@ const ArtworkPanel = ({ type, fixed }) => {
           className={classes.masonry}
           columnClassName={classes.column}
         >
-          {elements.map((artwork) => (
+          {determineLoadingState(loading, limit, elements).map((artwork) => (
             <ArtworkCard
               artwork={artwork}
               type={type}

@@ -1,3 +1,4 @@
+import { determineLoadingState } from "@utils/helpers";
 import React, { useEffect } from "react";
 import Masonry from "react-masonry-css";
 import { useLocation } from "react-router-dom";
@@ -14,6 +15,7 @@ const SearchPanel = ({ type }) => {
   const initialized = useSearchResults((state) => state[type].initialized);
   const hasMore = useSearchResults((state) => state[type].hasMore);
   const loading = useSearchResults((state) => state[type].loading);
+  const limit = useSearchResults((state) => state[type].limit);
   const fetching = useSearchResults((state) => state[type].fetching);
   const error = useSearchResults((state) => state[type].error);
   const fetchResults = useSearchResults((state) => state.fetchResults);
@@ -45,11 +47,11 @@ const SearchPanel = ({ type }) => {
           className={classes.masonry}
           columnClassName={classes.column}
         >
-          {elements.map((element) =>
+          {determineLoadingState(loading, limit, elements).map((element) =>
             type === "artwork" ? (
-              <ArtworkCard artwork={element} type="artwork" />
+              <ArtworkCard artwork={element} type="artwork" loading={loading} />
             ) : (
-              <ProfileCard user={element} loading={false} />
+              <ProfileCard user={element} loading={loading} />
             )
           )}
         </Masonry>

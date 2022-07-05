@@ -1,3 +1,4 @@
+import { determineLoadingState } from "@utils/helpers";
 import React from "react";
 import Masonry from "react-masonry-css";
 import ArtworkCard from "../../components/ArtworkCard/index";
@@ -15,6 +16,7 @@ const UserArtwork = ({ userUsername, shouldPause, type, fixed }) => {
   const initialized = useUserArtwork((state) => state.artwork.initialized);
   const hasMore = useUserArtwork((state) => state.artwork.hasMore);
   const fetching = useUserArtwork((state) => state.artwork.fetching);
+  const limit = useUserArtwork((state) => state.artwork.limit);
   const error = useUserArtwork((state) => state.artwork.error);
   const fetchArtwork = useUserArtwork((state) => state.fetchArtwork);
 
@@ -39,7 +41,7 @@ const UserArtwork = ({ userUsername, shouldPause, type, fixed }) => {
           className={classes.masonry}
           columnClassName={classes.column}
         >
-          {elements.map((artwork) => (
+          {determineLoadingState(loading, limit, elements).map((artwork) => (
             <ArtworkCard
               artwork={artwork}
               type={type}
