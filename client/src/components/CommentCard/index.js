@@ -76,7 +76,7 @@ const CommentCard = ({
           shouldBlink ? classes.highlight : ""
         }`}
       >
-        <ListItemAvatar>
+        <ListItemAvatar className={classes.avatar}>
           <Avatar
             src={comment?.owner?.avatar?.source ?? null}
             component={renderRedirectLink({
@@ -153,29 +153,36 @@ const CommentCard = ({
                 </form>
               </FormProvider>
             ) : (
-              <Box>
+              <Box className={classes.details}>
                 <Typography loading={loading} className={classes.content}>
-                  {comment?.content || "Could not load content"}
+                  {comment?.content ||
+                    "Fetching artwork's comment content details"}
                 </Typography>
-                <Typography
-                  component="span"
-                  variant="subtitle2"
-                  loading={loading}
-                  className={classes.created}
-                >
-                  {`${formatDistance(
-                    new Date(comment?.created ?? null),
-                    new Date()
-                  )} ago`}
-                </Typography>
-                <Typography
-                  component="span"
-                  variant="subtitle2"
-                  loading={loading}
-                  className={classes.modified}
-                >
-                  {comment?.modified ? "(edited)" : null}
-                </Typography>
+                <Box className={classes.subtitle}>
+                  <Typography
+                    component="span"
+                    variant="subtitle2"
+                    loading={loading}
+                    className={classes.created}
+                  >
+                    {comment?.created
+                      ? `${formatDistance(
+                          new Date(comment?.created),
+                          new Date()
+                        )} ago`
+                      : "Fetching comment creation date"}
+                  </Typography>
+                  {comment?.modified && (
+                    <Typography
+                      component="span"
+                      variant="subtitle2"
+                      loading={loading}
+                      className={classes.modified}
+                    >
+                      (edited)
+                    </Typography>
+                  )}
+                </Box>
               </Box>
             )
           }
