@@ -83,6 +83,7 @@ const NotificationsMenu = () => {
                   handleUnreadClick={unreadNotification}
                   isUpdating={isUpdating}
                   closeMenu={closeMenu}
+                  loading={loading}
                 />
                 <Divider />
               </>
