@@ -111,6 +111,7 @@ const ArtworkInfo = () => {
                       isAvailable
                       heading="Personal license. Use for personal projects, websites, social media and other non-commercial activities."
                       license="personal"
+                      loading={artworkLoading}
                       handlePurchase={({ versionId, license }) =>
                         purchaseArtwork({ history, versionId, license })
                       }
@@ -123,7 +124,6 @@ const ArtworkInfo = () => {
                     />
                   ),
                   error: null,
-                  loading: artworkLoading,
                 },
                 {
                   display: artwork.current.license === "commercial",
@@ -138,6 +138,7 @@ const ArtworkInfo = () => {
                       isAvailable
                       heading="Commercial license. Use for advertising, promotion, product integration and other commercial activities."
                       license="commercial"
+                      loading={artworkLoading}
                       handlePurchase={({ versionId, license }) =>
                         purchaseArtwork({ history, versionId, license })
                       }
@@ -150,13 +151,11 @@ const ArtworkInfo = () => {
                     />
                   ),
                   error: null,
-                  loading: artworkLoading,
                 },
               ],
             }}
             handleTabsChange={({ index }) => changeTab({ index })}
             handleChangeIndex={({ index }) => changeTab({ index })}
-            loading={artworkLoading}
           />
         ) : (
           <SwipeCard
@@ -184,18 +183,17 @@ const ArtworkInfo = () => {
                       heading="This artwork cannot be purchased or downloaded since it is preview only"
                       list={[]}
                       license=""
+                      loading={artworkLoading}
                       noPriceFormat="Preview"
                       submitting={ordersLoading}
                     />
                   ),
                   error: null,
-                  loading: artworkLoading,
                 },
               ],
             }}
             handleTabsChange={({ index }) => changeTab({ index })}
             handleChangeIndex={({ index }) => changeTab({ index })}
-            loading={artworkLoading}
           />
         )}
       </CardContent>
