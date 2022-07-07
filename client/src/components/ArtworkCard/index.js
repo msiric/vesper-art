@@ -76,7 +76,9 @@ const ArtworkCard = ({
       };
 
   return (
-    <Card className={classes.container}>
+    <Card
+      className={`${classes.container} ${!loading && classes.containerHover}`}
+    >
       <CardHeader
         title={
           <Box className={classes.labelWrapper}>

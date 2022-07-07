@@ -55,6 +55,8 @@ const GalleryPanel = ({ formatArtwork }) => {
     },
   };
 
+  const isBlocked = loading || elements.some((element) => !element.loaded);
+
   return (
     <Box className={classes.container}>
       <InfiniteList
@@ -75,7 +77,9 @@ const GalleryPanel = ({ formatArtwork }) => {
             <Masonry
               breakpointCols={breakpointsFixedWidth}
               className={classes.masonry}
-              columnClassName={classes.column}
+              columnClassName={`${classes.column} ${
+                !isBlocked && classes.columnHover
+              }`}
             >
               {determineLoadingState(loading, limit, elements).map((item) => (
                 <Card className={classes.card} key={item.id}>
@@ -85,7 +89,7 @@ const GalleryPanel = ({ formatArtwork }) => {
                     placeholder={item.dominant}
                     caption={item.caption}
                     shouldCover
-                    isBlocked={elements.some((element) => !element.loaded)}
+                    isBlocked={isBlocked}
                     loading={loading}
                     callbackFn={loadArtwork}
                   />
