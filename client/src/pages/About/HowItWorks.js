@@ -199,8 +199,6 @@ const HowItWorks = () => {
             items: [
               {
                 display: true,
-                iterable: false,
-                content: null,
                 component: (
                   <WizardTimeline illustrations={SELLER_ILLUSTRATIONS} />
                 ),
@@ -209,8 +207,6 @@ const HowItWorks = () => {
               },
               {
                 display: true,
-                iterable: false,
-                content: null,
                 component: (
                   <WizardTimeline illustrations={BUYER_ILLUSTRATIONS} />
                 ),

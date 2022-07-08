@@ -17,9 +17,8 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   const loading = useUserProfile((state) => state.profile.loading);
 
   const tabs = useUserArtwork((state) => state.tabs);
-  const artwork = useUserArtwork((state) => state.artwork.data);
   const artworkLoading = useUserArtwork((state) => state.artwork.loading);
-  const favorites = useUserArtwork((state) => state.favorites.data);
+  const favoritesLoading = useUserArtwork((state) => state.favorites.loading);
   const fetchArtwork = useUserArtwork((state) => state.fetchArtwork);
   const fetchFavorites = useUserArtwork((state) => state.fetchFavorites);
   const changeTab = useUserArtwork((state) => state.changeTab);
@@ -66,8 +65,6 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
             items: [
               {
                 display: true,
-                iterable: true,
-                content: artwork.length,
                 component: (
                   <Box className={classes.wrapper}>
                     <UserArtwork
@@ -88,12 +85,10 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                     loading={loading}
                   />
                 ),
-                loading: false,
+                loading: artworkLoading,
               },
               {
                 display: profile.displayFavorites,
-                iterable: true,
-                content: favorites.length,
                 component: (
                   <Box className={classes.wrapper}>
                     <UserFavorites
@@ -114,12 +109,12 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                     loading={loading}
                   />
                 ),
-                loading: tabs.loading,
+                loading: favoritesLoading,
               },
             ],
           }}
           handleTabsChange={changeTab}
-          loading={loading || artworkLoading}
+          loading={loading}
         />
       </Card>
     </Grid>

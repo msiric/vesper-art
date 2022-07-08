@@ -14,6 +14,7 @@ const Profile = ({ match, location }) => {
   const message = useUserProfile((state) => state.profile.error.message);
   const resetProfile = useUserProfile((state) => state.resetProfile);
   const resetArtwork = useUserArtwork((state) => state.resetArtwork);
+
   const paramId = match.params.id;
   const artworkFetched = useRef(false);
   const artworkRef = useRef(null);

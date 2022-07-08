@@ -18,6 +18,7 @@ const initialState = {
   },
   favorites: {
     data: [],
+    loading: false,
     fetching: false,
     initialized: false,
     hasMore: true,
@@ -89,7 +90,8 @@ const initActions = (set, get) => ({
         ...state,
         favorites: {
           ...state.favorites,
-          fetching: true,
+          loading: !state.favorites.initialized,
+          fetching: state.favorites.initialized,
           error: {
             ...initialState.favorites.error,
           },
@@ -107,6 +109,7 @@ const initActions = (set, get) => ({
         favorites: {
           ...state.favorites,
           data: [...state.favorites.data, ...data.favorites],
+          loading: false,
           fetching: false,
           initialized: true,
           error: { ...initialState.favorites.error },
@@ -120,8 +123,9 @@ const initActions = (set, get) => ({
         ...state,
         favorites: {
           ...state.favorites,
-          initialized: true,
+          loading: false,
           fetching: false,
+          initialized: true,
           error: resolveAsyncError(err, true),
         },
       }));

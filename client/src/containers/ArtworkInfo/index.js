@@ -100,8 +100,6 @@ const ArtworkInfo = () => {
               items: [
                 {
                   display: artwork.current.use !== "included",
-                  iterable: false,
-                  content: null,
                   component: (
                     <PricingCard
                       artworkId={artwork.id}
@@ -127,8 +125,6 @@ const ArtworkInfo = () => {
                 },
                 {
                   display: artwork.current.license === "commercial",
-                  iterable: false,
-                  content: null,
                   component: (
                     <PricingCard
                       artworkId={artwork.id}
@@ -171,8 +167,6 @@ const ArtworkInfo = () => {
               items: [
                 {
                   display: true,
-                  iterable: false,
-                  content: null,
                   component: (
                     <PricingCard
                       artworkId={artwork.id}
