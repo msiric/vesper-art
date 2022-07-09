@@ -108,9 +108,9 @@ export const isFormDisabled = (currentValues, defaultValues, formState) => {
 
 export const randomizeHeight = () => {
   const minimumHeight =
-    (TRANSFORMED_ARTWORK_WIDTH - 450) / (ALLOWED_ARTWORK_RATIO / 3);
+    (TRANSFORMED_ARTWORK_WIDTH - 400) / (ALLOWED_ARTWORK_RATIO / 3);
   const maximumHeight =
-    (TRANSFORMED_ARTWORK_WIDTH - 450) * (ALLOWED_ARTWORK_RATIO / 3);
+    (TRANSFORMED_ARTWORK_WIDTH - 350) * (ALLOWED_ARTWORK_RATIO / 3);
   return Math.floor(
     Math.random() * (maximumHeight - minimumHeight + 1) + minimumHeight
   );
