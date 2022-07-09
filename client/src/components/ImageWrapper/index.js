@@ -13,6 +13,7 @@ const ImageWrapper = memo(
     placeholder,
     caption = "",
     addOverlay = false,
+    shouldRandomize = true,
     shouldCover = false,
     shouldBlur = false,
     isBlocked = false,
@@ -30,7 +31,7 @@ const ImageWrapper = memo(
 
     return loading || isBlocked ? (
       <Box
-        height={randomizeHeight()}
+        height={shouldRandomize ? randomizeHeight() : undefined}
         className={classes.wrapper}
         loading
         width="100%"
