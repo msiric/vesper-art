@@ -25,7 +25,7 @@ export const trimAllSpaces = (value) =>
     : value;
 
 export const formatDate = (date, form = "dd/MM/yy HH:mm") => {
-  return format(new Date(date), form);
+  return date ? format(new Date(date), form) : "Invalid date";
 };
 
 export const formatAmount = (value) => {

@@ -1,3 +1,5 @@
+import Box from "@domain/Box";
+import Typography from "@domain/Typography";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
@@ -106,15 +108,23 @@ export const isFormDisabled = (currentValues, defaultValues, formState) => {
   return !isFormAltered(currentValues, defaultValues) || isFormInvalid;
 };
 
-export const randomizeHeight = () => {
-  const minimumHeight =
-    (TRANSFORMED_ARTWORK_WIDTH - 400) / (ALLOWED_ARTWORK_RATIO / 3);
-  const maximumHeight =
-    (TRANSFORMED_ARTWORK_WIDTH - 350) * (ALLOWED_ARTWORK_RATIO / 3);
-  return Math.floor(
-    Math.random() * (maximumHeight - minimumHeight + 1) + minimumHeight
-  );
+export const randomizeHeight = (
+  minimum = (TRANSFORMED_ARTWORK_WIDTH - 400) / (ALLOWED_ARTWORK_RATIO / 3),
+  maximum = (TRANSFORMED_ARTWORK_WIDTH - 350) * (ALLOWED_ARTWORK_RATIO / 3)
+) => {
+  return Math.floor(Math.random() * (maximum - minimum + 1) + minimum);
 };
 
 export const determineLoadingState = (loading, count, elements) =>
   loading ? Array.from(Array(count).keys()) : elements;
+
+export const renderTableBody = (value, loading, isText = true) =>
+  isText ? (
+    <Typography variant="subtitle2" loading={loading}>
+      {value ?? "Loading"}
+    </Typography>
+  ) : (
+    <Box height={randomizeHeight(60, 120)} loading={loading}>
+      {value}
+    </Box>
+  );
