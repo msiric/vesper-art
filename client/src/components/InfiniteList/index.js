@@ -5,7 +5,6 @@ import Box from "../../domain/Box";
 import Typography from "../../domain/Typography";
 import AsyncButton from "../AsyncButton";
 import EmptySection from "../EmptySection";
-import LoadingSpinner from "../LoadingSpinner";
 import infiniteListStyles from "./styles";
 
 const InfiniteList = ({
@@ -47,9 +46,6 @@ const InfiniteList = ({
     >
       {children}
       {showEmptySection && <EmptySection label={label} height={emptyHeight} />}
-      {showSpinnerProgress && (
-        <LoadingSpinner height={loaderHeight} margin={loaderMargin} />
-      )}
       {showLoadMore && (
         <AsyncButton
           type="button"

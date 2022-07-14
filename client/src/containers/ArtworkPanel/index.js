@@ -1,4 +1,4 @@
-import { determineLoadingState } from "@utils/helpers";
+import { determineFetchingState, determineLoadingState } from "@utils/helpers";
 import React from "react";
 import Masonry from "react-masonry-css";
 import ArtworkCard from "../../components/ArtworkCard/index";
@@ -20,6 +20,15 @@ const ArtworkPanel = ({ type, fixed }) => {
 
   const classes = artworkPanelStyles();
 
+  const renderArtwork = (artwork, loading) => (
+    <ArtworkCard
+      artwork={artwork}
+      type={type}
+      fixed={fixed}
+      loading={loading}
+    />
+  );
+
   return (
     <Box className={classes.container}>
       <InfiniteList
@@ -38,14 +47,12 @@ const ArtworkPanel = ({ type, fixed }) => {
           className={classes.masonry}
           columnClassName={classes.column}
         >
-          {determineLoadingState(loading, limit, elements).map((artwork) => (
-            <ArtworkCard
-              artwork={artwork}
-              type={type}
-              fixed={fixed}
-              loading={loading}
-            />
-          ))}
+          {determineLoadingState(loading, limit, elements).map((artwork) =>
+            renderArtwork(artwork, loading)
+          )}
+          {determineFetchingState(fetching, limit).map((artwork) =>
+            renderArtwork(artwork, fetching)
+          )}
         </Masonry>
       </InfiniteList>
     </Box>

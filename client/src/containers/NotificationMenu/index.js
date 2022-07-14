@@ -1,4 +1,4 @@
-import { determineLoadingState } from "@utils/helpers";
+import { determineFetchingState, determineLoadingState } from "@utils/helpers";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import InfiniteList from "../../components/InfiniteList/index";
@@ -42,6 +42,22 @@ const NotificationsMenu = () => {
 
   const history = useHistory();
 
+  const renderNotification = (notification, loading) => (
+    <>
+      <Divider />
+      <NotificationItem
+        notification={notification}
+        handleRedirectClick={redirectUser}
+        handleReadClick={readNotification}
+        handleUnreadClick={unreadNotification}
+        isUpdating={isUpdating}
+        closeMenu={closeMenu}
+        loading={loading}
+      />
+      <Divider />
+    </>
+  );
+
   return (
     <Menu
       open={!!anchor}
@@ -73,21 +89,10 @@ const NotificationsMenu = () => {
         <List className={classes.list} disablePadding>
           {refreshing && <LoadingBar label="Refreshing notifications" />}
           {determineLoadingState(loading, limit, notifications).map(
-            (notification) => (
-              <>
-                <Divider />
-                <NotificationItem
-                  notification={notification}
-                  handleRedirectClick={redirectUser}
-                  handleReadClick={readNotification}
-                  handleUnreadClick={unreadNotification}
-                  isUpdating={isUpdating}
-                  closeMenu={closeMenu}
-                  loading={loading}
-                />
-                <Divider />
-              </>
-            )
+            (notification) => renderNotification(notification, loading)
+          )}
+          {determineFetchingState(fetching, limit).map((notification) =>
+            renderNotification(notification, fetching)
           )}
         </List>
       </InfiniteList>

@@ -1,4 +1,4 @@
-import { determineLoadingState } from "@utils/helpers";
+import { determineFetchingState, determineLoadingState } from "@utils/helpers";
 import React from "react";
 import Masonry from "react-masonry-css";
 import { useHistory } from "react-router-dom";
@@ -57,6 +57,21 @@ const GalleryPanel = ({ formatArtwork }) => {
 
   const isBlocked = loading || elements.some((element) => !element.loaded);
 
+  const renderArtwork = (artwork, loading) => (
+    <Card className={classes.card} key={artwork.id}>
+      <ImageWrapper
+        height={artwork.height}
+        source={artwork.media}
+        placeholder={artwork.dominant}
+        caption={artwork.caption}
+        shouldCover
+        isBlocked={isBlocked}
+        loading={loading}
+        callbackFn={loadArtwork}
+      />
+    </Card>
+  );
+
   return (
     <Box className={classes.container}>
       <InfiniteList
@@ -81,20 +96,12 @@ const GalleryPanel = ({ formatArtwork }) => {
                 !isBlocked && classes.columnHover
               }`}
             >
-              {determineLoadingState(loading, limit, elements).map((item) => (
-                <Card className={classes.card} key={item.id}>
-                  <ImageWrapper
-                    height={item.height}
-                    source={item.media}
-                    placeholder={item.dominant}
-                    caption={item.caption}
-                    shouldCover
-                    isBlocked={isBlocked}
-                    loading={loading}
-                    callbackFn={loadArtwork}
-                  />
-                </Card>
-              ))}
+              {determineLoadingState(loading, limit, elements).map((artwork) =>
+                renderArtwork(artwork, loading || fetching)
+              )}
+              {determineFetchingState(fetching, limit).map((artwork) =>
+                renderArtwork(artwork, fetching)
+              )}
             </Masonry>
           </SRLWrapper>
         </SimpleReactLightbox>

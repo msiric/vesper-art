@@ -1,4 +1,4 @@
-import { determineLoadingState } from "@utils/helpers";
+import { determineFetchingState, determineLoadingState } from "@utils/helpers";
 import React, { useEffect } from "react";
 import Masonry from "react-masonry-css";
 import { useLocation } from "react-router-dom";
@@ -24,6 +24,13 @@ const SearchPanel = ({ type }) => {
 
   const classes = searchPanelStyles();
 
+  const renderItem = (element, loading) =>
+    type === "artwork" ? (
+      <ArtworkCard artwork={element} type="artwork" loading={loading} />
+    ) : (
+      <ProfileCard user={element} loading={loading} />
+    );
+
   useEffect(() => {
     fetchResults({ query: location.search, type });
   }, []);
@@ -48,11 +55,10 @@ const SearchPanel = ({ type }) => {
           columnClassName={classes.column}
         >
           {determineLoadingState(loading, limit, elements).map((element) =>
-            type === "artwork" ? (
-              <ArtworkCard artwork={element} type="artwork" loading={loading} />
-            ) : (
-              <ProfileCard user={element} loading={loading} />
-            )
+            renderItem(element, loading)
+          )}
+          {determineFetchingState(fetching, limit).map((element) =>
+            renderItem(element, fetching)
           )}
         </Masonry>
       </InfiniteList>

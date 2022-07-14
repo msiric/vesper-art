@@ -9,7 +9,10 @@ import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import Box from "../../domain/Box";
 import List from "../../domain/List";
 import useVisibleElement from "../../hooks/useVisibleElement";
-import { determineLoadingState } from "../../utils/helpers";
+import {
+  determineFetchingState,
+  determineLoadingState,
+} from "../../utils/helpers";
 import commentListStyles from "./styles";
 
 const CommentList = ({
@@ -58,6 +61,21 @@ const CommentList = ({
     }
   }, [isVisible]);
 
+  const renderComment = (comment, loading) => (
+    <CommentCard
+      artworkId={artworkId}
+      artworkOwnerId={artworkOwnerId}
+      comment={comment}
+      edits={edits}
+      queryRef={query ? query.ref : null}
+      highlightRef={highlightRef}
+      handleCommentClose={closeComment}
+      handleCommentEdit={updateComment}
+      handlePopoverOpen={openPopover}
+      loading={loading}
+    />
+  );
+
   return (
     <InfiniteList
       dataLength={comments ? comments.length : 0}
@@ -75,20 +93,12 @@ const CommentList = ({
     >
       <List ref={commentsRef} className={classes.list} disablePadding>
         <Box>
-          {determineLoadingState(loading, limit, comments).map((comment) => (
-            <CommentCard
-              artworkId={artworkId}
-              artworkOwnerId={artworkOwnerId}
-              comment={comment}
-              edits={edits}
-              queryRef={query ? query.ref : null}
-              highlightRef={highlightRef}
-              handleCommentClose={closeComment}
-              handleCommentEdit={updateComment}
-              handlePopoverOpen={openPopover}
-              loading={loading}
-            />
-          ))}
+          {determineLoadingState(loading, limit, comments).map((comment) =>
+            renderComment(comment, loading)
+          )}
+          {determineFetchingState(fetching, limit).map((comment) =>
+            renderComment(comment, fetching)
+          )}
         </Box>
         {highlight.element && (
           <CommentCard

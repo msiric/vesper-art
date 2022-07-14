@@ -118,6 +118,9 @@ export const randomizeHeight = (
 export const determineLoadingState = (loading, count, elements) =>
   loading ? Array.from(Array(count).keys()) : elements;
 
+export const determineFetchingState = (fetching, count) =>
+  fetching ? Array.from(Array(count).keys()) : [];
+
 export const renderTableBody = (value, loading, isText = true) =>
   isText ? (
     <Typography variant="subtitle2" loading={loading}>
