@@ -28,7 +28,7 @@ const RangeInput = ({
       renderInput={(startProps, endProps) => (
         <>
           <TextField {...startProps} margin="dense" className={classes.input} />
-          <RangeDelimiter> to </RangeDelimiter>
+          <RangeDelimiter>to</RangeDelimiter>
           <TextField {...endProps} margin="dense" className={classes.input} />
         </>
       )}

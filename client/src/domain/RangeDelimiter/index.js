@@ -3,7 +3,9 @@ import { DateRangeDelimiter as MaterialRangeDelimiter } from "@material-ui/picke
 import React, { forwardRef } from "react";
 import SkeletonWrapper from "../../components/SkeletonWrapper";
 
-const StyledRangeDelimiter = withStyles({})(MaterialRangeDelimiter);
+const StyledRangeDelimiter = withStyles({
+  root: { margin: "0 10px" },
+})(MaterialRangeDelimiter);
 
 const RangeDelimiter = forwardRef(
   ({ loading = false, variant = "rect", children, ...props }, ref) => {
