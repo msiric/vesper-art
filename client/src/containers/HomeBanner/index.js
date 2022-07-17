@@ -68,7 +68,7 @@ const HomeBanner = () => {
             <SyncButton
               component={RouterLink}
               to="/how_it_works"
-              color="default"
+              color="secondary"
               className={classes.bannerButton}
               startIcon={<InfoIcon />}
             >

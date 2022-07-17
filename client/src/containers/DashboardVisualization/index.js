@@ -1,3 +1,6 @@
+import Box from "@domain/Box";
+import Typography from "@domain/Typography";
+import { artepunktTheme } from "@styles/theme";
 import { format } from "date-fns";
 import React, { useEffect } from "react";
 import {
@@ -12,10 +15,24 @@ import {
 import DashboardCard from "../../components/DashboardCard/index";
 import { useUserStore } from "../../contexts/global/user";
 import { useUserStats } from "../../contexts/local/userStats";
-import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import Grid from "../../domain/Grid";
 import dashboardVisualizationStyles from "./styles";
+
+const ChartTooltip = ({ payload }) => {
+  const classes = dashboardVisualizationStyles();
+
+  return (
+    <Box>
+      {payload.map((item) => (
+        <Box key={item.name} className={classes.content}>
+          <Typography>{`${item.name}:\u00A0`}</Typography>
+          <Typography style={{ color: item.color }}>{item.value}</Typography>
+        </Box>
+      ))}
+    </Box>
+  );
+};
 
 const DashboardVisualization = () => {
   const userId = useUserStore((state) => state.id);
@@ -26,6 +43,8 @@ const DashboardVisualization = () => {
   const display = useUserStats((state) => state.display);
   const range = useUserStats((state) => state.range);
   const fetchSelectedData = useUserStats((state) => state.fetchSelectedData);
+
+  const classes = dashboardVisualizationStyles();
 
   const cards = [
     {
@@ -53,11 +72,9 @@ const DashboardVisualization = () => {
     }
   }, [range, display.type]);
 
-  const classes = dashboardVisualizationStyles();
-
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12} md={8}>
+      <Grid className={classes.container} item xs={12} md={8}>
         <Card className={classes.card}>
           <Box className={classes.chart} loading={loading}>
             <ResponsiveContainer width="100%" height="100%">
@@ -72,20 +89,20 @@ const DashboardVisualization = () => {
               >
                 <XAxis dataKey="date" />
                 <YAxis tick={false} width={1} />
-                <Tooltip />
+                <Tooltip content={<ChartTooltip />} />
                 <Legend />
                 <Line
                   name="Personal licenses"
                   type="monotone"
                   dataKey="pl"
-                  stroke="#8884d8"
+                  stroke={artepunktTheme.palette.primary.main}
                   activeDot={{ r: 6 }}
                 />
                 <Line
                   name="Commercial licenses"
                   type="monotone"
                   dataKey="cl"
-                  stroke="#82ca9d"
+                  stroke={artepunktTheme.palette.secondary.main}
                   activeDot={{ r: 6 }}
                 />
               </LineChart>

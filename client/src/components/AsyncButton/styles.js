@@ -1,5 +1,4 @@
 import { makeStyles } from "@material-ui/core/styles";
-import { artepunktTheme } from "../../styles/theme";
 
 const asyncButtonStyles = makeStyles((muiTheme) => ({
   container: {
@@ -10,7 +9,6 @@ const asyncButtonStyles = makeStyles((muiTheme) => ({
     padding: ({ padding }) => `${padding}px 0`,
   },
   progress: {
-    color: artepunktTheme.palette.primary.main,
     position: "absolute",
   },
 }));

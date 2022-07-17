@@ -30,6 +30,7 @@ const SettingsActions = () => {
       </CardContent>
       <CardActions className={classes.actions}>
         <SyncButton
+          color="secondary"
           onClick={toggleModal}
           startIcon={<DeactivateIcon />}
           loading={loading}
