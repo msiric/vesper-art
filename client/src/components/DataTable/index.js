@@ -69,7 +69,8 @@ const DataTable = ({
     tableBodyHeight,
     tableBodyMaxHeight,
     customToolbar: () => <CustomToolbar addOptions={addOptions} />,
-    onRowClick: (data) => redirect && history.push(`/${redirect}/${data[0]}`),
+    onRowClick: (data) =>
+      !loading && redirect && history.push(`/${redirect}/${data[0]}`),
     onTableChange: (_, data) =>
       data.displayData.length !== displayedData.length &&
       setDisplayedData(data.displayData),

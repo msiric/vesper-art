@@ -163,6 +163,7 @@ const ArtworkDatatable = () => {
     <Box>
       <IconButton
         color="primary"
+        disabled={loading}
         onClick={(e) => {
           e.stopPropagation();
           e.persist();
@@ -173,6 +174,7 @@ const ArtworkDatatable = () => {
       </IconButton>
       <IconButton
         color="secondary"
+        disabled={loading}
         onClick={(e) => {
           e.stopPropagation();
           e.persist();
