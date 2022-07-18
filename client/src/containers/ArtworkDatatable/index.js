@@ -162,6 +162,7 @@ const ArtworkDatatable = () => {
   const actionsColumn = (artworkId) => (
     <Box>
       <IconButton
+        color="primary"
         onClick={(e) => {
           e.stopPropagation();
           e.persist();
@@ -171,6 +172,7 @@ const ArtworkDatatable = () => {
         <EditIcon />
       </IconButton>
       <IconButton
+        color="secondary"
         onClick={(e) => {
           e.stopPropagation();
           e.persist();

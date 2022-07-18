@@ -44,6 +44,7 @@ const CommentPopover = ({
           Edit
         </SyncButton>
         <SyncButton
+          color="secondary"
           outline="text"
           startIcon={<DeleteIcon />}
           onClick={() => handleModalOpen({ commentId: id })}

@@ -108,11 +108,14 @@ export const isFormDisabled = (currentValues, defaultValues, formState) => {
   return !isFormAltered(currentValues, defaultValues) || isFormInvalid;
 };
 
-export const randomizeHeight = (
-  minimum = (TRANSFORMED_ARTWORK_WIDTH - 400) / (ALLOWED_ARTWORK_RATIO / 3),
-  maximum = (TRANSFORMED_ARTWORK_WIDTH - 350) * (ALLOWED_ARTWORK_RATIO / 3)
-) => {
-  return Math.floor(Math.random() * (maximum - minimum + 1) + minimum);
+export const randomizeHeight = (minimum, maximum) => {
+  const minimumHeight =
+    minimum ?? (TRANSFORMED_ARTWORK_WIDTH - 400) / (ALLOWED_ARTWORK_RATIO / 3);
+  const maximumHeight =
+    maximum ?? (TRANSFORMED_ARTWORK_WIDTH - 350) * (ALLOWED_ARTWORK_RATIO / 3);
+  return Math.floor(
+    Math.random() * (maximumHeight - minimumHeight + 1) + minimumHeight
+  );
 };
 
 export const determineLoadingState = (loading, count, elements) =>

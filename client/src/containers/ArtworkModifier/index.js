@@ -166,7 +166,7 @@ const ArtworkModifier = ({ paramId }) => {
             <SyncButton
               type="button"
               variant="outlined"
-              color="error"
+              color="secondary"
               onClick={toggleModal}
               submitting={formState.isSubmitting || isDeleting}
               loading={loading}

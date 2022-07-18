@@ -79,9 +79,15 @@ const Styles = makeStyles((muiTheme) => ({
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
+    [muiTheme.breakpoints.down("xs")]: {
+      flexDirection: "column",
+    },
   },
   bannerButton: {
     margin: "0 6px",
+    [muiTheme.breakpoints.down("xs")]: {
+      margin: "6px",
+    },
   },
   verifier: {
     display: "flex",
