@@ -10,8 +10,9 @@ import {
   renderTableBody,
   renderUserData,
 } from "../../utils/helpers";
+import ordersDatatableStyles from "./styles";
 
-const renderColumns = (display, loading) => [
+const renderColumns = (display, classes, loading) => [
   {
     name: "Id",
     options: {
@@ -21,6 +22,9 @@ const renderColumns = (display, loading) => [
   {
     name: "Artwork",
     options: {
+      setCellProps: () => ({
+        className: classes.artwork,
+      }),
       customBodyRender: (value) =>
         renderTableBody(
           <ArtworkThumbnail source={value?.source} />,
@@ -40,6 +44,7 @@ const renderColumns = (display, loading) => [
             numeric: true,
           }) * (order === "asc" ? 1 : -1),
       customBodyRender: (value) => renderTableBody(value, loading),
+      sort: !loading,
     },
   },
   {
@@ -56,6 +61,7 @@ const renderColumns = (display, loading) => [
           renderUserData({ data: value, isUsername: true }),
           loading
         ),
+      sort: !loading,
     },
   },
   {
@@ -70,6 +76,7 @@ const renderColumns = (display, loading) => [
           formatArtworkPrice({ price: value, withPrecision: true }),
           loading
         ),
+      sort: !loading,
     },
   },
   {
@@ -82,6 +89,7 @@ const renderColumns = (display, loading) => [
             numeric: true,
           }) * (order === "asc" ? 1 : -1),
       customBodyRender: (value) => renderTableBody(value, loading),
+      sort: !loading,
     },
   },
   {
@@ -97,6 +105,7 @@ const renderColumns = (display, loading) => [
           value ? <Rating value={value?.rating} readOnly /> : "Not rated",
           loading
         ),
+      sort: !loading,
     },
   },
   {
@@ -109,6 +118,7 @@ const renderColumns = (display, loading) => [
           (order === "asc" ? 1 : -1),
       customBodyRender: (value) =>
         renderTableBody(formatDate(value, "dd/MM/yy HH:mm"), loading),
+      sort: !loading,
     },
   },
 ];
@@ -135,6 +145,8 @@ const OrdersDatatable = () => {
   const display = useUserOrders((state) => state.display);
   const fetchOrders = useUserOrders((state) => state.fetchOrders);
 
+  const classes = ordersDatatableStyles();
+
   useEffect(() => {
     fetchOrders({ display });
   }, [display]);
@@ -142,7 +154,7 @@ const OrdersDatatable = () => {
   return (
     <Datatable
       title="My orders"
-      columns={renderColumns(display, loading)}
+      columns={renderColumns(display, classes, loading)}
       data={renderData(orders, display, loading)}
       label="You have no orders"
       loading={loading}

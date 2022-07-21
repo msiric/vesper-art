@@ -17,8 +17,9 @@ import {
   determineLoadingState,
   renderTableBody,
 } from "../../utils/helpers";
+import artworkDatatableStyles from "./styles";
 
-const renderColumns = (loading) => [
+const renderColumns = (loading, classes) => [
   {
     name: "Id",
     options: {
@@ -28,6 +29,9 @@ const renderColumns = (loading) => [
   {
     name: "Artwork",
     options: {
+      setCellProps: () => ({
+        className: classes.artwork,
+      }),
       customBodyRender: (value) =>
         renderTableBody(<ArtworkThumbnail source={value} />, loading, false),
       sort: false,
@@ -42,7 +46,9 @@ const renderColumns = (loading) => [
           previous.localeCompare(next, "en", {
             numeric: true,
           }) * (order === "asc" ? 1 : -1),
-      customBodyRender: (value) => renderTableBody(value, loading),
+      customBodyRender: (value) =>
+        renderTableBody(value ?? "Loading artwork title", loading),
+      sort: !loading,
     },
   },
   {
@@ -55,10 +61,11 @@ const renderColumns = (loading) => [
           }) || "/",
           loading
         ),
+      sort: !loading,
     },
   },
   {
-    name: "Personal license",
+    name: "PL",
     options: {
       sortCompare:
         (order) =>
@@ -71,10 +78,11 @@ const renderColumns = (loading) => [
           }),
           loading
         ),
+      sort: !loading,
     },
   },
   {
-    name: "Commercial license",
+    name: "CL",
     options: {
       sortCompare:
         (order) =>
@@ -87,6 +95,7 @@ const renderColumns = (loading) => [
           }),
           loading
         ),
+      sort: !loading,
     },
   },
   {
@@ -100,6 +109,7 @@ const renderColumns = (loading) => [
           }) * (order === "asc" ? 1 : -1),
       customBodyRender: (value) =>
         renderTableBody(capitalizeWord({ value }) || "/", loading),
+      sort: !loading,
     },
   },
   {
@@ -112,6 +122,7 @@ const renderColumns = (loading) => [
           (order === "asc" ? 1 : -1),
       customBodyRender: (value) =>
         renderTableBody(formatDate(value, "dd/MM/yy HH:mm"), loading),
+      sort: !loading,
     },
   },
   {
@@ -155,15 +166,18 @@ const ArtworkDatatable = () => {
 
   const history = useHistory();
 
+  const classes = artworkDatatableStyles();
+
   const handleArtworkEdit = (artworkId) => {
     history.push(`/artwork/${artworkId}/edit`);
   };
 
   const actionsColumn = (artworkId) => (
-    <Box>
+    <Box className={classes.wrapper}>
       <IconButton
         color="primary"
         disabled={loading}
+        className={classes.button}
         onClick={(e) => {
           e.stopPropagation();
           e.persist();
@@ -175,6 +189,7 @@ const ArtworkDatatable = () => {
       <IconButton
         color="secondary"
         disabled={loading}
+        className={classes.button}
         onClick={(e) => {
           e.stopPropagation();
           e.persist();
@@ -193,7 +208,7 @@ const ArtworkDatatable = () => {
   return (
     <Datatable
       title="My artwork"
-      columns={renderColumns(loading)}
+      columns={renderColumns(loading, classes)}
       data={renderData(uploads, actionsColumn, loading)}
       label="You have no published artwork"
       loading={loading}
