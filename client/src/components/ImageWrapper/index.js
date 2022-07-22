@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import Box from "../../domain/Box";
-import useProgressiveImage from "../../hooks/useProgressiveImage";
+import { useProgressiveImage } from "../../hooks/useProgressiveImage";
 import { randomizeHeight } from "../../utils/helpers";
 import imageWrapperStyles from "./styles";
 

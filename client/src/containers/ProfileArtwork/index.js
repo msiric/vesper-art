@@ -6,7 +6,7 @@ import { useUserProfile } from "../../contexts/local/userProfile";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import Grid from "../../domain/Grid";
-import useVisibleElement from "../../hooks/useVisibleElement";
+import { useVisibleElement } from "../../hooks/useVisibleElement";
 import UserArtwork from "../UserArtwork/index";
 import UserFavorites from "../UserFavorites/index";
 import profileArtworkStyles from "./styles";

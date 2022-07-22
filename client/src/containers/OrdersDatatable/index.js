@@ -1,3 +1,4 @@
+import { useWindowDimensions } from "@hooks/useWindowDimensions";
 import { Rating } from "@material-ui/lab";
 import React, { useEffect } from "react";
 import { formatArtworkPrice, formatDate } from "../../../../common/helpers";
@@ -12,7 +13,7 @@ import {
 } from "../../utils/helpers";
 import ordersDatatableStyles from "./styles";
 
-const renderColumns = (display, classes, loading) => [
+const renderColumns = (display, width, classes, loading) => [
   {
     name: "Id",
     options: {
@@ -29,7 +30,7 @@ const renderColumns = (display, classes, loading) => [
         renderTableBody(
           <ArtworkThumbnail source={value?.source} />,
           loading,
-          false
+          width
         ),
       sort: false,
     },
@@ -145,6 +146,8 @@ const OrdersDatatable = () => {
   const display = useUserOrders((state) => state.display);
   const fetchOrders = useUserOrders((state) => state.fetchOrders);
 
+  const { width } = useWindowDimensions();
+
   const classes = ordersDatatableStyles();
 
   useEffect(() => {
@@ -154,7 +157,7 @@ const OrdersDatatable = () => {
   return (
     <Datatable
       title="My orders"
-      columns={renderColumns(display, classes, loading)}
+      columns={renderColumns(display, width, classes, loading)}
       data={renderData(orders, display, loading)}
       label="You have no orders"
       loading={loading}

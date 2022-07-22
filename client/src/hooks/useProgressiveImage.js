@@ -16,5 +16,3 @@ export const useProgressiveImage = (source, onLoad = () => null) => {
 
   return state.downloaded;
 };
-
-export default useProgressiveImage;

@@ -1,5 +1,6 @@
 import Box from "@domain/Box";
 import Typography from "@domain/Typography";
+import { artepunktTheme } from "@styles/theme";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
@@ -124,13 +125,18 @@ export const determineLoadingState = (loading, count, elements) =>
 export const determineFetchingState = (fetching, count) =>
   fetching ? Array.from(Array(count).keys()) : [];
 
-export const renderTableBody = (value, loading, isText = true) =>
-  isText ? (
+export const renderTableBody = (value, loading, width = null) => {
+  const { min, max } =
+    width >= artepunktTheme.breakpoints.values.md
+      ? { min: 60, max: 120 }
+      : { min: 120, max: 280 };
+  return !width ? (
     <Typography variant="subtitle2" loading={loading}>
       {value ?? "Loading"}
     </Typography>
   ) : (
-    <Box height={randomizeHeight(60, 120)} loading={loading}>
+    <Box height={randomizeHeight(min, max)} width="100%" loading={loading}>
       {value}
     </Box>
   );
+};

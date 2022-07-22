@@ -1,3 +1,4 @@
+import { useWindowDimensions } from "@hooks/useWindowDimensions";
 import {
   DeleteOutlineRounded as DeleteIcon,
   EditOutlined as EditIcon,
@@ -19,7 +20,7 @@ import {
 } from "../../utils/helpers";
 import artworkDatatableStyles from "./styles";
 
-const renderColumns = (loading, classes) => [
+const renderColumns = (loading, width, classes) => [
   {
     name: "Id",
     options: {
@@ -33,7 +34,7 @@ const renderColumns = (loading, classes) => [
         className: classes.artwork,
       }),
       customBodyRender: (value) =>
-        renderTableBody(<ArtworkThumbnail source={value} />, loading, false),
+        renderTableBody(<ArtworkThumbnail source={value} />, loading, width),
       sort: false,
     },
   },
@@ -164,6 +165,8 @@ const ArtworkDatatable = () => {
   const fetchUploads = useUserUploads((state) => state.fetchUploads);
   const openModal = useUserUploads((state) => state.openModal);
 
+  const { width } = useWindowDimensions();
+
   const history = useHistory();
 
   const classes = artworkDatatableStyles();
@@ -208,7 +211,7 @@ const ArtworkDatatable = () => {
   return (
     <Datatable
       title="My artwork"
-      columns={renderColumns(loading, classes)}
+      columns={renderColumns(loading, width, classes)}
       data={renderData(uploads, actionsColumn, loading)}
       label="You have no published artwork"
       loading={loading}

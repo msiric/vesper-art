@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const useVisibleElement = (ref, shouldStop) => {
+export const useVisibleElement = (ref, shouldStop) => {
   const [isIntersecting, setIntersecting] = useState(false);
 
   const observer = new IntersectionObserver(([entry]) =>
@@ -21,5 +21,3 @@ const useVisibleElement = (ref, shouldStop) => {
 
   return isIntersecting;
 };
-
-export default useVisibleElement;

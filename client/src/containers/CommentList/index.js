@@ -8,7 +8,7 @@ import { useArtworkComments } from "../../contexts/local/artworkComments";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import Box from "../../domain/Box";
 import List from "../../domain/List";
-import useVisibleElement from "../../hooks/useVisibleElement";
+import { useVisibleElement } from "../../hooks/useVisibleElement";
 import {
   determineFetchingState,
   determineLoadingState,
