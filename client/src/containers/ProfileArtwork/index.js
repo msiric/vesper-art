@@ -30,7 +30,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   const classes = profileArtworkStyles();
 
   useEffect(() => {
-    if (!artworkFetched.current && isVisible) {
+    if (!artworkFetched.current && isVisible && !artworkLoading) {
       fetchArtwork({
         userUsername,
       });

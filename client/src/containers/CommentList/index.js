@@ -47,8 +47,9 @@ const CommentList = ({
 
   useEffect(() => {
     if (
-      (!commentsFetched.current && isVisible) ||
-      (!commentsFetched.current && query.notif === "comment" && query.ref)
+      ((!commentsFetched.current && isVisible) ||
+        (!commentsFetched.current && query.notif === "comment" && query.ref)) &&
+      !loading
     ) {
       fetchComments({
         artworkId,
