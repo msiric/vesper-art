@@ -223,7 +223,7 @@ export const calculateRating = ({ active, reviews }) =>
 export const formatError = ({ status, message, expose }) => [
   status,
   message,
-  expose,
+  { expose },
 ];
 
 export const formatResponse = ({ status, message, expose, ...rest }) => ({
