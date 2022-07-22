@@ -117,7 +117,7 @@ const ArtworkDetails = ({ match }) => {
         <Grid item xs={12} md={8}>
           <Box>
             <CommentSection
-              paramId={paramId}
+              artworkId={paramId}
               highlightRef={highlightRef}
               commentsRef={commentsRef}
               commentsFetched={commentsFetched}

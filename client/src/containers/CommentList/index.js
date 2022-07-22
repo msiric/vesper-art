@@ -16,12 +16,11 @@ import {
 import commentListStyles from "./styles";
 
 const CommentList = ({
-  paramId,
+  artworkId,
   commentsRef,
   highlightRef,
   commentsFetched,
 }) => {
-  const artworkId = useArtworkDetails((state) => state.artwork.data.id);
   const artworkOwnerId = useArtworkDetails(
     (state) => state.artwork.data.owner.id
   );
@@ -52,7 +51,7 @@ const CommentList = ({
       (!commentsFetched.current && query.notif === "comment" && query.ref)
     ) {
       fetchComments({
-        artworkId: paramId,
+        artworkId,
         query,
         highlightRef,
         enqueueSnackbar,
@@ -80,7 +79,12 @@ const CommentList = ({
     <InfiniteList
       dataLength={comments ? comments.length : 0}
       next={() =>
-        fetchComments({ artworkId, query, highlightRef, enqueueSnackbar })
+        fetchComments({
+          artworkId,
+          query,
+          highlightRef,
+          enqueueSnackbar,
+        })
       }
       hasMore={hasMore}
       loading={loading}

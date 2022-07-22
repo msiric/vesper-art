@@ -22,12 +22,11 @@ import { isFormDisabled } from "../../utils/helpers";
 import commentSectionStyles from "./styles";
 
 const CommentSection = ({
-  paramId,
+  artworkId,
   commentsRef,
   highlightRef,
   commentsFetched,
 }) => {
-  const artworkId = useArtworkDetails((state) => state.artwork.data.id);
   const loading = useArtworkDetails((state) => state.artwork.loading);
 
   const popover = useArtworkComments((state) => state.popover);
@@ -96,14 +95,13 @@ const CommentSection = ({
         </FormProvider>
         <Divider />
         <CommentList
-          paramId={paramId}
+          artworkId={artworkId}
           commentsRef={commentsRef}
           highlightRef={highlightRef}
           commentsFetched={commentsFetched}
         />
       </CardContent>
       <CommentPopover
-        artworkId={artworkId}
         id={popover.id}
         anchorEl={popover.anchorEl}
         open={popover.open}
