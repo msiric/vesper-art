@@ -182,6 +182,7 @@ const initActions = (set, get) => ({
                 id: userData.id,
                 name: userData.name,
                 avatar: userData.avatar,
+                active: true,
               },
             },
             ...state.comments.data,

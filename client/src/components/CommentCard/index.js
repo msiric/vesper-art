@@ -18,6 +18,7 @@ import ListItem from "../../domain/ListItem";
 import ListItemAvatar from "../../domain/ListItemAvatar";
 import ListItemSecondaryAction from "../../domain/ListItemSecondaryAction";
 import ListItemText from "../../domain/ListItemText";
+import Tooltip from "../../domain/Tooltip";
 import Typography from "../../domain/Typography";
 import CommentForm from "../../forms/CommentForm/index";
 import {
@@ -100,15 +101,22 @@ const CommentCard = ({
                   loading={loading}
                   className={classes.owner}
                 >
-                  {comment?.owner?.id === artworkOwnerId
-                    ? `${renderUserData({
-                        data: comment?.owner?.name,
-                        isUsername: true,
-                      })} 🎨`
-                    : renderUserData({
+                  {comment?.owner?.id === artworkOwnerId ? (
+                    <Box className={classes.author}>
+                      {renderUserData({
                         data: comment?.owner?.name,
                         isUsername: true,
                       })}
+                      <Tooltip title="OP">
+                        <Box>&nbsp;🎨</Box>
+                      </Tooltip>
+                    </Box>
+                  ) : (
+                    renderUserData({
+                      data: comment?.owner?.name,
+                      isUsername: true,
+                    })
+                  )}
                 </Typography>
               </Box>
             )
@@ -131,6 +139,7 @@ const CommentCard = ({
                   <Box className={classes.actions}>
                     <AsyncButton
                       type="submit"
+                      color="secondary"
                       fullWidth
                       submitting={formState.isSubmitting}
                       disabled={isDisabled}
@@ -141,7 +150,6 @@ const CommentCard = ({
                     </AsyncButton>
                     <SyncButton
                       type="button"
-                      color="warning"
                       onClick={() =>
                         handleCommentClose({ commentId: comment?.id })
                       }

@@ -196,6 +196,7 @@ const Onboarding = () => {
                     />
                     <AsyncButton
                       type="submit"
+                      color="secondary"
                       fullWidth
                       padding
                       submitting={formState.isSubmitting}

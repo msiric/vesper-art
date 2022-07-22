@@ -68,6 +68,7 @@ const ReviewCard = ({ paramId, highlightRef }) => {
           ) : isActive ? (
             shouldReview ? (
               <SyncButton
+                color="secondary"
                 variant="outlined"
                 startIcon={<ReviewIcon />}
                 onClick={toggleModal}

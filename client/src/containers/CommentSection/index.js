@@ -82,6 +82,7 @@ const CommentSection = ({
             <CommentForm errors={errors} loading={loading} />
             <AsyncButton
               type="submit"
+              color="secondary"
               fullWidth
               padding
               submitting={formState.isSubmitting}

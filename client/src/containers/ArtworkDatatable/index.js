@@ -178,7 +178,7 @@ const ArtworkDatatable = () => {
   const actionsColumn = (artworkId) => (
     <Box className={classes.wrapper}>
       <IconButton
-        color="primary"
+        color="secondary"
         disabled={loading}
         className={classes.button}
         onClick={(e) => {
@@ -190,7 +190,7 @@ const ArtworkDatatable = () => {
         <EditIcon />
       </IconButton>
       <IconButton
-        color="secondary"
+        color="primary"
         disabled={loading}
         className={classes.button}
         onClick={(e) => {

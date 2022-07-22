@@ -84,6 +84,7 @@ const RatingModal = ({
               <Box className={classes.actions}>
                 <AsyncButton
                   type="submit"
+                  color="secondary"
                   fullWidth
                   submitting={formState.isSubmitting}
                   disabled={isDisabled}
@@ -93,7 +94,6 @@ const RatingModal = ({
                 </AsyncButton>
                 <SyncButton
                   type="button"
-                  color="secondary"
                   onClick={handleClose}
                   startIcon={<CloseIcon />}
                 >
