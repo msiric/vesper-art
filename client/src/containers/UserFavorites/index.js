@@ -42,6 +42,7 @@ const UserFavorites = ({ userUsername, shouldPause, type, fixed }) => {
         error={error.refetch}
         label="No favorites yet"
         type="masonry"
+        emptyHeight="100%"
       >
         <Masonry
           breakpointCols={breakpointsFixedWidth}

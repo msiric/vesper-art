@@ -27,13 +27,12 @@ const InfiniteList = ({
   children,
   ...props
 }) => {
-  const classes = infiniteListStyles({ overflow });
+  const classes = infiniteListStyles({ overflow, dataLength, emptyHeight });
 
   const showEmptySection =
     initialized && !loading && !fetching && !dataLength && !error;
   const showLoadMore =
     initialized && !loading && !fetching && !error && hasMore;
-  const showSpinnerProgress = loading || fetching;
 
   return (
     <InfiniteScroll
@@ -58,13 +57,8 @@ const InfiniteList = ({
       )}
       {error && (
         <Box className={classes.error}>
-          <Typography>Error fetching data</Typography>
-          <AsyncButton
-            type="button"
-            padding
-            startIcon={<RefetchIcon />}
-            onClick={next}
-          >
+          <Typography className={classes.label}>Error fetching data</Typography>
+          <AsyncButton type="button" startIcon={<RefetchIcon />} onClick={next}>
             Retry
           </AsyncButton>
         </Box>

@@ -42,6 +42,7 @@ const UserArtwork = ({ userUsername, shouldPause, type, fixed }) => {
         error={error.refetch}
         label="No artwork yet"
         type="masonry"
+        emptyHeight="100%"
       >
         <Masonry
           breakpointCols={breakpointsFixedWidth}

@@ -91,6 +91,7 @@ const NotificationsMenu = () => {
         overflow="hidden"
         height={MENU_HEIGHT}
         loaderHeight={!initialized && MENU_HEIGHT}
+        emptyHeight="100%"
       >
         <List className={classes.list} disablePadding>
           {refreshing && <LoadingBar label="Refreshing notifications" />}
