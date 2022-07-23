@@ -41,6 +41,9 @@ const globalStyles = makeStyles((muiTheme) => ({
     ".illustrationPrimary": {
       fill: artepunktTheme.palette.primary.main,
     },
+    ".infinite-scroll-component__outerdiv, .infinite-scroll-component": {
+      height: "100% !important",
+    },
     // $TODO gadljivo
     ".VerifierTable": {
       display: "flex",
