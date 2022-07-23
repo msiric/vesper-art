@@ -41,6 +41,7 @@ const ArtworkPanel = ({ type, fixed }) => {
         error={error.refetch}
         label="No artwork found"
         type="masonry"
+        emptyHeight={300}
       >
         <Masonry
           breakpointCols={breakpointsFullWidth}

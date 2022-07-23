@@ -67,8 +67,14 @@ const NotificationsMenu = () => {
       onClose={closeMenu}
       className={classes.menu}
       PaperProps={{
-        style: { minHeight: "100%" },
+        style: {
+          minHeight: "100%",
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+        },
       }}
+      MenuListProps={{ style: { height: "100%" } }}
     >
       <InfiniteList
         dataLength={notifications ? notifications.length : 0}

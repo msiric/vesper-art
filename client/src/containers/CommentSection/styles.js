@@ -15,6 +15,9 @@ const commentSectionStyles = makeStyles((muiTheme) => ({
   heading: {
     marginBottom: "12px",
   },
+  button: {
+    marginBottom: 4,
+  },
 }));
 
 export default commentSectionStyles;

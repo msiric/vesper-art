@@ -5,7 +5,6 @@ const commentListStyles = makeStyles((muiTheme) => ({
     display: "flex",
     flexDirection: "column-reverse",
     padding: 0,
-    paddingBottom: 12,
   },
 }));
 

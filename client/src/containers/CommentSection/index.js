@@ -89,6 +89,7 @@ const CommentSection = ({
               disabled={isDisabled}
               loading={loading}
               startIcon={<SubmitIcon />}
+              className={classes.button}
             >
               Post
             </AsyncButton>

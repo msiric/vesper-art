@@ -95,6 +95,7 @@ const CommentList = ({
       label="No comments yet"
       type="list"
       loaderMargin="32px 0"
+      emptyHeight={200}
     >
       <List ref={commentsRef} className={classes.list} disablePadding>
         <Box>

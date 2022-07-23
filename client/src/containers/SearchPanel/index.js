@@ -47,7 +47,7 @@ const SearchPanel = ({ type }) => {
         error={error.refetch}
         label="No results matched your query"
         type="masonry"
-        emptyHeight={500}
+        emptyHeight={750}
       >
         <Masonry
           breakpointCols={breakpointsFullWidth}
