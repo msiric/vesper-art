@@ -26,7 +26,7 @@ const useGalleryStyles = makeStyles((muiTheme) => ({
     minHeight: "500px",
     display: "flex",
     flexDirection: "column",
-    padding: 24,
+    padding: "8px 16px",
   },
 }));
 
@@ -80,11 +80,13 @@ const Gallery = () => {
 
   return (
     <Container key={location.key} className={globalClasses.gridContainer}>
-      <Grid container>
-        <Card className={classes.card}>
-          <GalleryToolbar formatArtwork={formatArtwork} />
-          <GalleryPanel formatArtwork={formatArtwork} />
-        </Card>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <Card className={classes.card}>
+            <GalleryToolbar formatArtwork={formatArtwork} />
+            <GalleryPanel formatArtwork={formatArtwork} />
+          </Card>
+        </Grid>
       </Grid>
     </Container>
   );

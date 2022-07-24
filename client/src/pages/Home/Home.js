@@ -7,12 +7,9 @@ import Grid from "../../domain/Grid";
 import globalStyles from "../../styles/global";
 
 const useHomeStyles = makeStyles((muiTheme) => ({
-  wrapper: {
-    width: "100%",
-    margin: "0 auto",
-  },
-  artworkWrapper: {
-    marginTop: 32,
+  banner: {
+    marginBottom: 0,
+    paddingBottom: 0,
   },
 }));
 
@@ -34,19 +31,19 @@ const Home = () => {
 
   return [
     <Grid
-      container
-      className={`${classes.wrapper} ${globalClasses.largeContainer}`}
-      spacing={3}
+      className={`${globalClasses.largeContainer} ${globalClasses.gridContainer} ${classes.banner}`}
     >
-      <HomeBanner />
+      <Grid container spacing={2}>
+        <HomeBanner />
+      </Grid>
     </Grid>,
     <Grid
-      container
-      className={`${classes.wrapper} ${globalClasses.largeContainer}`}
-      spacing={3}
+      className={`${globalClasses.largeContainer} ${globalClasses.gridContainer}`}
     >
-      <Grid item xs={12} className={classes.artworkWrapper}>
-        <ArtworkPanel type="artwork" />
+      <Grid container spacing={2}>
+        <Grid item xs={12} className={classes.artworkWrapper}>
+          <ArtworkPanel type="artwork" />
+        </Grid>
       </Grid>
     </Grid>,
   ];

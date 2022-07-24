@@ -48,13 +48,13 @@ const Retry = ({ message, reinitializeState = window.location.reload }) => {
 
   return (
     <Container className={globalClasses.gridContainer}>
-      <Grid container>
-        <Grid item sm={12} className={classes.wrapper}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} className={classes.wrapper}>
           <Card className={classes.card}>
             <Typography className={classes.heading} variant="h2">
               500
             </Typography>
-            <MainHeading text="An error occurred" />
+            <MainHeading text="An error occurred" align="center" />
             <RedirectUser className={classes.illustration} />
             <SyncButton
               onClick={reinitializeState}

@@ -162,8 +162,8 @@ const HowItWorks = () => {
     <Container
       className={`${globalClasses.gridContainer} ${globalClasses.smallContainer}`}
     >
-      <Grid container>
-        <Grid item sm={12}>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
           {
             // FEATURE FLAG - stripe
             !featureFlags.stripe && (

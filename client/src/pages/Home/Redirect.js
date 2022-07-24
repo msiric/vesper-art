@@ -49,13 +49,13 @@ const Redirect = () => {
 
   return (
     <Container className={globalClasses.gridContainer}>
-      <Grid container>
-        <Grid item sm={12} className={classes.wrapper}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} className={classes.wrapper}>
           <Card className={classes.card}>
             <Typography className={classes.heading} variant="h2">
               404
             </Typography>
-            <MainHeading text="Can't find requested resource" />
+            <MainHeading text="Can't find requested resource" align="center" />
             <RedirectUser className={classes.illustration} />
             <SyncButton
               component={RouterLink}

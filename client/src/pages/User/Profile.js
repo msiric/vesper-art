@@ -35,14 +35,12 @@ const Profile = ({ match, location }) => {
   return !containsErrors(retry, redirect) ? (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        <>
-          <ProfileInfo paramId={paramId} />
-          <ProfileArtwork
-            paramId={paramId}
-            artworkRef={artworkRef}
-            artworkFetched={artworkFetched}
-          />
-        </>
+        <ProfileInfo paramId={paramId} />
+        <ProfileArtwork
+          paramId={paramId}
+          artworkRef={artworkRef}
+          artworkFetched={artworkFetched}
+        />
       </Grid>
     </Container>
   ) : (

@@ -63,7 +63,7 @@ const TermsOfService = () => {
       className={`${globalClasses.gridContainer} ${globalClasses.smallContainer}`}
     >
       <Grid container spacing={2}>
-        <Grid item sm={12}>
+        <Grid item xs={12}>
           {
             // FEATURE FLAG - stripe
             !featureFlags.stripe && (

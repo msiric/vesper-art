@@ -60,11 +60,13 @@ const Dashboard = ({}) => {
   ) ? (
     <LocalizationProvider dateAdapter={DateFnsUtils}>
       <Container className={globalClasses.gridContainer}>
-        <Grid container className={classes.wrapper}>
-          <DashboardToolbar />
-          <DashboardStatistics layout="row" />
-          <VisualizationToolbar />
-          <DashboardVisualization />
+        <Grid container spacing={2} className={classes.wrapper}>
+          <Grid item xs={12}>
+            <DashboardToolbar />
+            <DashboardStatistics layout="row" />
+            <VisualizationToolbar />
+            <DashboardVisualization />
+          </Grid>
         </Grid>
       </Container>
     </LocalizationProvider>

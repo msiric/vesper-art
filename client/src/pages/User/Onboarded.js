@@ -88,7 +88,7 @@ const Onboarded = () => {
   return (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        <Grid item sm={12}>
+        <Grid item xs={12}>
           <Card>
             <CardContent className={classes.content}>
               <WelcomeIcon className={classes.icon} />

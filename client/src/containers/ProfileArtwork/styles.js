@@ -8,7 +8,7 @@ const profileArtworkStyles = makeStyles((muiTheme) => ({
   wrapper: {
     width: "100%",
     height: "100%",
-    padding: "0 32px",
+    padding: "0 16px",
   },
 }));
 

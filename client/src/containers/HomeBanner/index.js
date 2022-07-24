@@ -78,7 +78,7 @@ const HomeBanner = () => {
         </CardContent>
       </Card>
     </Grid>,
-    <Grid item xs={12} md={3}>
+    <Grid item xs={12} md={3} className={classes.verifierContainer}>
       <Card className={classes.verifier}>
         <CardContent className={classes.content}>
           <Box className={classes.wrapper}>

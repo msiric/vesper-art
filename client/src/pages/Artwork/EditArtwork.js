@@ -14,6 +14,7 @@ import { containsErrors, renderError } from "../../utils/helpers";
 const useEditorStyles = makeStyles((muiTheme) => ({
   wrapper: {
     height: "100%",
+    width: "100%",
   },
 }));
 
@@ -75,12 +76,14 @@ const EditArtwork = ({ match }) => {
   ) ? (
     <Container className={globalClasses.gridContainer}>
       {artworkLoading || capabilitiesLoading || artwork.id ? (
-        <Grid item sm={12} className={classes.wrapper}>
-          <MainHeading
-            text="Edit artwork"
-            className={globalClasses.mainHeading}
-          />
-          <ArtworkModifier paramId={paramId} />
+        <Grid container spacing={2}>
+          <Grid item xs={12} className={classes.wrapper}>
+            <MainHeading
+              text="Edit artwork"
+              className={globalClasses.mainHeading}
+            />
+            <ArtworkModifier paramId={paramId} />
+          </Grid>
         </Grid>
       ) : (
         // $TODO push to home and display error notification

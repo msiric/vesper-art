@@ -89,6 +89,7 @@ const Styles = makeStyles((muiTheme) => ({
       margin: "6px",
     },
   },
+
   verifier: {
     display: "flex",
     justifyContent: "center",

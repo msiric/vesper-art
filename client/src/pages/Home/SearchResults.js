@@ -8,12 +8,7 @@ import { useSearchResults } from "../../contexts/local/searchResults";
 import Grid from "../../domain/Grid";
 import globalStyles from "../../styles/global";
 
-const useSearchStyles = makeStyles((muiTheme) => ({
-  container: {
-    width: "100%",
-    margin: "0 auto",
-  },
-}));
+const useSearchStyles = makeStyles((muiTheme) => ({}));
 
 const SearchResults = () => {
   const resetResults = useSearchResults((state) => state.resetResults);
@@ -38,13 +33,13 @@ const SearchResults = () => {
 
   return (
     <Grid
-      container
-      className={`${classes.container} ${globalClasses.largeContainer}`}
-      spacing={3}
+      className={`${globalClasses.gridContainer} ${globalClasses.largeContainer}`}
     >
       {query.q && (query.t === "artwork" || query.t === "users") ? (
-        <Grid item xs={12}>
-          <SearchPanel type={query.t} />
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <SearchPanel type={query.t} />
+          </Grid>
         </Grid>
       ) : (
         history.push("/")

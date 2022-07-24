@@ -4,7 +4,7 @@ const artworkPanelStyles = makeStyles((muiTheme) => ({
   container: {
     width: "100%",
     height: "100%",
-    padding: "16px 0",
+    padding: 0,
   },
   masonry: {
     display: "flex",
@@ -13,13 +13,13 @@ const artworkPanelStyles = makeStyles((muiTheme) => ({
   column: {
     display: "flex",
     flexDirection: "column",
-    paddingLeft: 24,
+    paddingLeft: 16,
     "&:first-child": {
       paddingLeft: 0,
     },
     backgroundClip: "padding-box",
     "&>div": {
-      marginBottom: 24,
+      marginBottom: 16,
     },
   },
 }));
