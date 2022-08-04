@@ -114,29 +114,31 @@ const Input = ({
         maxWidth={isDynamic ? 650 : ""}
         loading={loading}
       >
-        {state.loading ? (
-          <Box className={`${classes.input} ${classes.loading}`}>
-            <CircularProgress color="white" />
-          </Box>
-        ) : error ? (
-          <Box className={`${classes.input} ${classes.error}`}>
-            <IconButton disableRipple className={classes.icon}>
-              <ErrorIcon fontSize="large" />
-            </IconButton>
-          </Box>
-        ) : state.file ? (
-          <Box className={`${classes.input} ${classes.remove}`}>
-            <IconButton disableRipple className={classes.icon}>
-              <ClearIcon fontSize="large" />
-            </IconButton>
-          </Box>
-        ) : (
-          <Box className={`${classes.input} ${classes.upload}`}>
-            <IconButton disableRipple className={classes.icon}>
-              <UploadIcon fontSize="large" />
-            </IconButton>
-          </Box>
-        )}
+        {editable ? (
+          state.loading ? (
+            <Box className={`${classes.input} ${classes.loading}`}>
+              <CircularProgress color="white" />
+            </Box>
+          ) : error ? (
+            <Box className={`${classes.input} ${classes.error}`}>
+              <IconButton disableRipple className={classes.icon}>
+                <ErrorIcon fontSize="large" />
+              </IconButton>
+            </Box>
+          ) : state.file ? (
+            <Box className={`${classes.input} ${classes.remove}`}>
+              <IconButton disableRipple className={classes.icon}>
+                <ClearIcon fontSize="large" />
+              </IconButton>
+            </Box>
+          ) : (
+            <Box className={`${classes.input} ${classes.upload}`}>
+              <IconButton disableRipple className={classes.icon}>
+                <UploadIcon fontSize="large" />
+              </IconButton>
+            </Box>
+          )
+        ) : null}
         {state.file && (
           <img
             className={`${classes.preview} ${
