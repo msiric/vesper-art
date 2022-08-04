@@ -1,3 +1,4 @@
+import { initialState as eventsState } from "@contexts/global/events";
 import create from "zustand";
 import {
   postEmail,
@@ -9,7 +10,7 @@ import {
 } from "../../services/auth";
 import { postLogout } from "../../services/user";
 
-const initialState = {
+export const initialState = {
   authenticated: false,
   token: null,
   id: null,
@@ -116,7 +117,7 @@ const initActions = (set, get) => ({
             count: response.user.notifications,
             hasMore: true,
             cursor: "",
-            limit: 10,
+            limit: eventsState.notifications.limit,
           },
         });
       }

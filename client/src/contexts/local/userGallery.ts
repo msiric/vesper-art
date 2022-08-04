@@ -2,7 +2,7 @@ import create from "zustand";
 import { getOwnership, getUploads } from "../../services/user";
 import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 
-const initialState = {
+export const initialState = {
   artwork: {
     data: {},
     loading: true,
@@ -10,7 +10,7 @@ const initialState = {
     initialized: false,
     hasMore: true,
     cursor: "",
-    limit: 10,
+    limit: 8,
     error: {
       refetch: false,
       message: "",
@@ -23,7 +23,7 @@ const initialState = {
     initialized: false,
     hasMore: true,
     cursor: "",
-    limit: 10,
+    limit: 8,
     error: {
       refetch: false,
       message: "",
@@ -55,7 +55,6 @@ const initActions = (set, get) => ({
       }));
       const display = get().display;
       const selection = get()[display];
-      const elements = get().elements;
       const { data } =
         display === "purchases"
           ? await getOwnership.request({
@@ -98,6 +97,7 @@ const initActions = (set, get) => ({
             display === "purchases"
               ? item.version.cover.width
               : item.current.cover.width,
+          loaded: false,
         };
         return object;
       }, {});
@@ -135,6 +135,14 @@ const initActions = (set, get) => ({
     set(() => ({
       ...initialState,
       display: selection,
+    }));
+  },
+  loadArtwork: ({ source }) => {
+    set((state) => ({
+      ...state,
+      elements: state.elements.map((element) =>
+        element.media === source ? { ...element, loaded: true } : element
+      ),
     }));
   },
   resetGallery: () => {

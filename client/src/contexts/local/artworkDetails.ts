@@ -5,7 +5,7 @@ import { postDownload } from "../../services/checkout";
 import { getPurchases } from "../../services/orders";
 import { resolveAsyncError } from "../../utils/helpers";
 
-const initialState = {
+export const initialState = {
   artwork: {
     data: { owner: {}, current: { cover: {}, media: {} } },
     loading: true,

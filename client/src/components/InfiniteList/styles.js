@@ -12,7 +12,12 @@ const infiniteListStyles = makeStyles((muiTheme) => ({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 24,
+    height: ({ dataLength, emptyHeight }) =>
+      dataLength ? "auto" : emptyHeight,
+    margin: ({ dataLength }) => (dataLength ? "16px 0" : "0"),
+  },
+  label: {
+    marginBottom: 16,
   },
 }));
 

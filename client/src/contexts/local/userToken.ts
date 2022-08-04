@@ -2,7 +2,7 @@ import create from "zustand";
 import { getToken } from "../../services/auth";
 import { resolveAsyncError } from "../../utils/helpers";
 
-const initialState = {
+export const initialState = {
   token: {
     data: false,
     loading: true,

@@ -2,7 +2,7 @@ import create from "zustand";
 import { getArtwork, getFavorites } from "../../services/user";
 import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 
-const initialState = {
+export const initialState = {
   artwork: {
     data: [],
     loading: false,
@@ -10,7 +10,7 @@ const initialState = {
     initialized: false,
     hasMore: true,
     cursor: "",
-    limit: 10,
+    limit: 8,
     error: {
       refetch: false,
       message: "",
@@ -18,11 +18,12 @@ const initialState = {
   },
   favorites: {
     data: [],
+    loading: false,
     fetching: false,
     initialized: false,
     hasMore: true,
     cursor: "",
-    limit: 10,
+    limit: 8,
     error: {
       refetch: false,
       message: "",
@@ -89,7 +90,8 @@ const initActions = (set, get) => ({
         ...state,
         favorites: {
           ...state.favorites,
-          fetching: true,
+          loading: !state.favorites.initialized,
+          fetching: state.favorites.initialized,
           error: {
             ...initialState.favorites.error,
           },
@@ -107,6 +109,7 @@ const initActions = (set, get) => ({
         favorites: {
           ...state.favorites,
           data: [...state.favorites.data, ...data.favorites],
+          loading: false,
           fetching: false,
           initialized: true,
           error: { ...initialState.favorites.error },
@@ -120,8 +123,9 @@ const initActions = (set, get) => ({
         ...state,
         favorites: {
           ...state.favorites,
-          initialized: true,
+          loading: false,
           fetching: false,
+          initialized: true,
           error: resolveAsyncError(err, true),
         },
       }));

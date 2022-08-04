@@ -2,7 +2,7 @@ import create from "zustand";
 import { getDownload, getOrder, postReview } from "../../services/orders";
 import { resolveAsyncError, scrollToHighlight } from "../../utils/helpers";
 
-const initialState = {
+export const initialState = {
   order: {
     data: {
       artwork: {},

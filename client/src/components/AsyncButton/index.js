@@ -32,7 +32,11 @@ const AsyncButton = ({
         {children}
       </Button>
       {submitting && (
-        <CircularProgress size={24} className={classes.progress} />
+        <CircularProgress
+          color={color}
+          size={24}
+          className={classes.progress}
+        />
       )}
     </Box>
   );

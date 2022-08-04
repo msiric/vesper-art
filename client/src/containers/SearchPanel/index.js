@@ -1,3 +1,4 @@
+import { determineFetchingState, determineLoadingState } from "@utils/helpers";
 import React, { useEffect } from "react";
 import Masonry from "react-masonry-css";
 import { useLocation } from "react-router-dom";
@@ -14,6 +15,7 @@ const SearchPanel = ({ type }) => {
   const initialized = useSearchResults((state) => state[type].initialized);
   const hasMore = useSearchResults((state) => state[type].hasMore);
   const loading = useSearchResults((state) => state[type].loading);
+  const limit = useSearchResults((state) => state[type].limit);
   const fetching = useSearchResults((state) => state[type].fetching);
   const error = useSearchResults((state) => state[type].error);
   const fetchResults = useSearchResults((state) => state.fetchResults);
@@ -21,6 +23,13 @@ const SearchPanel = ({ type }) => {
   const location = useLocation();
 
   const classes = searchPanelStyles();
+
+  const renderItem = (element, loading) =>
+    type === "artwork" ? (
+      <ArtworkCard artwork={element} type="artwork" loading={loading} />
+    ) : (
+      <ProfileCard user={element} loading={loading} />
+    );
 
   useEffect(() => {
     fetchResults({ query: location.search, type });
@@ -38,19 +47,18 @@ const SearchPanel = ({ type }) => {
         error={error.refetch}
         label="No results matched your query"
         type="masonry"
-        emptyHeight={500}
+        emptyHeight={750}
       >
         <Masonry
           breakpointCols={breakpointsFullWidth}
           className={classes.masonry}
           columnClassName={classes.column}
         >
-          {elements.map((element) =>
-            type === "artwork" ? (
-              <ArtworkCard artwork={element} type="artwork" />
-            ) : (
-              <ProfileCard user={element} loading={false} />
-            )
+          {determineLoadingState(loading, limit, elements).map((element) =>
+            renderItem(element, loading)
+          )}
+          {determineFetchingState(fetching, limit).map((element) =>
+            renderItem(element, fetching)
           )}
         </Masonry>
       </InfiniteList>

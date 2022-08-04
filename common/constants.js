@@ -111,7 +111,7 @@ export const generatedData = {
 export const appPalette = {
   type: "dark",
   primary: { main: "#d68024", alt: "#9BCECB" },
-  secondary: { main: "#fff8f0", alt: "#304de6" },
+  secondary: { main: "#24D680", alt: "#304de6" },
   success: { main: "#7ad624", alt: "#08333B" },
   info: { main: "#247ad6", alt: "#F0F2F2" },
   warning: { main: "#d3d624", alt: "#F79A3E" },

@@ -36,6 +36,7 @@ const CommentPopover = ({
     >
       <Box>
         <SyncButton
+          color="secondary"
           outline="text"
           startIcon={<EditIcon />}
           onClick={() => handleCommentOpen({ commentId: id })}

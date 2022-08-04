@@ -152,9 +152,9 @@ const ArtworkModifier = ({ paramId }) => {
           <CardActions className={classes.actions}>
             <AsyncButton
               type="submit"
+              color="secondary"
               fullWidth
               variant="outlined"
-              color="primary"
               padding
               submitting={formState.isSubmitting}
               disabled={isDisabled}
@@ -166,7 +166,6 @@ const ArtworkModifier = ({ paramId }) => {
             <SyncButton
               type="button"
               variant="outlined"
-              color="error"
               onClick={toggleModal}
               submitting={formState.isSubmitting || isDeleting}
               loading={loading}

@@ -18,9 +18,13 @@ const commentCardStyles = makeStyles((muiTheme) => ({
       borderColor: artepunktTheme.palette.primary.main,
     },
   },
+  avatar: {
+    display: "flex",
+  },
   wrapper: {
     display: "flex",
     flexDirection: "column",
+    alignItems: "flex-start",
   },
   owner: {
     textDecoration: "none",
@@ -54,8 +58,22 @@ const commentCardStyles = makeStyles((muiTheme) => ({
   button: {
     padding: 0,
   },
+  details: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "flex-start",
+  },
   content: {
     wordBreak: "break-word",
+  },
+  subtitle: {
+    display: "flex",
+  },
+  author: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
 }));
 

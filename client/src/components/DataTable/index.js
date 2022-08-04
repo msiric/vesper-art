@@ -2,11 +2,10 @@ import { Add as AddIcon } from "@material-ui/icons";
 import MUIDataTable from "mui-datatables";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import EmptySection from "../EmptySection/index";
 import IconButton from "../../domain/IconButton";
 import Tooltip from "../../domain/Tooltip";
 import globalStyles from "../../styles/global";
-import LoadingSpinner from "../LoadingSpinner";
+import EmptySection from "../EmptySection/index";
 import dataTableStyles from "./styles";
 
 const CustomToolbar = ({ addOptions }) => {
@@ -62,25 +61,22 @@ const DataTable = ({
     download: false,
     viewColumns: false,
     filterType: "dropdown",
-    selectableRows: selectable,
-    rowHover: hoverable,
-    search: searchable,
+    selectableRows: !loading && selectable,
+    rowHover: !loading && hoverable,
+    search: !loading && searchable,
     pagination,
     responsive,
     tableBodyHeight,
     tableBodyMaxHeight,
     customToolbar: () => <CustomToolbar addOptions={addOptions} />,
-    onRowClick: (data) => redirect && history.push(`/${redirect}/${data[0]}`),
+    onRowClick: (data) =>
+      !loading && redirect && history.push(`/${redirect}/${data[0]}`),
     onTableChange: (_, data) =>
       data.displayData.length !== displayedData.length &&
       setDisplayedData(data.displayData),
     textLabels: {
       body: {
-        noMatch: loading ? (
-          <LoadingSpinner height={height} label="" />
-        ) : (
-          <EmptySection label={label} height={height} />
-        ),
+        noMatch: !loading && <EmptySection label={label} height={height} />,
       },
     },
     setTableProps: () => ({ className }),

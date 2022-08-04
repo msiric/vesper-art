@@ -15,7 +15,7 @@ const STEPS = [
   "Payment information",
 ];
 
-const initialState = {
+export const initialState = {
   secret: null,
   version: {
     data: { artwork: { owner: {} }, cover: {}, media: {} },

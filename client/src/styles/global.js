@@ -12,9 +12,11 @@ const globalStyles = makeStyles((muiTheme) => ({
   },
   largeContainer: {
     maxWidth: 2600,
+    width: "100%",
   },
   smallContainer: {
     maxWidth: 768,
+    width: "100%",
   },
   bottomSpacing: {
     marginBottom: artepunktTheme.spacing.grid,
@@ -40,6 +42,9 @@ const globalStyles = makeStyles((muiTheme) => ({
   "@global": {
     ".illustrationPrimary": {
       fill: artepunktTheme.palette.primary.main,
+    },
+    ".infinite-scroll-component__outerdiv, .infinite-scroll-component": {
+      height: "100% !important",
     },
     // $TODO gadljivo
     ".VerifierTable": {

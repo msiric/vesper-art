@@ -13,6 +13,8 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
     position: "relative",
     minHeight: 160,
     maxHeight: 600,
+  },
+  containerHover: {
     "&:hover": {
       "& $header": {
         height: 44,

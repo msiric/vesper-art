@@ -4,7 +4,6 @@ import AppBar from "../../domain/AppBar";
 import Box from "../../domain/Box";
 import Tab from "../../domain/Tab";
 import Tabs from "../../domain/Tabs";
-import LoadingSpinner from "../LoadingSpinner";
 import swipeCardStyles from "./styles";
 
 const SwipeCard = ({ tabs, handleTabsChange, margin, loading }) => {
@@ -23,44 +22,30 @@ const SwipeCard = ({ tabs, handleTabsChange, margin, loading }) => {
           loading={loading}
         >
           {tabs.headings
-            .filter((tab) => tab.display === true)
+            .filter((tab) => !!tab.display)
             .map((heading) => (
               <Tab label={heading.label} {...heading.props} />
             ))}
         </Tabs>
       </AppBar>
 
-      {!loading ? (
-        <SwipeableViews
-          axis="x"
-          index={tabs.value}
-          onChangeIndex={(value) => handleTabsChange({ index: value })}
-        >
-          {tabs.items
-            .filter((tab) => tab.display === true)
-            .map((item, index) => (
-              <Box
-                className={`${classes.wrapper} ${
-                  tabs.value !== index && classes.hidden
-                }`}
-              >
-                {item.loading ? (
-                  <LoadingSpinner />
-                ) : item.iterable ? (
-                  item.content ? (
-                    item.component
-                  ) : (
-                    item.error
-                  )
-                ) : (
-                  item.component
-                )}
-              </Box>
-            ))}
-        </SwipeableViews>
-      ) : (
-        <LoadingSpinner margin="32px 0" />
-      )}
+      <SwipeableViews
+        axis="x"
+        index={tabs.value}
+        onChangeIndex={(value) => handleTabsChange({ index: value })}
+      >
+        {tabs.items
+          .filter((tab) => !!tab.display)
+          .map((item, index) => (
+            <Box
+              className={`${classes.wrapper} ${
+                tabs.value !== index && classes.hidden
+              }`}
+            >
+              {item.loading || item.component ? item.component : item.error}
+            </Box>
+          ))}
+      </SwipeableViews>
     </Box>
   );
 };

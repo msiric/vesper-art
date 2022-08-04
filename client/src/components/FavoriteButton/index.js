@@ -58,6 +58,7 @@ const FavoriteButton = ({
 
   return labeled ? (
     <AsyncButton
+      color="secondary"
       startIcon={
         favorited ? (
           <FavoritedIcon fontSize={fontSize} />

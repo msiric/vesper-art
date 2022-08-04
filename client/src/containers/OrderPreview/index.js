@@ -21,8 +21,9 @@ const OrderPreview = () => {
           height={version.cover.height || 500}
           source={version.cover.source}
           placeholder={version.cover.dominant}
-          shouldBlur
+          shouldRandomize={false}
           loading={loading}
+          shouldBlur
         />
       </Box>
       <Box className={classes.detailsWrapper}>

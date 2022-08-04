@@ -4,7 +4,7 @@ import { postArtwork } from "../../services/artwork";
 import { getUser } from "../../services/stripe";
 import { deleteEmptyValues, resolveAsyncError } from "../../utils/helpers";
 
-const initialState = {
+export const initialState = {
   capabilities: {
     data: {},
     loading: false,

@@ -1,6 +1,15 @@
+import Box from "@domain/Box";
+import Typography from "@domain/Typography";
+import { artepunktTheme } from "@styles/theme";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { auth, featureFlags, statusCodes } from "../../../common/constants";
+import {
+  ALLOWED_ARTWORK_RATIO,
+  auth,
+  featureFlags,
+  statusCodes,
+  TRANSFORMED_ARTWORK_WIDTH,
+} from "../../../common/constants";
 import { isFormAltered } from "../../../common/helpers";
 import Redirect from "../pages/Home/Redirect";
 import Retry from "../pages/Home/Retry";
@@ -98,4 +107,36 @@ export const isFormDisabled = (currentValues, defaultValues, formState) => {
   const isFormInvalid = formState.isSubmitting;
   // || !formState.isValid;
   return !isFormAltered(currentValues, defaultValues) || isFormInvalid;
+};
+
+export const randomizeHeight = (minimum, maximum) => {
+  const minimumHeight =
+    minimum ?? (TRANSFORMED_ARTWORK_WIDTH - 400) / (ALLOWED_ARTWORK_RATIO / 3);
+  const maximumHeight =
+    maximum ?? (TRANSFORMED_ARTWORK_WIDTH - 350) * (ALLOWED_ARTWORK_RATIO / 3);
+  return Math.floor(
+    Math.random() * (maximumHeight - minimumHeight + 1) + minimumHeight
+  );
+};
+
+export const determineLoadingState = (loading, count, elements) =>
+  loading ? Array.from(Array(count).keys()) : elements;
+
+export const determineFetchingState = (fetching, count) =>
+  fetching ? Array.from(Array(count).keys()) : [];
+
+export const renderTableBody = (value, loading, width = null) => {
+  const { min, max } =
+    width >= artepunktTheme.breakpoints.values.md
+      ? { min: 60, max: 120 }
+      : { min: 120, max: 280 };
+  return !width ? (
+    <Typography variant="subtitle2" loading={loading}>
+      {value ?? "Loading"}
+    </Typography>
+  ) : (
+    <Box height={randomizeHeight(min, max)} width="100%" loading={loading}>
+      {value}
+    </Box>
+  );
 };

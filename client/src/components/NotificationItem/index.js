@@ -25,6 +25,7 @@ const NotificationItem = ({
   handleUnreadClick,
   closeMenu,
   isUpdating,
+  loading,
 }) => {
   const classes = notificationItemStyles();
 
@@ -36,21 +37,25 @@ const NotificationItem = ({
     icon: <ErrorIcon />,
   };
 
-  if (notification.type === "comment") {
+  if (notification?.type === "comment") {
     data.label = "A user left a comment on your artwork";
-    data.link = `/artwork/${notification.link}?notif=comment&ref=${notification.ref}`;
+    data.link = `/artwork/${notification?.link}?notif=comment&ref=${notification?.ref}`;
     data.icon = <CommentIcon />;
-  } else if (notification.type === "order") {
+  } else if (notification?.type === "order") {
     data.label = "A user ordered your artwork";
-    data.link = `/orders/${notification.link}?notif=order`;
+    data.link = `/orders/${notification?.link}?notif=order`;
     data.icon = <OrderIcon />;
-  } else if (notification.type === "review") {
+  } else if (notification?.type === "review") {
     data.label = "A user left a review on your artwork";
-    data.link = `/orders/${notification.link}?notif=review`;
+    data.link = `/orders/${notification?.link}?notif=review`;
     data.icon = <ReviewIcon />;
+  } else {
+    data.label = "";
+    data.link = "";
+    data.icon = null;
   }
 
-  return data.label && data.link ? (
+  return (
     <ListItem
       onClick={() =>
         !isUpdating &&
@@ -65,42 +70,54 @@ const NotificationItem = ({
       className={classes.item}
       disableRipple
     >
-      <ListItemAvatar>
-        <Avatar className={notification.read ? classes.read : classes.unread}>
+      <ListItemAvatar className={classes.avatar}>
+        <Avatar
+          className={notification?.read ? classes.read : classes.unread}
+          loading={loading}
+        >
           {data.icon}
         </Avatar>
       </ListItemAvatar>
       <ListItemText
+        className={classes.listItem}
         primary={
-          <Typography component={Link} to={data.link} className={classes.link}>
-            {data.label}
+          <Typography
+            component={Link}
+            to={data.link}
+            className={classes.link}
+            loading={loading}
+          >
+            {data.label || "Fetching content"}
           </Typography>
         }
         secondary={
-          <Typography variant="caption">
-            {`${formatDistance(
-              new Date(notification.created),
-              new Date()
-            )} ago`}
+          <Typography variant="caption" loading={loading}>
+            {notification?.created
+              ? `${formatDistance(
+                  new Date(notification?.created),
+                  new Date()
+                )} ago`
+              : "Fetching date"}
           </Typography>
         }
       />
       <ListItemSecondaryAction className={classes.icon}>
         <IconButton
           onClick={
-            notification.read
-              ? (e) => handleUnreadClick({ event: e, id: notification.id })
-              : (e) => handleReadClick({ event: e, id: notification.id })
+            notification?.read
+              ? (e) => handleUnreadClick({ event: e, id: notification?.id })
+              : (e) => handleReadClick({ event: e, id: notification?.id })
           }
           edge="end"
-          aria-label={notification.read ? "Mark unread" : "Mark read"}
+          aria-label={notification?.read ? "Mark unread" : "Mark read"}
           disabled={isUpdating}
+          loading={loading}
         >
-          {notification.read ? <ReadIcon /> : <UnreadIcon />}
+          {notification?.read ? <ReadIcon /> : <UnreadIcon />}
         </IconButton>
       </ListItemSecondaryAction>
     </ListItem>
-  ) : null;
+  );
 };
 
 export default NotificationItem;

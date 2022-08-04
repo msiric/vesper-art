@@ -65,8 +65,8 @@ const AccountRestoration = () => {
 
   return (
     <Container>
-      <Grid container className={classes.wrapper}>
-        <Grid item sm={12} className={classes.headerWrapper}>
+      <Grid container spacing={2} className={classes.wrapper}>
+        <Grid item xs={12} className={classes.headerWrapper}>
           <Avatar className={classes.avatar}>
             <RecoveryAvatar />
           </Avatar>

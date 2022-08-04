@@ -2,7 +2,7 @@ import create from "zustand";
 import { getUser } from "../../services/user";
 import { resolveAsyncError } from "../../utils/helpers";
 
-const initialState = {
+export const initialState = {
   profile: {
     data: {},
     loading: true,

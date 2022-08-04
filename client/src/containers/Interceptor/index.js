@@ -101,7 +101,7 @@ const Interceptor = () => {
 
     ax.interceptors.response.use(
       (response) => {
-        if (response.data && response.data.expose) {
+        if (response?.data?.expose) {
           enqueueSnackbar(response.data.message, {
             variant: "success",
           });
@@ -109,21 +109,16 @@ const Interceptor = () => {
         return Promise.resolve(response);
       },
       async (error) => {
-        if (
-          error.response &&
-          error.response.data.message === auth.loginMessage
-        ) {
-          return history.push("/login");
+        if (error?.response?.data?.message === auth.loginMessage) {
+          history.push("/login");
+          return Promise.reject(error);
         }
-        if (
-          error.response &&
-          error.response.config.url === auth.refreshEndpoint
-        ) {
+        if (error?.response?.config?.url === auth.refreshEndpoint) {
           handleAuthError();
           return Promise.reject(error);
         }
-        if (error.response && error.response.status === 401) {
-          if (socket && socket.instance) socket.instance.emit("disconnectUser");
+        if (error?.response?.status === 401) {
+          if (socket?.instance) socket.instance.emit("disconnectUser");
           const { data } = await postRefresh.request();
           updateUser({
             token: data.accessToken,
@@ -145,8 +140,8 @@ const Interceptor = () => {
 
           return ax(config);
         }
-        if (error.response && error.response.status !== 401) {
-          if (error.response.data && error.response.data.expose) {
+        if (error?.response?.status !== 401) {
+          if (error?.response?.data?.expose) {
             enqueueSnackbar(error.response.data.message, {
               variant: "error",
             });

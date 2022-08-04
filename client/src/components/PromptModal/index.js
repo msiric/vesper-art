@@ -56,7 +56,7 @@ const PromptModal = ({
             </AsyncButton>
             <SyncButton
               type="button"
-              color="dark"
+              color="secondary"
               onClick={handleClose}
               startIcon={<CloseIcon />}
             >

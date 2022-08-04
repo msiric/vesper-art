@@ -6,12 +6,6 @@ const commentSectionStyles = makeStyles((muiTheme) => ({
       paddingBottom: 0,
     },
   },
-  list: {
-    display: "flex",
-    flexDirection: "column-reverse",
-    padding: 0,
-    paddingBottom: 12,
-  },
   empty: {
     height: 180,
     display: "flex",
@@ -20,6 +14,9 @@ const commentSectionStyles = makeStyles((muiTheme) => ({
   },
   heading: {
     marginBottom: "12px",
+  },
+  button: {
+    marginBottom: 4,
   },
 }));
 

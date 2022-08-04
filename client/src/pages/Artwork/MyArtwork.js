@@ -37,7 +37,7 @@ const MyArtwork = ({}) => {
   return !containsErrors(retry, redirect) ? (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        <Grid item sm={12} className={globalClasses.elementWidth}>
+        <Grid item xs={12} className={globalClasses.elementWidth}>
           <ArtworkDatatable />
         </Grid>
       </Grid>

@@ -9,8 +9,6 @@ import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { commentValidation } from "../../../../common/validation";
-import AsyncButton from "../AsyncButton/index";
-import SyncButton from "../SyncButton/index";
 import { useUserStore } from "../../contexts/global/user";
 import Avatar from "../../domain/Avatar";
 import Box from "../../domain/Box";
@@ -20,6 +18,7 @@ import ListItem from "../../domain/ListItem";
 import ListItemAvatar from "../../domain/ListItemAvatar";
 import ListItemSecondaryAction from "../../domain/ListItemSecondaryAction";
 import ListItemText from "../../domain/ListItemText";
+import Tooltip from "../../domain/Tooltip";
 import Typography from "../../domain/Typography";
 import CommentForm from "../../forms/CommentForm/index";
 import {
@@ -27,12 +26,14 @@ import {
   renderRedirectLink,
   renderUserData,
 } from "../../utils/helpers";
+import AsyncButton from "../AsyncButton/index";
+import SyncButton from "../SyncButton/index";
 import commentCardStyles from "./styles";
 
 const CommentCard = ({
   artworkId,
   artworkOwnerId,
-  comment = { content: "" },
+  comment = { content: "", owner: { avatar: {} } },
   edits = {},
   queryRef,
   highlightRef,
@@ -76,45 +77,52 @@ const CommentCard = ({
           shouldBlink ? classes.highlight : ""
         }`}
       >
-        <ListItemAvatar>
+        <ListItemAvatar className={classes.avatar}>
           <Avatar
-            src={comment.owner.avatar ? comment.owner.avatar.source : null}
+            src={comment?.owner?.avatar?.source ?? null}
             component={renderRedirectLink({
-              active: comment.owner.active,
+              active: comment?.owner?.active,
               isUsername: false,
             })}
-            to={`/user/${comment.owner.name}`}
+            to={`/user/${comment?.owner?.name}`}
             loading={loading}
           />
         </ListItemAvatar>
         <ListItemText
           primary={
-            edits[comment.id] ? null : (
+            edits[comment?.id] ? null : (
               <Box className={classes.wrapper}>
                 <Typography
                   component={renderRedirectLink({
-                    active: comment.owner.active,
+                    active: comment?.owner?.active,
                     isUsername: true,
                   })}
-                  to={`/user/${comment.owner.name}`}
+                  to={`/user/${comment?.owner?.name}`}
                   loading={loading}
                   className={classes.owner}
                 >
-                  {comment.owner.id === artworkOwnerId
-                    ? `${renderUserData({
-                        data: comment.owner.name,
-                        isUsername: true,
-                      })} 🎨`
-                    : renderUserData({
-                        data: comment.owner.name,
+                  {comment?.owner?.id === artworkOwnerId ? (
+                    <Box className={classes.author}>
+                      {renderUserData({
+                        data: comment?.owner?.name,
                         isUsername: true,
                       })}
+                      <Tooltip title="OP">
+                        <Box>&nbsp;🎨</Box>
+                      </Tooltip>
+                    </Box>
+                  ) : (
+                    renderUserData({
+                      data: comment?.owner?.name,
+                      isUsername: true,
+                    })
+                  )}
                 </Typography>
               </Box>
             )
           }
           secondary={
-            edits[comment.id] ? (
+            edits[comment?.id] ? (
               <FormProvider control={control}>
                 <form
                   className={classes.form}
@@ -122,7 +130,7 @@ const CommentCard = ({
                     async () =>
                       await handleCommentEdit({
                         artworkId,
-                        commentId: comment.id,
+                        commentId: comment?.id,
                         values: getValues(),
                       })
                   )}
@@ -131,6 +139,7 @@ const CommentCard = ({
                   <Box className={classes.actions}>
                     <AsyncButton
                       type="submit"
+                      color="secondary"
                       fullWidth
                       submitting={formState.isSubmitting}
                       disabled={isDisabled}
@@ -141,9 +150,8 @@ const CommentCard = ({
                     </AsyncButton>
                     <SyncButton
                       type="button"
-                      color="warning"
                       onClick={() =>
-                        handleCommentClose({ commentId: comment.id })
+                        handleCommentClose({ commentId: comment?.id })
                       }
                       startIcon={<CloseIcon />}
                     >
@@ -153,39 +161,46 @@ const CommentCard = ({
                 </form>
               </FormProvider>
             ) : (
-              <Box>
+              <Box className={classes.details}>
                 <Typography loading={loading} className={classes.content}>
-                  {comment.content || "Could not load content"}
+                  {comment?.content ||
+                    "Fetching artwork's comment content details"}
                 </Typography>
-                <Typography
-                  component="span"
-                  variant="subtitle2"
-                  loading={loading}
-                  className={classes.created}
-                >
-                  {`${formatDistance(
-                    new Date(comment.created),
-                    new Date()
-                  )} ago`}
-                </Typography>
-                <Typography
-                  component="span"
-                  variant="subtitle2"
-                  loading={loading}
-                  className={classes.modified}
-                >
-                  {comment.modified ? "(edited)" : null}
-                </Typography>
+                <Box className={classes.subtitle}>
+                  <Typography
+                    component="span"
+                    variant="subtitle2"
+                    loading={loading}
+                    className={classes.created}
+                  >
+                    {comment?.created
+                      ? `${formatDistance(
+                          new Date(comment?.created),
+                          new Date()
+                        )} ago`
+                      : "Fetching comment creation date"}
+                  </Typography>
+                  {comment?.modified && (
+                    <Typography
+                      component="span"
+                      variant="subtitle2"
+                      loading={loading}
+                      className={classes.modified}
+                    >
+                      (edited)
+                    </Typography>
+                  )}
+                </Box>
               </Box>
             )
           }
         />
-        {edits[comment.id] || comment.owner.id !== userId ? null : (
+        {edits[comment?.id] || comment?.owner?.id !== userId ? null : (
           <ListItemSecondaryAction className={classes.menu}>
             <IconButton
               onClick={(e) =>
                 handlePopoverOpen({
-                  commentId: comment.id,
+                  commentId: comment?.id,
                   commentTarget: e.currentTarget,
                 })
               }

@@ -1,6 +1,6 @@
 import create from "zustand";
 
-const initialState = {
+export const initialState = {
   loading: true,
   error: false,
   theme: "dark",

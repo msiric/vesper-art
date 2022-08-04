@@ -41,14 +41,14 @@ const PricingCard = ({
   return (
     <Card className={classes.container}>
       <CardContent className={classes.content}>
-        <Box loading={loading} className={classes.dataWrapper}>
+        <Box className={classes.dataWrapper}>
           {!!price && (
             <Typography variant="h5" color="textSecondary">
               $
             </Typography>
           )}
           <Box className={classes.priceWrapper}>
-            <Typography className={classes.price}>
+            <Typography className={classes.price} loading={loading}>
               {formatArtworkPrice({
                 price,
                 prefix: "",
@@ -64,7 +64,9 @@ const PricingCard = ({
             variant="subtitle1"
             className={classes.heading}
           >
-            {heading}
+            {!loading
+              ? heading
+              : "Fetching artwork's pricing information details"}
           </Typography>
           <List component="nav" aria-label="Features" disablePadding>
             {list.map((item) => (
@@ -86,6 +88,7 @@ const PricingCard = ({
               onClick={() => handlePurchase({ versionId, license })}
               // FEATURE FLAG - payment
               disabled={!featureFlags.payment}
+              loading={loading}
             >
               Purchase
             </SyncButton>
@@ -95,6 +98,7 @@ const PricingCard = ({
               onClick={handleModalOpen}
               submitting={submitting}
               disabled={!isAvailable}
+              loading={loading}
             >
               Download
             </AsyncButton>
@@ -104,6 +108,7 @@ const PricingCard = ({
             component={RouterLink}
             to={`/artwork/${artworkId}/edit`}
             startIcon={<EditIcon />}
+            loading={loading}
           >
             Edit artwork
           </SyncButton>

@@ -1,3 +1,4 @@
+import { determineFetchingState, determineLoadingState } from "@utils/helpers";
 import React from "react";
 import Masonry from "react-masonry-css";
 import ArtworkCard from "../../components/ArtworkCard/index";
@@ -13,10 +14,20 @@ const UserFavorites = ({ userUsername, shouldPause, type, fixed }) => {
   const hasMore = useUserArtwork((state) => state.favorites.hasMore);
   const loading = useUserArtwork((state) => state.favorites.loading);
   const fetching = useUserArtwork((state) => state.favorites.fetching);
+  const limit = useUserArtwork((state) => state.favorites.limit);
   const error = useUserArtwork((state) => state.favorites.error);
   const fetchFavorites = useUserArtwork((state) => state.fetchFavorites);
 
   const classes = userFavoritesStyles();
+
+  const renderArtwork = (artwork, loading) => (
+    <ArtworkCard
+      artwork={artwork}
+      type={type}
+      fixed={fixed}
+      loading={loading}
+    />
+  );
 
   return (
     <Box className={classes.container}>
@@ -31,20 +42,19 @@ const UserFavorites = ({ userUsername, shouldPause, type, fixed }) => {
         error={error.refetch}
         label="No favorites yet"
         type="masonry"
+        emptyHeight="100%"
       >
         <Masonry
           breakpointCols={breakpointsFixedWidth}
           className={classes.masonry}
           columnClassName={classes.column}
         >
-          {elements.map((artwork) => (
-            <ArtworkCard
-              artwork={artwork}
-              type={type}
-              fixed={fixed}
-              loading={loading}
-            />
-          ))}
+          {determineLoadingState(loading, limit, elements).map((artwork) =>
+            renderArtwork(artwork, loading)
+          )}
+          {determineFetchingState(fetching, limit).map((artwork) =>
+            renderArtwork(artwork, fetching)
+          )}
         </Masonry>
       </InfiniteList>
     </Box>

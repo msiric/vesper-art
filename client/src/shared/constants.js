@@ -13,6 +13,8 @@ export const breakpointsFixedWidth = {
   600: 1,
 };
 
+export const datatableRowsPerPage = 10;
+
 export const socialLinks = {
   facebook: "https://www.facebook.com/vesper.crew/",
   instagram: "https://www.instagram.com/vesper_crew/",

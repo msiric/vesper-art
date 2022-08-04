@@ -185,7 +185,6 @@ const ShareModal = ({
               <Box>
                 <SyncButton
                   type="button"
-                  color="dark"
                   onClick={() => handleClose({ callback: handlePopperClose })}
                   onMouseEnter={handlePopperOpen}
                   onMouseLeave={handlePopperClose}

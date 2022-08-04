@@ -28,9 +28,10 @@ const ArtworkPreview = ({ paramId }) => {
           height={version.height || 500}
           source={version.cover.source}
           placeholder={version.cover.dominant}
+          shouldRandomize={false}
+          loading={loading}
           addOverlay
           shouldBlur
-          loading={loading}
         />
       </Box>
       <Box className={classes.imageDetails}>

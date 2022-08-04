@@ -58,6 +58,7 @@ const VerifierCard = () => {
           <CardActions className={classes.actions}>
             <AsyncButton
               type="submit"
+              color="secondary"
               fullWidth
               padding
               submitting={formState.isSubmitting}

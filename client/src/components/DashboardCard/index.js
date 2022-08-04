@@ -13,13 +13,15 @@ const DashboardCard = ({ currency, data, label, loading }) => {
     <Card className={classes.container}>
       <CardContent className={classes.dataWrapper}>
         <Typography className={classes.data} loading={loading}>
-          {formatArtworkPrice({
-            price: data,
-            prefix: currency ? "$" : "",
-            freeFormat: currency ? "$0" : 0,
-            withPrecision: currency,
-            withAbbreviation: currency,
-          })}
+          {loading
+            ? "0"
+            : formatArtworkPrice({
+                price: data,
+                prefix: currency ? "$" : "",
+                freeFormat: currency ? "$0" : 0,
+                withPrecision: currency,
+                withAbbreviation: currency,
+              })}
         </Typography>
       </CardContent>
       <Divider />

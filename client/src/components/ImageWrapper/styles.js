@@ -6,7 +6,6 @@ const imageWrapperStyles = makeStyles((muiTheme) => ({
     width: "100%",
     height: "100%",
     objectFit: "contain",
-    borderRadius: 4,
     zIndex: 10,
   },
   wrapper: {
@@ -15,7 +14,6 @@ const imageWrapperStyles = makeStyles((muiTheme) => ({
     display: "flex",
     justifyContent: "center",
     overflow: "hidden",
-    borderRadius: muiTheme.shape.borderRadius,
     height: ({ height, loading }) => (loading ? height : "auto"),
     [muiTheme.breakpoints.down("sm")]: {
       height: ({ height, loading }) => (loading ? height / 1.25 : "auto"),
@@ -26,6 +24,7 @@ const imageWrapperStyles = makeStyles((muiTheme) => ({
   },
   hiddenWrapper: {
     background: ({ placeholder }) => placeholder,
+    minHeight: ({ height }) => `${height / 2.15}px`,
     height: "100%",
     width: "100%",
     filter: "blur(8px)",

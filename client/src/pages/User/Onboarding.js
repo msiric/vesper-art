@@ -147,7 +147,7 @@ const Onboarding = () => {
   return (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        <Grid item sm={12}>
+        <Grid item xs={12}>
           <Card>
             <HelpBox
               type="alert"
@@ -196,6 +196,7 @@ const Onboarding = () => {
                     />
                     <AsyncButton
                       type="submit"
+                      color="secondary"
                       fullWidth
                       padding
                       submitting={formState.isSubmitting}

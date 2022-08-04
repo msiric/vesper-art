@@ -4,7 +4,7 @@ import { getDashboard } from "../../services/stripe";
 import { getSelection, getStatistics } from "../../services/user";
 import { resolveAsyncError } from "../../utils/helpers";
 
-const initialState = {
+export const initialState = {
   graphData: [
     {
       date: null,

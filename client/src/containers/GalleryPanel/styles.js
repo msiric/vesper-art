@@ -18,15 +18,19 @@ const galleryPanelStyles = makeStyles((muiTheme) => ({
   column: {
     display: "flex",
     flexDirection: "column",
-    paddingLeft: 24,
+    paddingLeft: 16,
     "&:first-child": {
       paddingLeft: 0,
     },
     backgroundClip: "padding-box",
     "&>div": {
-      marginBottom: 24,
-      cursor: "pointer",
+      marginBottom: 16,
+    },
+  },
+  columnHover: {
+    "&>div": {
       "&:hover": {
+        cursor: "pointer",
         boxShadow: "0px 0px 20px 5px rgba(0,0,0,0.75)",
       },
     },

@@ -6,7 +6,6 @@ import {
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { reviewValidation } from "../../../../common/validation";
-import AsyncButton from "../AsyncButton/index";
 import Backdrop from "../../domain/Backdrop";
 import Box from "../../domain/Box";
 import Divider from "../../domain/Divider";
@@ -15,6 +14,7 @@ import Modal from "../../domain/Modal";
 import Typography from "../../domain/Typography";
 import RatingForm from "../../forms/RatingForm";
 import { isFormDisabled } from "../../utils/helpers";
+import AsyncButton from "../AsyncButton/index";
 import SyncButton from "../SyncButton/index";
 import ratingModalStyles from "./styles";
 
@@ -84,6 +84,7 @@ const RatingModal = ({
               <Box className={classes.actions}>
                 <AsyncButton
                   type="submit"
+                  color="secondary"
                   fullWidth
                   submitting={formState.isSubmitting}
                   disabled={isDisabled}
@@ -93,7 +94,6 @@ const RatingModal = ({
                 </AsyncButton>
                 <SyncButton
                   type="button"
-                  color="dark"
                   onClick={handleClose}
                   startIcon={<CloseIcon />}
                 >

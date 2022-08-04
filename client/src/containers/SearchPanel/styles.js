@@ -14,13 +14,13 @@ const searchPanelStyles = makeStyles((muiTheme) => ({
   column: {
     display: "flex",
     flexDirection: "column",
-    paddingLeft: 24,
+    paddingLeft: 16,
     "&:first-child": {
       paddingLeft: 0,
     },
     backgroundClip: "padding-box",
     "&>div": {
-      marginBottom: 24,
+      marginBottom: 16,
     },
   },
 }));

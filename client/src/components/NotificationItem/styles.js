@@ -20,6 +20,16 @@ const notificationItemStyles = makeStyles((muiTheme) => ({
   icon: {
     position: "static",
     transform: "none",
+    "&>span": {
+      borderRadius: "50%",
+      transform: "scale(1, 0.75)",
+    },
+  },
+  avatar: {
+    display: "flex",
+  },
+  listItem: {
+    alignItems: "flex-start",
   },
 }));
 

@@ -14,6 +14,7 @@ const Profile = ({ match, location }) => {
   const message = useUserProfile((state) => state.profile.error.message);
   const resetProfile = useUserProfile((state) => state.resetProfile);
   const resetArtwork = useUserArtwork((state) => state.resetArtwork);
+
   const paramId = match.params.id;
   const artworkFetched = useRef(false);
   const artworkRef = useRef(null);
@@ -34,14 +35,12 @@ const Profile = ({ match, location }) => {
   return !containsErrors(retry, redirect) ? (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        <>
-          <ProfileInfo paramId={paramId} />
-          <ProfileArtwork
-            paramId={paramId}
-            artworkRef={artworkRef}
-            artworkFetched={artworkFetched}
-          />
-        </>
+        <ProfileInfo paramId={paramId} />
+        <ProfileArtwork
+          paramId={paramId}
+          artworkRef={artworkRef}
+          artworkFetched={artworkFetched}
+        />
       </Grid>
     </Container>
   ) : (

@@ -113,7 +113,7 @@ const Header = () => {
                   component={RouterLink}
                   variant="text"
                   to="/login"
-                  color="default"
+                  color="secondary"
                   className={classes.margin}
                 >
                   Log in

@@ -2,7 +2,7 @@ import create from "zustand";
 import { postVerifier } from "../../services/home";
 import { resolveAsyncError } from "../../utils/helpers";
 
-const initialState = {
+export const initialState = {
   license: {
     data: false,
     loading: false,

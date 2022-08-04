@@ -234,12 +234,6 @@ artepunktTheme.overrides.MuiTableBody = {
 //   },
 // };
 
-artepunktTheme.overrides.MuiTableCell = {
-  body: {
-    cursor: "pointer",
-  },
-};
-
 artepunktTheme.overrides.MuiSnackbarContent = {
   root: {
     minHeight: 48,

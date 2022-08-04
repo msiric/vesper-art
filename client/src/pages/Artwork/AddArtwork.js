@@ -31,9 +31,14 @@ const AddArtwork = () => {
 
   return !containsErrors(retry, redirect) ? (
     <Container className={globalClasses.gridContainer}>
-      <Grid item sm={12}>
-        <MainHeading text="Add artwork" className={globalClasses.mainHeading} />
-        <ArtworkCreator />
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <MainHeading
+            text="Add artwork"
+            className={globalClasses.mainHeading}
+          />
+          <ArtworkCreator />
+        </Grid>
       </Grid>
     </Container>
   ) : (
