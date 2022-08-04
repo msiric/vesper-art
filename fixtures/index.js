@@ -165,9 +165,9 @@ const seedS3 = async () => {
     }
     await seedS3();
     await evaluateTransaction(queryRunner);
-    console.log("done");
+    console.log("Prod database seeded successfully");
   } catch (err) {
-    console.log("err", err);
+    console.log("Failed seeding the prod database", err);
     await rollbackTransaction(queryRunner);
   } finally {
     await releaseTransaction(queryRunner);
