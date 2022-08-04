@@ -2,7 +2,7 @@ import create from "zustand";
 import { getOrders } from "../../services/orders";
 import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 
-const initialState = {
+export const initialState = {
   orders: {
     data: [],
     loading: true,

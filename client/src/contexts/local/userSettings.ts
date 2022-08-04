@@ -9,7 +9,7 @@ import {
 } from "../../services/user";
 import { resolveAsyncError } from "../../utils/helpers";
 
-const initialState = {
+export const initialState = {
   user: {
     data: {},
     loading: true,

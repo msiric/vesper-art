@@ -13,7 +13,7 @@ import {
   scrollToHighlight,
 } from "../../utils/helpers";
 
-const initialState = {
+export const initialState = {
   comments: {
     data: [],
     loading: false,

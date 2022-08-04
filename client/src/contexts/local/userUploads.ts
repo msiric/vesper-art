@@ -3,7 +3,7 @@ import { deleteArtwork } from "../../services/artwork";
 import { getMyArtwork } from "../../services/user";
 import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 
-const initialState = {
+export const initialState = {
   uploads: {
     data: [],
     loading: true,

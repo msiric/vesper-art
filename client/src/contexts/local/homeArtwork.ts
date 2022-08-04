@@ -7,7 +7,7 @@ import {
   resolvePaginationId,
 } from "../../utils/helpers";
 
-const initialState = {
+export const initialState = {
   artwork: {
     data: [],
     loading: false,

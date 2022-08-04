@@ -9,7 +9,7 @@ import {
 import { getUser } from "../../services/stripe";
 import { deleteEmptyValues, resolveAsyncError } from "../../utils/helpers";
 
-const initialState = {
+export const initialState = {
   artwork: {
     data: {
       current: {

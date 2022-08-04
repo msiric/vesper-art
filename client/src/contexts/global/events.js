@@ -12,7 +12,7 @@ const SEARCH_TYPES = {
   users: "users",
 };
 
-const initialState = {
+export const initialState = {
   notifications: {
     items: [],
     count: 0,
@@ -32,7 +32,7 @@ const initialState = {
     anchor: null,
     isUpdating: false,
   },
-  search: "artwork",
+  search: SEARCH_TYPES.artwork,
 };
 
 const initState = () => ({
@@ -341,7 +341,10 @@ const initActions = (set, get) => ({
     const { search } = get();
     set((state) => ({
       ...state,
-      search: search === "artwork" ? "users" : "artwork",
+      search:
+        search === SEARCH_TYPES.artwork
+          ? SEARCH_TYPES.users
+          : SEARCH_TYPES.artwork,
     }));
   },
   searchQuery: ({ values, history }) => {

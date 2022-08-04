@@ -2,7 +2,7 @@ import create from "zustand";
 import { getSearch } from "../../services/home";
 import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 
-const initialState = {
+export const initialState = {
   artwork: {
     data: [],
     loading: true,
@@ -10,7 +10,7 @@ const initialState = {
     initialized: false,
     hasMore: true,
     cursor: "",
-    limit: 50,
+    limit: 30,
     error: { refetch: false, message: "" },
   },
   users: {
@@ -20,7 +20,7 @@ const initialState = {
     initialized: false,
     hasMore: true,
     cursor: "",
-    limit: 50,
+    limit: 30,
     error: { refetch: false, message: "" },
   },
   type: null,

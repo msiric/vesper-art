@@ -2,7 +2,7 @@ import create from "zustand";
 import { getArtwork, getFavorites } from "../../services/user";
 import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 
-const initialState = {
+export const initialState = {
   artwork: {
     data: [],
     loading: false,
@@ -10,7 +10,7 @@ const initialState = {
     initialized: false,
     hasMore: true,
     cursor: "",
-    limit: 10,
+    limit: 8,
     error: {
       refetch: false,
       message: "",
@@ -23,7 +23,7 @@ const initialState = {
     initialized: false,
     hasMore: true,
     cursor: "",
-    limit: 10,
+    limit: 8,
     error: {
       refetch: false,
       message: "",
