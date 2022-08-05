@@ -30,7 +30,8 @@ router
   // $DONE works
   .get(
     handler(getArtwork, false, (req, res, next) => ({
-      ...req.query,
+      cursor: req.query.cursor,
+      limit: req.query.limit,
     }))
   )
   // $DONE works
@@ -49,7 +50,7 @@ router
   // $TODO $DONE works (NOTE needs to return number of favorites instead of array)
   .get(
     handler(getArtworkDetails, false, (req, res, next) => ({
-      ...req.params,
+      artworkId: req.params.artworkId,
     }))
   )
   // $TODO not tested
@@ -67,7 +68,7 @@ router
   .patch(
     [isAuthenticated],
     handler(updateArtwork, true, (req, res, next) => ({
-      ...req.params,
+      artworkId: req.params.artworkId,
       artworkData: { ...req.body },
     }))
   )
@@ -75,14 +76,14 @@ router
   .delete(
     [isAuthenticated],
     handler(deleteArtwork, true, (req, res, next) => ({
-      ...req.params,
+      artworkId: req.params.artworkId,
     }))
   );
 
 router.route("/artwork/:artworkId/edit").get(
   [isAuthenticated],
   handler(getArtworkEdit, false, (req, res, next) => ({
-    ...req.params,
+    artworkId: req.params.artworkId,
   }))
 );
 
@@ -91,16 +92,17 @@ router
   // $TODO not tested
   .get(
     handler(getArtworkComments, false, (req, res, next) => ({
-      ...req.params,
-      ...req.query,
+      artworkId: req.params.artworkId,
+      cursor: req.query.cursor,
+      limit: req.query.limit,
     }))
   )
   // $DONE works
   .post(
     [isAuthenticated],
     handler(postComment, true, (req, res, next) => ({
-      ...req.params,
-      ...req.body,
+      artworkId: req.params.artworkId,
+      commentContent: req.body.commentContent,
     }))
   );
 
@@ -109,22 +111,25 @@ router
   // $TODO not tested
   .get(
     handler(getComment, false, (req, res, next) => ({
-      ...req.params,
+      artworkId: req.params.artworkId,
+      commentId: req.params.commentId,
     }))
   )
   // $DONE works
   .patch(
     [isAuthenticated],
     handler(patchComment, true, (req, res, next) => ({
-      ...req.params,
-      ...req.body,
+      artworkId: req.params.artworkId,
+      commentId: req.params.commentId,
+      commentContent: req.body.commentContent,
     }))
   )
   // $DONE works
   .delete(
     [isAuthenticated],
     handler(deleteComment, true, (req, res, next) => ({
-      ...req.params,
+      artworkId: req.params.artworkId,
+      commentId: req.params.commentId,
     }))
   );
 
@@ -132,21 +137,21 @@ router
   .route("/artwork/:artworkId/favorites")
   .get(
     handler(fetchArtworkFavorites, false, (req, res, next) => ({
-      ...req.params,
+      artworkId: req.params.artworkId,
     }))
   )
   // $DONE works
   .post(
     [isAuthenticated],
     handler(favoriteArtwork, true, (req, res, next) => ({
-      ...req.params,
+      artworkId: req.params.artworkId,
     }))
   )
   // $DONE works
   .delete(
     [isAuthenticated],
     handler(unfavoriteArtwork, true, (req, res, next) => ({
-      ...req.params,
+      artworkId: req.params.artworkId,
     }))
   );
 

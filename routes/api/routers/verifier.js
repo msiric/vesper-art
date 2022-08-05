@@ -8,7 +8,9 @@ router
   // $TODO not tested
   .post(
     handler(verifyLicense, true, (req, res, next) => ({
-      ...req.body,
+      licenseFingerprint: req.body.licenseFingerprint,
+      assigneeIdentifier: req.body.assigneeIdentifier,
+      assignorIdentifier: req.body.assignorIdentifier,
     }))
   );
 

@@ -18,7 +18,7 @@ featureFlags.stripe &&
   router.route("/discounts/:discountCode").get(
     isAuthenticated,
     handler(getDiscount, false, (req, res, next) => ({
-      ...req.params,
+      discountCode: req.params.discountCode,
     }))
   );
 
@@ -26,7 +26,7 @@ featureFlags.stripe &&
 router.route("/discounts").post(
   isAuthenticated,
   handler(postDiscount, true, (req, res, next) => ({
-    ...req.body,
+    discountData: req.body.discountData,
   }))
 );
 

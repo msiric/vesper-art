@@ -25,14 +25,14 @@ router
   .post(
     [isAuthenticated],
     handler(readNotification, true, (req, res, next) => ({
-      ...req.params,
+      notificationId: req.params.notificationId,
     }))
   )
   // $TODO not tested
   .delete(
     [isAuthenticated],
     handler(unreadNotification, true, (req, res, next) => ({
-      ...req.params,
+      notificationId: req.params.notificationId,
     }))
   );
 

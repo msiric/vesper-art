@@ -36,7 +36,7 @@ router
   .get(
     isAuthenticated,
     handler(getBoughtArtwork, false, (req, res, next) => ({
-      ...req.params,
+      artworkId: req.params.artworkId,
     }))
   );
 
@@ -46,7 +46,7 @@ router
   .get(
     [isAuthenticated],
     handler(getOrderDetails, false, (req, res, next) => ({
-      ...req.params,
+      orderId: req.params.orderId,
     }))
   );
 
@@ -57,8 +57,8 @@ router
   .post(
     [isAuthenticated],
     handler(postReview, true, (req, res, next) => ({
-      ...req.body,
-      ...req.params,
+      orderId: req.params.orderId,
+      reviewRating: req.body.reviewRating,
     }))
   );
 
@@ -68,8 +68,7 @@ router
   .get(
     [isAuthenticated],
     handler(getOrderMedia, true, (req, res, next) => ({
-      ...req.params,
-      response: res,
+      orderId: req.params.orderId,
     }))
   );
 

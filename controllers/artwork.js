@@ -266,12 +266,7 @@ export const updateArtwork = async ({
   throw createError(...formatError(errors.artworkNotFound));
 };
 
-export const deleteArtwork = async ({
-  userId,
-  artworkId,
-  data,
-  connection,
-}) => {
+export const deleteArtwork = async ({ userId, artworkId, connection }) => {
   const foundArtwork = await fetchArtworkMedia({
     artworkId,
     userId,

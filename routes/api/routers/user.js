@@ -34,7 +34,7 @@ const router = express.Router();
 
 router.route("/users/:userUsername").get(
   handler(getUserProfile, false, (req, res, next) => ({
-    ...req.params,
+    userUsername: req.params.userUsername,
   }))
 );
 
@@ -44,8 +44,9 @@ router
   .patch(
     [isAuthenticated, isAuthorized, multerApi.uploadUserLocal],
     handler(updateUserProfile, true, (req, res, next) => ({
-      ...req.params,
-      ...req.body,
+      userId: req.params.userId,
+      userDescription: req.body.userDescription,
+      userCountry: req.body.userCountry,
       userPath: req.file ? req.file.path : "",
       userFilename: req.file ? req.file.filename : "",
       userMimetype: req.file ? req.file.mimetype : "",
@@ -55,8 +56,8 @@ router
   .delete(
     [isAuthenticated, isAuthorized],
     handler(deactivateUser, true, (req, res, next) => ({
+      userId: req.params.userId,
       response: res,
-      ...req.params,
     }))
   );
 
@@ -65,8 +66,9 @@ router
   // $TODO not tested
   .get(
     handler(getUserArtworkByUsername, false, (req, res, next) => ({
-      ...req.params,
-      ...req.query,
+      userUsername: req.params.userUsername,
+      cursor: req.query.cursor,
+      limit: req.query.limit,
     }))
   );
 
@@ -75,8 +77,9 @@ router
   // $TODO not tested
   .get(
     handler(getUserFavorites, false, (req, res, next) => ({
-      ...req.params,
-      ...req.query,
+      userUsername: req.params.userUsername,
+      cursor: req.query.cursor,
+      limit: req.query.limit,
     }))
   );
 
@@ -86,8 +89,9 @@ router
   .get(
     [isAuthenticated, isAuthorized],
     handler(getUserArtworkById, false, (req, res, next) => ({
-      ...req.params,
-      ...req.query,
+      userId: req.params.userId,
+      cursor: req.query.cursor,
+      limit: req.query.limit,
     }))
   );
 
@@ -97,8 +101,9 @@ router
   .get(
     [isAuthenticated, isAuthorized],
     handler(getUserUploads, false, (req, res, next) => ({
-      ...req.params,
-      ...req.query,
+      userId: req.params.userId,
+      cursor: req.query.cursor,
+      limit: req.query.limit,
     }))
   );
 
@@ -108,8 +113,9 @@ router
   .get(
     [isAuthenticated, isAuthorized],
     handler(getUserOwnership, false, (req, res, next) => ({
-      ...req.params,
-      ...req.query,
+      userId: req.params.userId,
+      cursor: req.query.cursor,
+      limit: req.query.limit,
     }))
   );
 
@@ -121,7 +127,7 @@ featureFlags.dashboard &&
     .get(
       [isAuthenticated, isAuthorized],
       handler(getSellerStatistics, false, (req, res, next) => ({
-        ...req.params,
+        userId: req.params.userId,
       }))
     );
 
@@ -133,7 +139,7 @@ featureFlags.dashboard &&
     .get(
       [isAuthenticated, isAuthorized],
       handler(getBuyerStatistics, false, (req, res, next) => ({
-        ...req.params,
+        userId: req.params.userId,
       }))
     );
 
@@ -145,8 +151,9 @@ featureFlags.dashboard &&
     .get(
       [isAuthenticated, isAuthorized],
       handler(getUserSales, false, (req, res, next) => ({
-        ...req.params,
-        ...req.query,
+        userId: req.params.userId,
+        start: req.query.start,
+        end: req.query.end,
       }))
     );
 
@@ -158,8 +165,9 @@ featureFlags.dashboard &&
     .get(
       [isAuthenticated, isAuthorized],
       handler(getUserPurchases, false, (req, res, next) => ({
-        ...req.params,
-        ...req.query,
+        userId: req.params.userId,
+        start: req.query.start,
+        end: req.query.end,
       }))
     );
 
@@ -169,7 +177,7 @@ router
   .get(
     [isAuthenticated, isAuthorized],
     handler(getUserSettings, false, (req, res, next) => ({
-      ...req.params,
+      userId: req.params.userId,
     }))
   );
 
@@ -179,8 +187,9 @@ router
   .get(
     [isAuthenticated, isAuthorized],
     handler(getPreviousNotifications, false, (req, res, next) => ({
-      ...req.params,
-      ...req.query,
+      userId: req.params.userId,
+      cursor: req.query.cursor,
+      limit: req.query.limit,
     }))
   );
 
@@ -190,8 +199,9 @@ router
   .get(
     [isAuthenticated, isAuthorized],
     handler(getLatestNotifications, false, (req, res, next) => ({
-      ...req.params,
-      ...req.query,
+      userId: req.params.userId,
+      cursor: req.query.cursor,
+      limit: req.query.limit,
     }))
   );
 
@@ -201,8 +211,8 @@ router
   .patch(
     [isAuthenticated, isAuthorized],
     handler(updateUserOrigin, true, (req, res, next) => ({
-      ...req.params,
-      ...req.body,
+      userId: req.params.userId,
+      userBusinessAddress: req.body.userBusinessAddress,
     }))
   );
 
@@ -212,8 +222,8 @@ router
   .patch(
     [isAuthenticated, isAuthorized],
     handler(updateUserPreferences, true, (req, res, next) => ({
-      ...req.params,
-      ...req.body,
+      userId: req.params.userId,
+      userFavorites: req.body.userFavorites,
     }))
   );
 
@@ -223,8 +233,8 @@ router
   .patch(
     [isAuthenticated, isAuthorized],
     handler(updateUserEmail, true, (req, res, next) => ({
-      ...req.params,
-      ...req.body,
+      userId: req.params.userId,
+      userEmail: req.body.userEmail,
       response: res,
     }))
   );
@@ -235,8 +245,10 @@ router
   .patch(
     [isAuthenticated, isAuthorized],
     handler(updateUserPassword, true, (req, res, next) => ({
-      ...req.params,
-      ...req.body,
+      userId: req.params.userId,
+      userCurrent: req.body.userCurrent,
+      userPassword: req.body.userPassword,
+      userConfirm: req.body.userConfirm,
     }))
   );
 
@@ -251,8 +263,9 @@ featureFlags.stripe &&
     .post(
       [isAuthenticated, isAuthorized],
       handler(createUserIntent, true, (req, res, next) => ({
-        ...req.params,
-        ...req.body,
+        userId: req.params.userId,
+        versionId: req.body.versionId,
+        intentId: req.body.intentId,
       }))
     );
 
@@ -266,7 +279,8 @@ featureFlags.stripe &&
     .delete(
       [isAuthenticated, isAuthorized],
       handler(deleteUserIntent, true, (req, res, next) => ({
-        ...req.params,
+        userId: req.params.userId,
+        intentId: req.params.intentId,
       }))
     );
 
