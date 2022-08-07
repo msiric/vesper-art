@@ -69,59 +69,91 @@ describe("Order tests", () => {
     await closeConnection(connection);
   });
 
-  describe("/api/orders/sales", () => {
+  describe("/api/users/:userId/orders/sales", () => {
     it("should fetch user sales", async () => {
-      const res = await request(app, sellerToken).get("/api/orders/sales");
+      const res = await request(app, sellerToken).get(
+        `/api/users/${seller.id}/orders/sales`
+      );
       expect(res.body.sales).toHaveLength(sellerOrders.length);
       expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
+    it("should throw a 403 error if orders are fetched by non owner", async () => {
+      const res = await request(app, buyerToken).get(
+        `/api/users/${seller.id}/orders/sales`
+      );
+      expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
+    });
+
     it("should throw an error if user is not authenticated", async () => {
-      const res = await request(app).get("/api/orders/sales");
+      const res = await request(app).get(
+        `/api/users/${seller.id}/orders/sales`
+      );
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
       expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
   });
 
-  describe("/api/orders/purchases", () => {
+  describe("/api/user/:userId/orders/purchases", () => {
     it("should fetch user purchases", async () => {
-      const res = await request(app, buyerToken).get("/api/orders/purchases");
+      const res = await request(app, buyerToken).get(
+        `/api/users/${buyer.id}/orders/purchases`
+      );
       expect(res.body.purchases).toHaveLength(buyerOrders.length);
       expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
+    it("should throw a 403 error if orders are fetched by non owner", async () => {
+      const res = await request(app, sellerToken).get(
+        `/api/users/${buyer.id}/orders/purchases`
+      );
+      expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
+    });
+
     it("should throw an error if user is not authenticated", async () => {
-      const res = await request(app).get("/api/orders/purchases");
+      const res = await request(app).get(
+        `/api/users/${buyer.id}/orders/purchases`
+      );
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
       expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
   });
 
-  describe("/api/orders/purchases/:artworkId", () => {
+  describe("/api/users/:userId/orders/purchases/:artworkId", () => {
     it("should fetch artwork's orders", async () => {
       const artworkOrders = buyerOrders.filter(
         (item) => item.artwork.id === buyerOrders[0].artwork.id
       );
       const res = await request(app, buyerToken).get(
-        `/api/orders/purchases/${buyerOrders[0].artwork.id}`
+        `/api/users/${buyer.id}/orders/purchases/${buyerOrders[0].artwork.id}`
       );
       expect(res.body.purchases).toHaveLength(artworkOrders.length);
       expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
+    it("should throw a 403 error if orders are fetched by non owner", async () => {
+      const res = await request(app, sellerToken).get(
+        `/api/users/${buyer.id}/orders/purchases/${buyerOrders[0].artwork.id}`
+      );
+      expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
+    });
+
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get(
-        `/api/orders/purchases/${buyerOrders[0].artwork.id}`
+        `/api/users/${buyer.id}/orders/purchases/${buyerOrders[0].artwork.id}`
       );
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
       expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
   });
 
-  describe("/api/orders/:orderId", () => {
+  describe("/api/users/:userId/orders/:orderId", () => {
     it("should fetch order details", async () => {
       const res = await request(app, buyerToken).get(
-        `/api/orders/${buyerOrders[0].id}`
+        `/api/users/${buyer.id}/orders/${buyerOrders[0].id}`
       );
       expect(res.body.order).toBeTruthy();
       expect(res.statusCode).toEqual(statusCodes.ok);
@@ -129,23 +161,33 @@ describe("Order tests", () => {
 
     it("should throw an error if order doesn't exist", async () => {
       const res = await request(app, buyerToken).get(
-        `/api/orders/${unusedUuid}`
+        `/api/users/${buyer.id}/orders/${unusedUuid}`
       );
       expect(res.body.message).toEqual(errors.orderNotFound.message);
       expect(res.statusCode).toEqual(errors.orderNotFound.status);
     });
 
+    it("should throw a 403 error if order is fetched by non owner", async () => {
+      const res = await request(app, sellerToken).get(
+        `/api/users/${buyer.id}/orders/${buyerOrders[0].id}`
+      );
+      expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
+    });
+
     it("should throw an error if user is not authenticated", async () => {
-      const res = await request(app).get(`/api/orders/${buyerOrders[0].id}`);
+      const res = await request(app).get(
+        `/api/users/${buyer.id}/orders/${buyerOrders[0].id}`
+      );
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
       expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
   });
 
-  describe("/api/orders/:orderId/download", () => {
+  describe("/api/users/:userId/orders/:orderId/download", () => {
     it("should fetch order media", async () => {
       const res = await request(app, buyerToken).get(
-        `/api/orders/${buyerOrders[0].id}/download`
+        `/api/users/${buyer.id}/orders/${buyerOrders[0].id}/download`
       );
       expect(res.body.file).toBeTruthy();
       expect(res.body.url).toBeTruthy();
@@ -154,15 +196,23 @@ describe("Order tests", () => {
 
     it("should throw an error if order doesn't exist", async () => {
       const res = await request(app, buyerToken).get(
-        `/api/orders/${unusedUuid}/download`
+        `/api/users/${buyer.id}/orders/${unusedUuid}/download`
       );
       expect(res.body.message).toEqual(errors.artworkNotFound.message);
       expect(res.statusCode).toEqual(errors.artworkNotFound.status);
     });
 
+    it("should throw a 403 error if order media is fetched by non owner", async () => {
+      const res = await request(app, sellerToken).get(
+        `/api/users/${buyer.id}/orders/${buyerOrders[0].id}/download`
+      );
+      expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
+    });
+
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get(
-        `/api/orders/${buyerOrders[0].id}/download`
+        `/api/users/${buyer.id}/orders/${buyerOrders[0].id}/download`
       );
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
       expect(res.statusCode).toEqual(errors.forbiddenAccess.status);

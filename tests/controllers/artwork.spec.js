@@ -955,11 +955,83 @@ describe("Artwork tests", () => {
         expect(res.statusCode).toEqual(errors.artworkNotFound.status);
       });
     });
+  });
+
+  describe("/api/users/:userId/artwork/:artworkId", () => {
+    describe("getArtworkEdit", () => {
+      it("should fetch an active artwork if user is owner", async () => {
+        const res = await request(app, sellerToken).get(
+          `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+        );
+
+        expect(res.body.artwork).toBeTruthy();
+        expect(res.statusCode).toEqual(statusCodes.ok);
+      });
+
+      it("should throw a validation error if artwork id is invalid", async () => {
+        const res = await request(app, sellerToken).get(
+          `/api/users/${seller.id}/artwork/invalidId`
+        );
+
+        expect(res.body.message).toEqual(errors.routeParameterInvalid.message);
+        expect(res.statusCode).toEqual(errors.routeParameterInvalid.status);
+      });
+
+      it("should throw a 404 error if artwork is not found", async () => {
+        const res = await request(app, sellerToken).get(
+          `/api/users/${seller.id}/artwork/${unusedUuid}`
+        );
+
+        expect(res.body.message).toEqual(errors.artworkNotFound.message);
+        expect(res.statusCode).toEqual(errors.artworkNotFound.status);
+      });
+
+      it("should throw a 404 error if user is not owner", async () => {
+        const res = await request(app, sellerToken).get(
+          `/api/users/${seller.id}/artwork/${activeArtworkByBuyer[0].id}`
+        );
+        expect(res.body.message).toEqual(errors.artworkNotFound.message);
+        expect(res.statusCode).toEqual(errors.artworkNotFound.status);
+      });
+
+      it("should fetch an active artwork even if it is invisible", async () => {
+        const res = await request(app, sellerToken).get(
+          `/api/users/${seller.id}/artwork/${activeAndInvisibleArtworkBySeller[0].id}`
+        );
+
+        expect(res.body.artwork).toBeTruthy();
+        expect(res.statusCode).toEqual(statusCodes.ok);
+      });
+
+      it("should throw a 404 error if artwork is not active", async () => {
+        const res = await request(app, sellerToken).get(
+          `/api/users/${seller.id}/artwork/${inactiveArtworkBySeller[0].id}`
+        );
+        expect(res.body.message).toEqual(errors.artworkNotFound.message);
+        expect(res.statusCode).toEqual(errors.artworkNotFound.status);
+      });
+
+      it("should throw a 403 error if artwork is fetched by non owner", async () => {
+        const res = await request(app, sellerToken).get(
+          `/api/users/${buyer.id}/artwork/${activeArtworkBySeller[0].id}`
+        );
+        expect(res.body.message).toEqual(errors.notAuthorized.message);
+        expect(res.statusCode).toEqual(errors.notAuthorized.status);
+      });
+
+      it("should throw an error if user is not authenticated", async () => {
+        const res = await request(app).get(
+          `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+        );
+        expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
+      });
+    });
 
     describe("updateArtwork", () => {
       it("should update existing artwork that was never ordered", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${unorderedArtwork[0].id}`)
+          .patch(`/api/users/${seller.id}/artwork/${unorderedArtwork[0].id}`)
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -979,7 +1051,7 @@ describe("Artwork tests", () => {
       it("should update existing artwork that was ordered once previously and has new unordered version", async () => {
         const res = await request(app, sellerToken)
           .patch(
-            `/api/artwork/${onceOrderedArtworkWithNewVersion[0].artworkId}`
+            `/api/users/${seller.id}/artwork/${onceOrderedArtworkWithNewVersion[0].artworkId}`
           )
           .send({
             artworkTitle: "test",
@@ -1000,7 +1072,7 @@ describe("Artwork tests", () => {
       it("should update existing artwork that was ordered once previously and has new ordered version", async () => {
         const res = await request(app, sellerToken)
           .patch(
-            `/api/artwork/${multiOrderedArtworkWithNoNewVersions[0].artworkId}`
+            `/api/users/${seller.id}/artwork/${multiOrderedArtworkWithNoNewVersions[0].artworkId}`
           )
           .send({
             artworkTitle: "test",
@@ -1018,9 +1090,51 @@ describe("Artwork tests", () => {
         expect(res.statusCode).toEqual(responses.artworkUpdated.status);
       });
 
+      it("should throw a 404 error if user is not owner", async () => {
+        const res = await request(app, buyerToken)
+          .patch(
+            `/api/users/${buyer.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "free",
+            artworkLicense: "personal",
+            artworkPersonal: pricing.minimumPrice + 10,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "test",
+          });
+        expect(res.body.message).toEqual(errors.artworkNotFound.message);
+        expect(res.statusCode).toEqual(errors.artworkNotFound.status);
+      });
+
+      it("should throw a 403 error if artwork is fetched by non owner", async () => {
+        const res = await request(app, buyerToken)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "available",
+            artworkLicense: "personal",
+            artworkPersonal: 10,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "test",
+          });
+        expect(res.body.message).toEqual(errors.notAuthorized.message);
+        expect(res.statusCode).toEqual(errors.notAuthorized.status);
+      });
+
       it("should throw a 403 error if user is not authenticated", async () => {
         const res = await request(app)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1038,7 +1152,9 @@ describe("Artwork tests", () => {
 
       it("should throw an error if artwork is identical to the previous version", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: activeArtworkBySeller[0].current.title,
             artworkAvailability: activeArtworkBySeller[0].current.availability,
@@ -1058,7 +1174,9 @@ describe("Artwork tests", () => {
 
       it("should throw a validation error if title is missing", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkAvailability: "available",
             artworkType: "free",
@@ -1080,7 +1198,9 @@ describe("Artwork tests", () => {
 
       it("should throw a validation error if availability is missing", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkType: "free",
@@ -1102,7 +1222,9 @@ describe("Artwork tests", () => {
 
       it("should throw a validation error if availability is invalid", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "invalid",
@@ -1125,7 +1247,9 @@ describe("Artwork tests", () => {
 
       it("should throw a validation error if type is missing", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1147,7 +1271,9 @@ describe("Artwork tests", () => {
 
       it("should throw a validation error if type is invalid", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1170,7 +1296,9 @@ describe("Artwork tests", () => {
 
       it("should pass if type is invalid but artwork is 'preview only'", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "unavailable",
@@ -1189,7 +1317,9 @@ describe("Artwork tests", () => {
 
       it("should throw a validation error if license is missing", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1211,7 +1341,9 @@ describe("Artwork tests", () => {
 
       it("should throw a validation error if license is invalid", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1234,7 +1366,9 @@ describe("Artwork tests", () => {
 
       it("should pass if license is invalid but artwork is 'preview only'", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "unavailable",
@@ -1253,7 +1387,9 @@ describe("Artwork tests", () => {
 
       it("should throw a validation error if personal is not an integer", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1274,7 +1410,9 @@ describe("Artwork tests", () => {
 
       it("should throw a validation error if personal is below the minimum price", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1297,7 +1435,9 @@ describe("Artwork tests", () => {
 
       it("should throw a validation error if personal is above the maximum price", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1320,7 +1460,9 @@ describe("Artwork tests", () => {
 
       it("should pass if personal is zero and artwork is not available/commercial/separate/personal", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1339,7 +1481,9 @@ describe("Artwork tests", () => {
 
       it("should throw a validation error if use is missing", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1361,7 +1505,9 @@ describe("Artwork tests", () => {
 
       it("should throw a validation error if use is invalid", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1384,7 +1530,9 @@ describe("Artwork tests", () => {
 
       it("should pass if use is invalid but artwork is available/personal", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1403,7 +1551,9 @@ describe("Artwork tests", () => {
 
       it("should throw a validation error if commercial is invalid", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1426,7 +1576,9 @@ describe("Artwork tests", () => {
 
       it("should throw an error if commercial artwork is valid but user hasn't completed the onboarding process", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1457,7 +1609,9 @@ describe("Artwork tests", () => {
 
       it("should throw a validation error if commercial is not an integer", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1478,7 +1632,9 @@ describe("Artwork tests", () => {
 
       it("should throw a validation error if commercial is below the minimum price", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1501,7 +1657,9 @@ describe("Artwork tests", () => {
 
       it("should throw a validation error if commercial is above the maximum price", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1524,7 +1682,9 @@ describe("Artwork tests", () => {
 
       it("should throw a validation error if commercial is below the personal license price", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1547,7 +1707,9 @@ describe("Artwork tests", () => {
 
       it("should pass if commercial is zero and artwork is not available/commercial/separate/personal", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1566,7 +1728,9 @@ describe("Artwork tests", () => {
 
       it("should throw a validation error if visibility is missing", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .patch(
+            `/api/users/${seller.id}/artwork/${activeArtworkBySeller[0].id}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1586,9 +1750,27 @@ describe("Artwork tests", () => {
         );
       });
 
+      it("should throw a validation error if artwork id is invalid", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/users/${seller.id}/artwork/invalidId`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "free",
+            artworkLicense: "personal",
+            artworkPersonal: pricing.minimumPrice + 10,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+        expect(res.body.message).toEqual(errors.routeParameterInvalid.message);
+        expect(res.statusCode).toEqual(errors.routeParameterInvalid.status);
+      });
+
       it("should throw an error if artwork is not found", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${unusedUuid}`)
+          .patch(`/api/users/${seller.id}/artwork/${unusedUuid}`)
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1609,7 +1791,7 @@ describe("Artwork tests", () => {
     describe("deleteArtwork", () => {
       it("should delete unordered artwork", async () => {
         const res = await request(app, sellerToken).delete(
-          `/api/artwork/${unorderedArtwork[0].id}`
+          `/api/users/${seller.id}/artwork/${unorderedArtwork[0].id}`
         );
         expect(deactivateVersionMock).toHaveBeenCalledTimes(1);
         expect(s3Mock).toHaveBeenCalledTimes(2);
@@ -1621,7 +1803,7 @@ describe("Artwork tests", () => {
 
       it("should delete ordered artwork with new unordered version", async () => {
         const res = await request(app, sellerToken).delete(
-          `/api/artwork/${onceOrderedArtworkWithNewVersion[0].artworkId}`
+          `/api/users/${seller.id}/artwork/${onceOrderedArtworkWithNewVersion[0].artworkId}`
         );
         expect(deactivateVersionMock).toHaveBeenCalledTimes(1);
         expect(s3Mock).toHaveBeenCalledTimes(0);
@@ -1633,7 +1815,7 @@ describe("Artwork tests", () => {
 
       it("should delete ordered artwork with no new versions", async () => {
         const res = await request(app, sellerToken).delete(
-          `/api/artwork/${multiOrderedArtworkWithNoNewVersions[0].artworkId}`
+          `/api/users/${seller.id}/artwork/${multiOrderedArtworkWithNoNewVersions[0].artworkId}`
         );
         expect(deactivateVersionMock).toHaveBeenCalledTimes(0);
         expect(s3Mock).toHaveBeenCalledTimes(0);
@@ -1643,72 +1825,41 @@ describe("Artwork tests", () => {
         expect(res.statusCode).toEqual(responses.artworkDeleted.status);
       });
 
-      it("should throw an error if artwork is not found", async () => {
-        const res = await request(app, sellerToken).delete(
-          `/api/artwork/${unusedUuid}`
-        );
-        expect(res.statusCode).toEqual(errors.artworkNotFound.status);
-        expect(res.body.message).toEqual(errors.artworkNotFound.message);
-      });
-
-      it("should throw an error if user is not authenticated", async () => {
-        const res = await request(app).delete(
-          `/api/artwork/${multiOrderedArtworkWithNoNewVersions[0].artworkId}`
-        );
-        expect(res.body.message).toEqual(errors.forbiddenAccess.message);
-        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
-      });
-    });
-  });
-
-  describe("/api/artwork/:artworkId/edit", () => {
-    describe("getArtworkEdit", () => {
-      it("should fetch an active artwork if user is owner", async () => {
-        const res = await request(app, sellerToken).get(
-          `/api/artwork/${activeArtworkBySeller[0].id}/edit`
-        );
-
-        expect(res.body.artwork).toBeTruthy();
-        expect(res.statusCode).toEqual(statusCodes.ok);
-      });
-
       it("should throw a validation error if artwork id is invalid", async () => {
-        const res = await request(app, sellerToken).get(
-          "/api/artwork/invalidId/edit"
+        const res = await request(app, sellerToken).delete(
+          `/api/users/${seller.id}/artwork/invalidId`
         );
-
         expect(res.body.message).toEqual(errors.routeParameterInvalid.message);
         expect(res.statusCode).toEqual(errors.routeParameterInvalid.status);
       });
 
+      it("should throw an error if artwork is not found", async () => {
+        const res = await request(app, sellerToken).delete(
+          `/api/users/${seller.id}/artwork/${unusedUuid}`
+        );
+        expect(res.statusCode).toEqual(errors.artworkNotFound.status);
+        expect(res.body.message).toEqual(errors.artworkNotFound.message);
+      });
+
       it("should throw a 404 error if user is not owner", async () => {
-        const res = await request(app, sellerToken).get(
-          `/api/artwork/${activeArtworkByBuyer[0].id}/edit`
+        const res = await request(app, buyerToken).get(
+          `/api/users/${buyer.id}/artwork/${multiOrderedArtworkWithNoNewVersions[0].artworkId}`
         );
         expect(res.body.message).toEqual(errors.artworkNotFound.message);
         expect(res.statusCode).toEqual(errors.artworkNotFound.status);
       });
 
-      it("should fetch an active artwork even if it is invisible", async () => {
-        const res = await request(app, sellerToken).get(
-          `/api/artwork/${activeAndInvisibleArtworkBySeller[0].id}/edit`
+      it("should throw a 403 error if artwork is deleted by non owner", async () => {
+        const res = await request(app, buyerToken).get(
+          `/api/users/${seller.id}/artwork/${multiOrderedArtworkWithNoNewVersions[0].artworkId}`
         );
-
-        expect(res.body.artwork).toBeTruthy();
-        expect(res.statusCode).toEqual(statusCodes.ok);
-      });
-
-      it("should throw a 404 error if artwork is not active", async () => {
-        const res = await request(app, sellerToken).get(
-          `/api/artwork/${inactiveArtworkBySeller[0].id}/edit`
-        );
-        expect(res.body.message).toEqual(errors.artworkNotFound.message);
-        expect(res.statusCode).toEqual(errors.artworkNotFound.status);
+        expect(res.body.message).toEqual(errors.notAuthorized.message);
+        expect(res.statusCode).toEqual(errors.notAuthorized.status);
       });
 
       it("should throw an error if user is not authenticated", async () => {
-        const res = await request(app).get(
-          `/api/artwork/${activeArtworkBySeller[0].id}/edit`
+        const res = await request(app).delete(
+          `/api/users/${seller.id}/artwork/${multiOrderedArtworkWithNoNewVersions[0].artworkId}`
         );
         expect(res.body.message).toEqual(errors.forbiddenAccess.message);
         expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
@@ -1859,21 +2010,20 @@ describe("Artwork tests", () => {
         expect(res.statusCode).toEqual(statusCodes.ok);
       });
     });
+  });
+
+  describe("/api/users/:userId/comments/:commentId", () => {
     describe("patchComment", () => {
       it("should patch comment", async () => {
         const res = await request(app, buyerToken)
-          .patch(
-            `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
-          )
+          .patch(`/api/users/${buyer.id}/comments/${filteredComments[0].id}`)
           .send({ commentContent: "test" });
         expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
       it("should throw a validation error if the comment content is too large", async () => {
         const res = await request(app, buyerToken)
-          .patch(
-            `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
-          )
+          .patch(`/api//users/${buyer.id}/comments/${filteredComments[0].id}`)
           .send({
             commentContent: new Array(ranges.comment.max + 2).join("a"),
           });
@@ -1885,31 +2035,17 @@ describe("Artwork tests", () => {
         );
       });
 
-      it("should throw a 404 error if comment is patched by non owner", async () => {
+      it("should throw a 403 error if comment is patched by non owner", async () => {
         const res = await request(app, sellerToken)
-          .patch(
-            `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
-          )
+          .patch(`/api/users/${buyer.id}/comments/${filteredComments[0].id}`)
           .send({ commentContent: "test" });
-        expect(res.body.message).toEqual(errors.commentNotFound.message);
-        expect(res.statusCode).toEqual(errors.commentNotFound.status);
-      });
-
-      it("should throw a 404 error if artwork doesn't exist", async () => {
-        const res = await request(app, buyerToken)
-          .patch(
-            `/api/artwork/${unusedUuid}/comments/${filteredComments[0].id}`
-          )
-          .send({ commentContent: "test" });
-        expect(res.body.message).toEqual(errors.artworkNotFound.message);
-        expect(res.statusCode).toEqual(errors.artworkNotFound.status);
+        expect(res.body.message).toEqual(errors.notAuthorized.message);
+        expect(res.statusCode).toEqual(errors.notAuthorized.status);
       });
 
       it("should throw a 404 error if comment doesn't exist", async () => {
         const res = await request(app, buyerToken)
-          .patch(
-            `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${unusedUuid}`
-          )
+          .patch(`/api/users/${buyer.id}/comments/${unusedUuid}`)
           .send({ commentContent: "test" });
         expect(res.body.message).toEqual(errors.commentNotFound.message);
         expect(res.statusCode).toEqual(errors.commentNotFound.status);
@@ -1917,9 +2053,7 @@ describe("Artwork tests", () => {
 
       it("should throw an error if user is not authenticated", async () => {
         const res = await request(app)
-          .patch(
-            `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
-          )
+          .patch(`/api/users/${buyer.id}/comments/${filteredComments[0].id}`)
           .send({ commentContent: "test" });
         expect(res.body.message).toEqual(errors.forbiddenAccess.message);
         expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
@@ -1929,30 +2063,22 @@ describe("Artwork tests", () => {
     describe("deleteComment", () => {
       it("should delete comment", async () => {
         const res = await request(app, buyerToken).delete(
-          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
+          `/api/users/${buyer.id}/comments/${filteredComments[0].id}`
         );
         expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
-      it("should throw a 404 error if comment is deleted by non owner", async () => {
+      it("should throw a 403 error if comment is deleted by non owner", async () => {
         const res = await request(app, sellerToken).delete(
-          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
+          `/api/users/${buyer.id}/comments/${filteredComments[0].id}`
         );
-        expect(res.body.message).toEqual(errors.commentNotFound.message);
-        expect(res.statusCode).toEqual(errors.commentNotFound.status);
-      });
-
-      it("should throw a 404 error if artwork doesn't exist", async () => {
-        const res = await request(app, buyerToken).delete(
-          `/api/artwork/${unusedUuid}/comments/${filteredComments[0].id}`
-        );
-        expect(res.body.message).toEqual(errors.artworkNotFound.message);
-        expect(res.statusCode).toEqual(errors.artworkNotFound.status);
+        expect(res.body.message).toEqual(errors.notAuthorized.message);
+        expect(res.statusCode).toEqual(errors.notAuthorized.status);
       });
 
       it("should throw a 404 error if comment doesn't exist", async () => {
         const res = await request(app, buyerToken).delete(
-          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${unusedUuid}`
+          `/api/users/${buyer.id}/comments/${unusedUuid}`
         );
         expect(res.body.message).toEqual(errors.commentNotFound.message);
         expect(res.statusCode).toEqual(errors.commentNotFound.status);
@@ -1960,7 +2086,7 @@ describe("Artwork tests", () => {
 
       it("should throw an error if user is not authenticated", async () => {
         const res = await request(app).delete(
-          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
+          `/api/users/${buyer.id}/comments/${filteredComments[0].id}`
         );
         expect(res.body.message).toEqual(errors.forbiddenAccess.message);
         expect(res.statusCode).toEqual(errors.forbiddenAccess.status);

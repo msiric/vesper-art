@@ -55,7 +55,6 @@ export const addNewComment = async ({
 
 export const editExistingComment = async ({
   commentId,
-  artworkId,
   userId,
   commentContent,
   connection,
@@ -66,10 +65,9 @@ export const editExistingComment = async ({
     .set({ content: commentContent, modified: true })
     .where(
       // $TODO should artwork.active and artwork.visibility be checked as well?
-      'id = :commentId AND "artworkId" = :artworkId AND "ownerId" = :userId',
+      'id = :commentId AND "ownerId" = :userId',
       {
         commentId,
-        artworkId,
         userId,
       }
     )
@@ -79,7 +77,6 @@ export const editExistingComment = async ({
 
 export const removeExistingComment = async ({
   commentId,
-  artworkId,
   userId,
   connection,
 }) => {
@@ -87,14 +84,10 @@ export const removeExistingComment = async ({
     .createQueryBuilder()
     .delete()
     .from(Comment)
-    .where(
-      'id = :commentId AND "artworkId" = :artworkId AND "ownerId" = :userId',
-      {
-        commentId,
-        artworkId,
-        userId,
-      }
-    )
+    .where('id = :commentId AND "ownerId" = :userId', {
+      commentId,
+      userId,
+    })
     .execute();
   return deletedComment;
 };

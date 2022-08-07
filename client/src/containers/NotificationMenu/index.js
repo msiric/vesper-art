@@ -79,7 +79,7 @@ const NotificationsMenu = () => {
       <InfiniteList
         dataLength={notifications ? notifications.length : 0}
         next={(e) =>
-          fetchNotifications({ event: e, userId, shouldFetch: true })
+          fetchNotifications({ userId, event: e, shouldFetch: true })
         }
         hasMore={hasMore}
         loading={loading}

@@ -67,47 +67,31 @@ export const postComment = async ({
 
 export const patchComment = async ({
   userId,
-  artworkId,
   commentId,
   commentContent,
   connection,
 }) => {
   await commentValidation.validate({ commentContent });
-  const foundArtwork = await fetchArtworkById({ artworkId, connection });
-  if (!isObjectEmpty(foundArtwork)) {
-    const updatedComment = await editExistingComment({
-      commentId,
-      artworkId,
-      userId,
-      commentContent,
-      connection,
-    });
-    if (updatedComment.affected !== 0) {
-      return formatResponse(responses.commentUpdated);
-    }
-    throw createError(...formatError(errors.commentNotFound));
+  const updatedComment = await editExistingComment({
+    commentId,
+    userId,
+    commentContent,
+    connection,
+  });
+  if (updatedComment.affected !== 0) {
+    return formatResponse(responses.commentUpdated);
   }
-  throw createError(...formatError(errors.artworkNotFound));
+  throw createError(...formatError(errors.commentNotFound));
 };
 
-export const deleteComment = async ({
-  userId,
-  artworkId,
-  commentId,
-  connection,
-}) => {
-  const foundArtwork = await fetchArtworkById({ artworkId, connection });
-  if (!isObjectEmpty(foundArtwork)) {
-    const deletedComment = await removeExistingComment({
-      commentId,
-      artworkId,
-      userId,
-      connection,
-    });
-    if (deletedComment.affected !== 0) {
-      return formatResponse(responses.commentDeleted);
-    }
-    throw createError(...formatError(errors.commentNotFound));
+export const deleteComment = async ({ userId, commentId, connection }) => {
+  const deletedComment = await removeExistingComment({
+    commentId,
+    userId,
+    connection,
+  });
+  if (deletedComment.affected !== 0) {
+    return formatResponse(responses.commentDeleted);
   }
-  throw createError(...formatError(errors.artworkNotFound));
+  throw createError(...formatError(errors.commentNotFound));
 };

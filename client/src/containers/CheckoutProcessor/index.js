@@ -21,7 +21,6 @@ import CheckoutStepper from "../../components/CheckoutStepper";
 import LicenseAlert from "../../components/LicenseAlert";
 import ListItems from "../../components/ListItems";
 import SyncButton from "../../components/SyncButton";
-import CheckoutSummary from "../CheckoutSummary/index";
 import { useUserStore } from "../../contexts/global/user";
 import { useOrderCheckout } from "../../contexts/local/orderCheckout";
 import Box from "../../domain/Box";
@@ -33,6 +32,7 @@ import BillingForm from "../../forms/BillingForm/index";
 import LicenseForm from "../../forms/LicenseForm/index";
 import PaymentForm from "../../forms/PaymentForm/index";
 import { useLicenseValidator } from "../../hooks/useLicenseValidator";
+import CheckoutSummary from "../CheckoutSummary/index";
 import checkoutProcessorStyles from "./styles";
 
 const STEPS = [
@@ -44,6 +44,7 @@ const STEPS = [
 const CheckoutProcessor = () => {
   const { id: versionId } = useParams();
 
+  const userId = useUserStore((state) => state.id);
   const userName = useUserStore((state) => state.fullName);
 
   const version = useOrderCheckout((state) => state.version.data);
@@ -238,7 +239,8 @@ const CheckoutProcessor = () => {
   }, []);
 
   useEffect(() => {
-    version.artwork.id && fetchOrders({ artworkId: version.artwork.id });
+    version.artwork.id &&
+      fetchOrders({ userId, artworkId: version.artwork.id });
   }, [version.artwork.id]);
 
   return (

@@ -21,7 +21,7 @@ const router = express.Router();
 router.route("/account/:accountId").get(
   isAuthenticated,
   handler(getStripeUser, false, (req, res, next) => ({
-    ...req.params,
+    accountId: req.params.accountId,
   }))
 );
 
@@ -31,7 +31,7 @@ featureFlags.payment &&
   router.route("/intent/:intentId").get(
     isAuthenticated,
     handler(fetchIntentById, false, (req, res, next) => ({
-      ...req.params,
+      intentId: req.params.intentId,
     }))
   );
 
@@ -40,21 +40,22 @@ featureFlags.payment &&
   router.route("/intent/:versionId").post(
     isAuthenticated,
     handler(managePaymentIntent, true, (req, res, next) => ({
-      ...req.params,
-      ...req.body,
+      versionId: req.params.versionId,
+      discountId: req.body.discountId,
+      licenseUsage: req.body.licenseUsage,
+      licenseCompany: req.body.licenseCompany,
+      licenseType: req.body.licenseType,
     }))
   );
 
-router.route("/dashboard/").get(
-  handler(redirectToDashboard, false, (req, res, next) => ({
-    ...req.params,
-  }))
-);
+router
+  .route("/dashboard/")
+  .get(handler(redirectToDashboard, false, (req, res, next) => ({})));
 
 router.route("/dashboard/:accountId").get(
   isAuthenticated,
   handler(redirectToStripe, false, (req, res, next) => ({
-    ...req.params,
+    accountId: req.params.accountId,
     userOnboarded: res.locals.user ? res.locals.user.onboarded : null,
   }))
 );
@@ -63,16 +64,18 @@ router.route("/dashboard/:accountId").get(
 router.route("/authorize").post(
   isAuthenticated,
   handler(onboardUser, true, (req, res, next) => ({
-    sessionData: req.session,
-    responseData: res.locals,
-    ...req.body,
+    session: req.session,
+    locals: res.locals,
+    userBusinessAddress: req.body.userBusinessAddress,
+    userEmail: req.body.userEmail,
   }))
 );
 
 router.route("/token").get(
   handler(assignStripeId, true, (req, res, next) => ({
-    sessionData: req.session,
-    queryData: req.query,
+    session: req.session,
+    state: req.query.state,
+    code: req.query.code,
   }))
 );
 

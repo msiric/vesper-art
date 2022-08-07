@@ -19,8 +19,8 @@ export const createAccessToken = ({ userData }) => {
 };
 
 // $TODO getConnection needs to come from one of the services
-export const updateAccessToken = async (req, res, next, connection) => {
-  const refreshToken = req.cookies[cookieKeys.jid];
+export const updateAccessToken = async ({ cookies, response, connection }) => {
+  const refreshToken = cookies[cookieKeys.jid];
   if (!refreshToken) throw createError(...formatError(errors.forbiddenAccess));
 
   const { data } = verifyTokenValidity(
@@ -52,7 +52,11 @@ export const updateAccessToken = async (req, res, next, connection) => {
 
   const { tokenPayload, userInfo } = formatTokenData({ user: foundUser });
 
-  sendRefreshToken(res, createRefreshToken({ userData: tokenPayload }));
+  const newRefreshToken = createRefreshToken({ userData: tokenPayload });
+
+  sendRefreshToken({ response, refreshToken: newRefreshToken });
+
+  console.log("final", response);
 
   return {
     ok: true,
@@ -71,8 +75,8 @@ export const createRefreshToken = ({ userData }) => {
   );
 };
 
-export const sendRefreshToken = (res, refreshToken) => {
-  return res.cookie(cookieKeys.jid, refreshToken, {
+export const sendRefreshToken = ({ response, refreshToken }) => {
+  return response.cookie(cookieKeys.jid, refreshToken, {
     httpOnly: true,
     path: auth.refreshEndpoint,
   });

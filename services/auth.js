@@ -35,13 +35,13 @@ export const addNewUser = async ({
   return savedUser;
 };
 
-export const logUserOut = (res) => {
-  sendRefreshToken(res, "");
+export const logUserOut = ({ response }) => {
+  sendRefreshToken({ response, refreshToken: "" });
   return { accessToken: "", user: "" };
 };
 
-export const refreshAccessToken = async (req, res, next, connection) => {
-  return await updateAccessToken(req, res, next, connection);
+export const refreshAccessToken = async ({ cookies, response, connection }) => {
+  return await updateAccessToken({ cookies, response, connection });
 };
 
 export const revokeAccessToken = async ({ userId, connection }) => {

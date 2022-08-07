@@ -475,7 +475,7 @@ export const updateUserEmail = async ({
       emailContent: renderEmail({ ...emailValues.formattedProps }),
       emailAttachments: emailValues.formattedAttachments,
     });
-    logUserOut(response);
+    logUserOut({ response });
     return formatResponse(responses.emailAddressUpdated);
   }
   throw createError(...formatError(errors.emailAlreadyExists));
@@ -584,7 +584,7 @@ export const deactivateUser = async ({ userId, response, connection }) => {
     }
     await deleteUserNotifications({ userId: foundUser.id, connection });
     await deactivateExistingUser({ userId: foundUser.id, connection });
-    logUserOut(response);
+    logUserOut({ response });
     return formatResponse(responses.userDeactivated);
   }
   throw createError(...formatError(errors.userNotFound));

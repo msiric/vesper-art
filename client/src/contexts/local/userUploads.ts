@@ -50,9 +50,10 @@ const initActions = (set, get) => ({
       }));
     }
   },
-  removeArtwork: async ({ artworkId }) => {
+  removeArtwork: async ({ userId, artworkId }) => {
     set((state) => ({ ...state, isDeleting: true }));
     await deleteArtwork.request({
+      userId,
       artworkId,
     });
     set((state) => ({

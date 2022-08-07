@@ -89,7 +89,7 @@ const Header = () => {
                   </Badge>
                 </IconButton> */}
                 <IconButton
-                  onClick={(e) => fetchNotifications({ event: e, userId })}
+                  onClick={(e) => fetchNotifications({ userId, event: e })}
                   aria-label="Show notifications"
                   color="inherit"
                 >

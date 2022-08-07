@@ -36,7 +36,7 @@ const ReviewCard = ({ paramId, highlightRef }) => {
   const classes = reviewCardStyles();
 
   useEffect(() => {
-    fetchOrder({ orderId: paramId, query, highlightRef });
+    fetchOrder({ userId, orderId: paramId, query, highlightRef });
   }, []);
 
   return (

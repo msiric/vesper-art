@@ -1,3 +1,4 @@
+import { useUserStore } from "@contexts/global/user";
 import {
   CommentRounded as CommentIcon,
   DraftsRounded as ReadIcon,
@@ -27,6 +28,8 @@ const NotificationItem = ({
   isUpdating,
   loading,
 }) => {
+  const userId = useUserStore((state) => state.id);
+
   const classes = notificationItemStyles();
 
   const history = useHistory();
@@ -105,8 +108,10 @@ const NotificationItem = ({
         <IconButton
           onClick={
             notification?.read
-              ? (e) => handleUnreadClick({ event: e, id: notification?.id })
-              : (e) => handleReadClick({ event: e, id: notification?.id })
+              ? (e) =>
+                  handleUnreadClick({ userId, event: e, id: notification?.id })
+              : (e) =>
+                  handleReadClick({ userId, event: e, id: notification?.id })
           }
           edge="end"
           aria-label={notification?.read ? "Mark unread" : "Mark read"}

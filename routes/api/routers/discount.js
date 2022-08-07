@@ -8,6 +8,7 @@ import {
 
 const router = express.Router();
 
+// Authenticated routes
 // $TODO not tested
 // FEATURE FLAG - stripe
 // FEATURE FLAG - payment
@@ -16,7 +17,7 @@ featureFlags.stripe &&
   featureFlags.payment &&
   featureFlags.discount &&
   router.route("/discounts/:discountCode").get(
-    isAuthenticated,
+    [isAuthenticated],
     handler(getDiscount, false, (req, res, next) => ({
       discountCode: req.params.discountCode,
     }))
@@ -24,7 +25,7 @@ featureFlags.stripe &&
 
 // $TODO REMOVE (ONLY FOR DEV)
 router.route("/discounts").post(
-  isAuthenticated,
+  [isAuthenticated],
   handler(postDiscount, true, (req, res, next) => ({
     discountData: req.body.discountData,
   }))

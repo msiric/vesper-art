@@ -193,10 +193,10 @@ const initActions = (set, get) => ({
       reset();
     } catch (err) {}
   },
-  updateComment: async ({ artworkId, commentId, values }) => {
+  updateComment: async ({ userId, commentId, values }) => {
     try {
       await patchComment.request({
-        artworkId,
+        userId,
         commentId,
         data: values,
       });
@@ -221,14 +221,14 @@ const initActions = (set, get) => ({
       }));
     } catch (err) {}
   },
-  deleteComment: async ({ artworkId, commentId }) => {
+  deleteComment: async ({ userId, commentId }) => {
     try {
       set((state) => ({
         ...state,
         isDeleting: true,
       }));
       await deleteComment.request({
-        artworkId,
+        userId,
         commentId,
       });
       set((state) => ({

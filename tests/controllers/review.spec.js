@@ -77,26 +77,42 @@ describe("Review tests", () => {
     await closeConnection(connection);
   });
 
-  describe("/api/orders/:orderId/reviews", () => {
+  describe("/api/users/:userId/orders/:orderId/reviews", () => {
     it("should post review", async () => {
       const res = await request(app, buyerToken)
-        .post(`/api/orders/${buyerOrdersWithoutReview[0].id}/reviews`)
+        .post(
+          `/api/users/${buyer.id}/orders/${buyerOrdersWithoutReview[0].id}/reviews`
+        )
         .send({ reviewRating: 5 });
       expect(res.body.message).toEqual(responses.reviewCreated.message);
       expect(res.statusCode).toEqual(responses.reviewCreated.status);
     });
 
+    it("should throw a 403 error if review is posted by non owner", async () => {
+      const res = await request(app, sellerToken)
+        .post(
+          `/api/users/${buyer.id}/orders/${buyerOrdersWithoutReview[0].id}/reviews`
+        )
+        .send({ reviewRating: 5 });
+      expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
+    });
+
     it("should throw an error if user is not authenticated", async () => {
-      const res = await request(app).post(
-        `/api/orders/${buyerOrdersWithoutReview[0].id}/reviews`
-      );
+      const res = await request(app)
+        .post(
+          `/api/users/${buyer.id}/orders/${buyerOrdersWithoutReview[0].id}/reviews`
+        )
+        .send({ reviewRating: 5 });
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
       expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
 
     it("should throw a validation error if rating is missing", async () => {
       const res = await request(app, buyerToken)
-        .post(`/api/orders/${buyerOrdersWithoutReview[0].id}/reviews`)
+        .post(
+          `/api/users/${buyer.id}/orders/${buyerOrdersWithoutReview[0].id}/reviews`
+        )
         .send();
       expect(res.body.message).toEqual(
         validationErrors.reviewRatingRequired.message
@@ -108,7 +124,9 @@ describe("Review tests", () => {
 
     it("should throw a validation error if rating is invalid", async () => {
       const res = await request(app, buyerToken)
-        .post(`/api/orders/${buyerOrdersWithoutReview[0].id}/reviews`)
+        .post(
+          `/api/users/${buyer.id}/orders/${buyerOrdersWithoutReview[0].id}/reviews`
+        )
         .send({ reviewRating: "invalidRating" });
       expect(res.body.message).toEqual(validationErrors.invalidNumber.message);
       expect(res.statusCode).toEqual(validationErrors.invalidNumber.status);
@@ -116,7 +134,9 @@ describe("Review tests", () => {
 
     it("should throw a validation error if rating is below 1", async () => {
       const res = await request(app, buyerToken)
-        .post(`/api/orders/${buyerOrdersWithoutReview[0].id}/reviews`)
+        .post(
+          `/api/users/${buyer.id}/orders/${buyerOrdersWithoutReview[0].id}/reviews`
+        )
         .send({ reviewRating: 0 });
       expect(res.body.message).toEqual(
         validationErrors.reviewRatingMin.message
@@ -126,7 +146,9 @@ describe("Review tests", () => {
 
     it("should throw a validation error if rating is above 5", async () => {
       const res = await request(app, buyerToken)
-        .post(`/api/orders/${buyerOrdersWithoutReview[0].id}/reviews`)
+        .post(
+          `/api/users/${buyer.id}/orders/${buyerOrdersWithoutReview[0].id}/reviews`
+        )
         .send({ reviewRating: 6 });
       expect(res.body.message).toEqual(
         validationErrors.reviewRatingMax.message
@@ -136,7 +158,7 @@ describe("Review tests", () => {
 
     it("should throw an error if order is not found", async () => {
       const res = await request(app, buyerToken)
-        .post(`/api/orders/${unusedUuid}/reviews`)
+        .post(`/api/users/${buyer.id}/orders/${unusedUuid}/reviews`)
         .send({ reviewRating: 5 });
       expect(res.body.message).toEqual(errors.orderNotFound.message);
       expect(res.statusCode).toEqual(errors.orderNotFound.status);
@@ -144,7 +166,9 @@ describe("Review tests", () => {
 
     it("should throw an error if review already exists", async () => {
       const res = await request(app, buyerToken)
-        .post(`/api/orders/${buyerOrdersWithReview[0].id}/reviews`)
+        .post(
+          `/api/users/${buyer.id}/orders/${buyerOrdersWithReview[0].id}/reviews`
+        )
         .send({ reviewRating: 5 });
       expect(res.body.message).toEqual(errors.reviewAlreadyExists.message);
       expect(res.statusCode).toEqual(errors.reviewAlreadyExists.status);

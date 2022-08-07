@@ -8,6 +8,7 @@ import {
 
 const router = express.Router();
 
+// Authenticated routes
 // FEATURE FLAG - stripe
 // FEATURE FLAG - payment
 featureFlags.stripe &&

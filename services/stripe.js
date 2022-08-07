@@ -1,15 +1,15 @@
 import { stripe } from "../lib/stripe";
 
 export const constructStripeEvent = async ({
-  stripeBody,
-  stripeSignature,
-  stripeSecret,
+  body,
+  signature,
+  secret,
   connection,
 }) => {
   const constructedEvent = await stripe.webhooks.constructEvent(
-    stripeBody,
-    stripeSignature,
-    stripeSecret
+    body,
+    signature,
+    secret
   );
   return constructedEvent;
 };

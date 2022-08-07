@@ -147,7 +147,7 @@ const initActions = (set, get) => ({
       search: typeof search !== "undefined" ? search : state.search,
     }));
   },
-  fetchNotifications: async ({ event, userId, shouldFetch = false }) => {
+  fetchNotifications: async ({ userId, event, shouldFetch = false }) => {
     const { notifications } = get();
     const target = shouldFetch ? notifications.anchor : event.currentTarget;
     if (notifications.initialized && !shouldFetch) {
@@ -255,7 +255,7 @@ const initActions = (set, get) => ({
       },
     }));
   },
-  readNotification: async ({ event = window.event, id }) => {
+  readNotification: async ({ userId, event = window.event, id }) => {
     try {
       event.stopPropagation();
       set((state) => ({
@@ -265,7 +265,7 @@ const initActions = (set, get) => ({
           isUpdating: true,
         },
       }));
-      await patchRead.request({ notificationId: id });
+      await patchRead.request({ userId, notificationId: id });
       set((state) => ({
         ...state,
         notifications: {
@@ -283,7 +283,7 @@ const initActions = (set, get) => ({
       console.log(err);
     }
   },
-  unreadNotification: async ({ event = window.event, id }) => {
+  unreadNotification: async ({ userId, event = window.event, id }) => {
     try {
       event.stopPropagation();
       set((state) => ({
@@ -293,7 +293,7 @@ const initActions = (set, get) => ({
           isUpdating: true,
         },
       }));
-      await patchUnread.request({ notificationId: id });
+      await patchUnread.request({ userId, notificationId: id });
       set((state) => ({
         ...state,
         notifications: {

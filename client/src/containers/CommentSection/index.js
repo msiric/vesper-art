@@ -113,7 +113,7 @@ const CommentSection = ({
       />
       <PromptModal
         open={modal.open}
-        handleConfirm={() => deleteComment({ artworkId, commentId: modal.id })}
+        handleConfirm={() => deleteComment({ userId, commentId: modal.id })}
         handleClose={closeModal}
         ariaLabel="Delete comment"
         promptTitle="Are you sure you want to delete this comment?"

@@ -21,6 +21,7 @@ import { isFormDisabled } from "../../utils/helpers";
 import artworkModifierClasses from "./styles";
 
 const ArtworkModifier = ({ paramId }) => {
+  const userId = useUserStore((state) => state.id);
   const stripeId = useUserStore((state) => state.stripeId);
 
   const artwork = useArtworkUpdate((state) => state.artwork.data);
@@ -81,7 +82,7 @@ const ArtworkModifier = ({ paramId }) => {
   const classes = artworkModifierClasses();
 
   const onSubmit = async (values) => {
-    await updateArtwork({ artworkId: artwork.id, values });
+    await updateArtwork({ userId, artworkId: artwork.id, values });
     history.push({
       pathname: "/",
       state: { message: "Artwork updated" },
@@ -117,7 +118,7 @@ const ArtworkModifier = ({ paramId }) => {
 
   useEffect(() => {
     Promise.all([
-      fetchArtwork({ artworkId: paramId }),
+      fetchArtwork({ userId, artworkId: paramId }),
       ...(stripeId && [fetchCapabilities({ stripeId })]),
     ]);
   }, []);

@@ -160,14 +160,14 @@ export const postLogout = {
   error: { message: "Failed to log out user", variant: "error" },
 };
 export const patchRead = {
-  request: async ({ notificationId }) =>
-    await ax.post(`/api/notifications/${notificationId}`),
+  request: async ({ userId, notificationId }) =>
+    await ax.post(`/api/users/${userId}/notifications/${notificationId}`),
   success: { message: "Notification successfully read", variant: "success" },
   error: { message: "Failed to read notification", variant: "error" },
 };
 export const patchUnread = {
-  request: async ({ notificationId }) =>
-    await ax.delete(`/api/notifications/${notificationId}`),
+  request: async ({ userId, notificationId }) =>
+    await ax.delete(`/api/users/${userId}/notifications/${notificationId}`),
   success: { message: "Notification successfully unread", variant: "success" },
   error: { message: "Failed to unread notification", variant: "error" },
 };

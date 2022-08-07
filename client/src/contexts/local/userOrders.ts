@@ -17,9 +17,10 @@ export const initialState = {
 const initState = () => ({ ...initialState });
 
 const initActions = (set, get) => ({
-  fetchOrders: async ({ display }) => {
+  fetchOrders: async ({ userId, display }) => {
     try {
       const { data } = await getOrders.request({
+        userId,
         display,
       });
       set((state) => ({

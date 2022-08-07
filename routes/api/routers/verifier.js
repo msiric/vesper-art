@@ -3,6 +3,7 @@ import { verifyLicense } from "../../../controllers/verifier";
 import { requestHandler as handler } from "../../../middleware/index";
 const router = express.Router();
 
+// Public routes
 router
   .route("/verifier")
   // $TODO not tested

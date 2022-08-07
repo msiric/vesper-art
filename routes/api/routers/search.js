@@ -4,6 +4,7 @@ import { requestHandler as handler } from "../../../middleware/index";
 
 const router = express.Router();
 
+// Public routes
 router.route("/search").get(
   handler(getResults, false, (req, res, next) => ({
     searchQuery: req.query.q,

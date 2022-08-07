@@ -113,7 +113,7 @@ export const postSignUp = async ({
 export const postLogIn = async ({
   userUsername,
   userPassword,
-  res,
+  response,
   connection,
 }) => {
   await loginValidation.validate({ userUsername, userPassword });
@@ -139,7 +139,9 @@ export const postLogIn = async ({
 
     const { tokenPayload, userInfo } = formatTokenData({ user: foundUser });
 
-    sendRefreshToken(res, createRefreshToken({ userData: tokenPayload }));
+    const refreshToken = createRefreshToken({ userData: tokenPayload });
+
+    sendRefreshToken({ response, refreshToken });
 
     return {
       accessToken: createAccessToken({ userData: tokenPayload }),
@@ -149,12 +151,12 @@ export const postLogIn = async ({
   throw createError(...formatError(errors.userDoesNotExist));
 };
 
-export const postLogOut = ({ res, connection }) => {
-  return logUserOut(res);
+export const postLogOut = ({ response, connection }) => {
+  return logUserOut({ response });
 };
 
-export const postRefreshToken = async ({ req, res, next, connection }) => {
-  return await refreshAccessToken(req, res, next, connection);
+export const postRefreshToken = async ({ cookies, response, connection }) => {
+  return await refreshAccessToken({ cookies, response, connection });
 };
 
 // $TODO not used?

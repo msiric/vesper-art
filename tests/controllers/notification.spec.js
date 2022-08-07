@@ -73,25 +73,37 @@ describe("Notification tests", () => {
     await closeConnection(connection);
   });
 
-  describe("/api/notifications", () => {
+  describe("/api/users/:userId/notifications", () => {
     it("should fetch buyer notifications", async () => {
-      const res = await request(app, sellerToken).get("/api/notifications");
+      const res = await request(app, sellerToken).get(
+        `/api/users/${seller.id}/notifications`
+      );
       expect(res.body.notifications).toHaveLength(sellerNotifications.length);
       expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
+    it("should throw a 403 error if notifications are fetched by non owner", async () => {
+      const res = await request(app, buyerToken).get(
+        `/api/users/${seller.id}/notifications`
+      );
+      expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
+    });
+
     it("should throw an error if user is not authenticated", async () => {
-      const res = await request(app).get("/api/notifications");
+      const res = await request(app).get(
+        `/api/users/${seller.id}/notifications`
+      );
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
       expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
   });
 
-  describe("/api/notifications/:notificationId", () => {
+  describe("/api/users/:userId/notifications/:notificationId", () => {
     describe("readNotification", () => {
       it("should read a notification", async () => {
         const res = await request(app, sellerToken).post(
-          `/api/notifications/${unreadNotificationsBySeller[0].id}`
+          `/api/users/${seller.id}/notifications/${unreadNotificationsBySeller[0].id}`
         );
         expect(res.body.message).toEqual(responses.notificationRead.message);
         expect(res.statusCode).toEqual(responses.notificationRead.status);
@@ -99,15 +111,23 @@ describe("Notification tests", () => {
 
       it("should throw an error if notification is not found", async () => {
         const res = await request(app, sellerToken).post(
-          `/api/notifications/${unusedUuid}`
+          `/api/users/${seller.id}/notifications/${unusedUuid}`
         );
         expect(res.body.message).toEqual(errors.notificationNotFound.message);
         expect(res.statusCode).toEqual(errors.notificationNotFound.status);
       });
 
+      it("should throw a 403 error if notification is read by non owner", async () => {
+        const res = await request(app, buyerToken).post(
+          `/api/users/${seller.id}/notifications/${unreadNotificationsBySeller[0].id}`
+        );
+        expect(res.body.message).toEqual(errors.notAuthorized.message);
+        expect(res.statusCode).toEqual(errors.notAuthorized.status);
+      });
+
       it("should throw an error if user is not authenticated", async () => {
         const res = await request(app).post(
-          `/api/notifications/${unreadNotificationsBySeller[0].id}`
+          `/api/users/${seller.id}/notifications/${unreadNotificationsBySeller[0].id}`
         );
         expect(res.body.message).toEqual(errors.forbiddenAccess.message);
         expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
@@ -117,7 +137,7 @@ describe("Notification tests", () => {
     describe("unreadNotification", () => {
       it("should unread a notification", async () => {
         const res = await request(app, sellerToken).delete(
-          `/api/notifications/${readNotificationsBySeller[0].id}`
+          `/api/users/${seller.id}/notifications/${readNotificationsBySeller[0].id}`
         );
         expect(res.body.message).toEqual(responses.notificationUnread.message);
         expect(res.statusCode).toEqual(responses.notificationUnread.status);
@@ -125,15 +145,23 @@ describe("Notification tests", () => {
 
       it("should throw an error if notification is not found", async () => {
         const res = await request(app, sellerToken).delete(
-          `/api/notifications/${unusedUuid}`
+          `/api/users/${seller.id}/notifications/${unusedUuid}`
         );
         expect(res.body.message).toEqual(errors.notificationNotFound.message);
         expect(res.statusCode).toEqual(errors.notificationNotFound.status);
       });
 
+      it("should throw a 403 error if notification is unread by non owner", async () => {
+        const res = await request(app, buyerToken).delete(
+          `/api/users/${seller.id}/notifications/${readNotificationsBySeller[0].id}`
+        );
+        expect(res.body.message).toEqual(errors.notAuthorized.message);
+        expect(res.statusCode).toEqual(errors.notAuthorized.status);
+      });
+
       it("should throw an error if user is not authenticated", async () => {
         const res = await request(app).delete(
-          `/api/notifications/${readNotificationsBySeller[0].id}`
+          `/api/users/${seller.id}/notifications/${readNotificationsBySeller[0].id}`
         );
         expect(res.body.message).toEqual(errors.forbiddenAccess.message);
         expect(res.statusCode).toEqual(errors.forbiddenAccess.status);

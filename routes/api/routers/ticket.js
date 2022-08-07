@@ -2,6 +2,7 @@ import express from "express";
 
 const router = express.Router();
 
+// Authenticated routes
 // $TODO no automated tests
 // $TODO only for test (remove in prod)
 router.route("/contact");

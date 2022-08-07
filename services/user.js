@@ -303,7 +303,6 @@ export const fetchArtworkOrders = async ({ userId, artworkId, connection }) => {
   return foundPurchases;
 };
 
-// $TODO needs to be improved
 export const fetchUserPurchasesWithMedia = async ({
   userId,
   cursor,
@@ -718,8 +717,6 @@ export const editUserStripe = async ({ userId, stripeId, connection }) => {
   return updatedUser;
 };
 
-// $Needs testing (mongo -> postgres)
-// $TODO needs work
 export const addUserAvatar = async ({
   avatarId,
   userId,
@@ -753,8 +750,6 @@ export const addUserAvatar = async ({
   return savedAvatar;
 };
 
-// $Needs testing (mongo -> postgres)
-// $TODO needs work
 export const editUserAvatar = async ({ userId, avatarUpload, connection }) => {
   // foundUser.avatar.source = avatarUpload.fileMedia;
   // foundUser.avatar.dominant = avatarUpload.fileDominant;
