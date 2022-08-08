@@ -56,8 +56,6 @@ export const updateAccessToken = async ({ cookies, response, connection }) => {
 
   sendRefreshToken({ response, refreshToken: newRefreshToken });
 
-  console.log("final", response);
-
   return {
     ok: true,
     accessToken: createAccessToken({ userData: tokenPayload }),

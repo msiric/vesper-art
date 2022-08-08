@@ -3,7 +3,6 @@ import path from "path";
 import app from "../../app";
 import { countries, statusCodes } from "../../common/constants";
 import { errors as validationErrors, ranges } from "../../common/validation";
-import { ArtworkVisibility } from "../../entities/Artwork";
 import * as s3Utils from "../../lib/s3";
 import * as artworkServices from "../../services/artwork";
 import { fetchAllArtworks } from "../../services/artwork";
@@ -60,31 +59,19 @@ const removeVersionMock = jest.spyOn(artworkServices, "removeArtworkVersion");
 
 let connection,
   buyer,
-  buyerCookie,
   buyerToken,
   seller,
-  sellerCookie,
   sellerToken,
-  impartial,
-  impartialCookie,
-  impartialToken,
   avatar,
-  avatarCookie,
   avatarToken,
   artwork,
   artworkBySeller,
-  invisibleArtworkBySeller,
-  inactiveArtworkBySeller,
-  visibleArtworkBySeller,
   activeArtworkBySeller,
-  invisibleAndInactiveArtworkBySeller,
-  visibleAndActiveArtworkBySeller,
   buyerPurchases,
   sellerSales,
   unorderedArtwork,
   onceOrderedArtworkWithNewVersion,
   multiOrderedArtworkWithNoNewVersions,
-  uniqueOrders,
   firstOrderDate,
   lastOrderDate,
   startDate,
@@ -94,7 +81,7 @@ describe("User tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();
-    [buyer, seller, impartial, avatar, artwork, buyerPurchases, sellerSales] =
+    [buyer, seller, avatar, artwork, buyerPurchases, sellerSales] =
       await Promise.all([
         fetchUserByUsername({
           userUsername: validUsers.buyer.username,
@@ -119,17 +106,6 @@ describe("User tests", () => {
           connection,
         }),
         fetchUserByUsername({
-          userUsername: validUsers.impartial.username,
-          selection: [
-            ...USER_SELECTION["ESSENTIAL_INFO"](),
-            ...USER_SELECTION["STRIPE_INFO"](),
-            ...USER_SELECTION["VERIFICATION_INFO"](),
-            ...USER_SELECTION["AUTH_INFO"](),
-            ...USER_SELECTION["LICENSE_INFO"](),
-          ],
-          connection,
-        }),
-        fetchUserByUsername({
           userUsername: validUsers.avatar.username,
           selection: [
             ...USER_SELECTION["ESSENTIAL_INFO"](),
@@ -144,31 +120,13 @@ describe("User tests", () => {
         fetchUserPurchases({ userId: validUsers.buyer.id, connection }),
         fetchUserSales({ userId: validUsers.seller.id, connection }),
       ]);
-    ({ cookie: buyerCookie, token: buyerToken } = logUserIn(buyer));
-    ({ cookie: sellerCookie, token: sellerToken } = logUserIn(seller));
-    ({ cookie: impartialCookie, token: impartialToken } = logUserIn(impartial));
-    ({ cookie: avatarCookie, token: avatarToken } = logUserIn(avatar));
+    ({ token: buyerToken } = logUserIn(buyer));
+    ({ token: sellerToken } = logUserIn(seller));
+    ({ token: avatarToken } = logUserIn(avatar));
 
     artworkBySeller = artwork.filter((item) => item.owner.id === seller.id);
-    invisibleArtworkBySeller = artworkBySeller.filter(
-      (item) => item.visibility === ArtworkVisibility.invisible
-    );
-    inactiveArtworkBySeller = artworkBySeller.filter(
-      (item) => item.active === false
-    );
-    visibleArtworkBySeller = artworkBySeller.filter(
-      (item) => item.visibility === ArtworkVisibility.visible
-    );
     activeArtworkBySeller = artworkBySeller.filter(
       (item) => item.active === true
-    );
-    invisibleAndInactiveArtworkBySeller = artworkBySeller.filter(
-      (item) =>
-        item.visibility === ArtworkVisibility.invisible && item.active === false
-    );
-    visibleAndActiveArtworkBySeller = artworkBySeller.filter(
-      (item) =>
-        item.visibility === ArtworkVisibility.visible && item.active === true
     );
     unorderedArtwork = findUnorderedArtwork(
       activeArtworkBySeller,
@@ -178,7 +136,6 @@ describe("User tests", () => {
     multiOrderedArtworkWithNoNewVersions = findUniqueOrders(
       findMultiOrderedArtwork(entities.Order)
     );
-    uniqueOrders = findUniqueOrders(entities.Order);
     firstOrderDate = format(new Date(sellerSales[0].created), DATE_FORMAT);
     lastOrderDate = format(
       new Date(sellerSales[sellerSales.length - 1].created),
@@ -469,228 +426,6 @@ describe("User tests", () => {
         expect(res.body.message).toEqual(errors.notAuthorized.message);
         expect(res.statusCode).toEqual(errors.notAuthorized.status);
       });
-    });
-  });
-
-  describe("/api/users/:userUsername/artwork", () => {
-    let userArtwork;
-    beforeAll(() => {
-      userArtwork = entities.Artwork.filter(
-        (item) => item.ownerId === buyer.id
-      );
-    });
-    it("should fetch user artwork", async () => {
-      const res = await request(app).get(`/api/users/${buyer.name}/artwork`);
-      expect(res.body.artwork).toHaveLength(userArtwork.length);
-      expect(res.statusCode).toEqual(statusCodes.ok);
-    });
-
-    it("should limit user artwork to 1", async () => {
-      const limit = 1;
-      const res = await request(app).get(
-        `/api/users/${buyer.name}/artwork?cursor=&limit=${limit}`
-      );
-      expect(res.body.artwork).toHaveLength(limit);
-      expect(res.statusCode).toEqual(statusCodes.ok);
-    });
-
-    it("should limit user artwork to 1 and skip the first one", async () => {
-      const cursor = userArtwork[0].id;
-      const limit = 1;
-      const res = await request(app).get(
-        `/api/users/${buyer.name}/artwork?cursor=${cursor}&limit=${limit}`
-      );
-      expect(res.body.artwork[0].id).toEqual(userArtwork[1].id);
-      expect(res.statusCode).toEqual(statusCodes.ok);
-    });
-
-    it("should throw an error if user is not found", async () => {
-      const res = await request(app).get(`/api/users/nonExistentUser/artwork`);
-      expect(res.body.message).toEqual(errors.userNotFound.message);
-      expect(res.statusCode).toEqual(errors.userNotFound.status);
-    });
-  });
-
-  describe("/api/users/:userUsername/favorites", () => {
-    let userFavorites;
-    beforeAll(() => {
-      userFavorites = entities.Favorite.filter(
-        (item) => item.ownerId === seller.id
-      );
-    });
-    it("should fetch user favorites", async () => {
-      const res = await request(app).get(`/api/users/${seller.name}/favorites`);
-      expect(res.body.favorites).toHaveLength(userFavorites.length);
-      expect(res.statusCode).toEqual(statusCodes.ok);
-    });
-
-    it("should limit user favorites to 1", async () => {
-      const limit = 1;
-      const res = await request(app).get(
-        `/api/users/${seller.name}/favorites?cursor=&limit=${limit}`
-      );
-      expect(res.body.favorites).toHaveLength(limit);
-      expect(res.statusCode).toEqual(statusCodes.ok);
-    });
-
-    it("should limit user favorites to 1 and skip the first one", async () => {
-      const cursor = userFavorites[0].id;
-      const limit = 1;
-      const res = await request(app).get(
-        `/api/users/${seller.name}/favorites?cursor=${cursor}&limit=${limit}`
-      );
-      expect(res.body.favorites[0].id).toEqual(userFavorites[1].id);
-      expect(res.statusCode).toEqual(statusCodes.ok);
-    });
-
-    it("should throw an error if user is not found", async () => {
-      const res = await request(app).get(
-        `/api/users/nonExistentUser/favorites`
-      );
-      expect(res.body.message).toEqual(errors.userNotFound.message);
-      expect(res.statusCode).toEqual(errors.userNotFound.status);
-    });
-
-    it("should throw an error if user has disabled displaying favorites", async () => {
-      const res = await request(app).get(`/api/users/${buyer.name}/favorites`);
-      expect(res.body.message).toEqual(errors.userFavoritesNotAllowed.message);
-      expect(res.statusCode).toEqual(errors.userFavoritesNotAllowed.status);
-    });
-  });
-
-  describe("/api/users/:userId/my_artwork", () => {
-    it("should fetch user artwork", async () => {
-      const res = await request(app, sellerToken).get(
-        `/api/users/${seller.id}/my_artwork`
-      );
-      expect(res.body.artwork).toHaveLength(activeArtworkBySeller.length);
-      expect(res.statusCode).toEqual(statusCodes.ok);
-    });
-
-    it("should limit user artwork to 1", async () => {
-      const limit = 1;
-      const res = await request(app, sellerToken).get(
-        `/api/users/${seller.id}/my_artwork?cursor=&limit=${limit}`
-      );
-      expect(res.body.artwork).toHaveLength(limit);
-      expect(res.statusCode).toEqual(statusCodes.ok);
-    });
-
-    it("should limit user artwork to 1 and skip the first one", async () => {
-      // has to be reversed since it's coming from the endpoint that serves artwork in descending order
-      const sellerArtwork = activeArtworkBySeller.reverse();
-      const cursor = sellerArtwork[0].id;
-      const limit = 1;
-      const res = await request(app, sellerToken).get(
-        `/api/users/${seller.id}/my_artwork?cursor=${cursor}&limit=${limit}`
-      );
-      expect(res.body.artwork[0].id).toEqual(sellerArtwork[1].id);
-      expect(res.statusCode).toEqual(statusCodes.ok);
-    });
-
-    it("should throw an error if user is not authenticated", async () => {
-      const res = await request(app).get(`/api/users/${seller.id}/my_artwork`);
-      expect(res.body.message).toEqual(errors.forbiddenAccess.message);
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
-    });
-
-    it("should throw an error if user is not authorized", async () => {
-      const res = await request(app, buyerToken).get(
-        `/api/users/${seller.id}/my_artwork`
-      );
-      expect(res.body.message).toEqual(errors.notAuthorized.message);
-      expect(res.statusCode).toEqual(errors.notAuthorized.status);
-    });
-  });
-
-  describe("/api/users/:userId/uploads", () => {
-    it("should fetch user uploads", async () => {
-      const res = await request(app, sellerToken).get(
-        `/api/users/${seller.id}/uploads`
-      );
-      expect(res.body.artwork).toHaveLength(
-        visibleAndActiveArtworkBySeller.length
-      );
-      expect(res.body.artwork[0].current.media.source).toBeTruthy();
-      expect(res.statusCode).toEqual(statusCodes.ok);
-    });
-
-    it("should limit user uploads to 1", async () => {
-      const limit = 1;
-      const res = await request(app, sellerToken).get(
-        `/api/users/${seller.id}/uploads?cursor=&limit=${limit}`
-      );
-      expect(res.body.artwork).toHaveLength(limit);
-      expect(res.statusCode).toEqual(statusCodes.ok);
-    });
-
-    it("should limit user uploads to 1 and skip the first one", async () => {
-      // has to be reversed since it's coming from the endpoint that serves artwork in descending order
-      const sellerArtwork = visibleAndActiveArtworkBySeller.reverse();
-      const cursor = sellerArtwork[0].id;
-      const limit = 1;
-      const res = await request(app, sellerToken).get(
-        `/api/users/${seller.id}/uploads?cursor=${cursor}&limit=${limit}`
-      );
-      expect(res.body.artwork[0].id).toEqual(sellerArtwork[1].id);
-      expect(res.statusCode).toEqual(statusCodes.ok);
-    });
-
-    it("should throw an error if user is not authenticated", async () => {
-      const res = await request(app).get(`/api/users/${seller.id}/uploads`);
-      expect(res.body.message).toEqual(errors.forbiddenAccess.message);
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
-    });
-
-    it("should throw an error if user is not authorized", async () => {
-      const res = await request(app, buyerToken).get(
-        `/api/users/${seller.id}/uploads`
-      );
-      expect(res.body.message).toEqual(errors.notAuthorized.message);
-      expect(res.statusCode).toEqual(errors.notAuthorized.status);
-    });
-  });
-
-  describe("/api/users/:userId/ownership", () => {
-    it("should fetch user ownership", async () => {
-      const res = await request(app, buyerToken).get(
-        `/api/users/${buyer.id}/ownership`
-      );
-      expect(res.body.purchases).toHaveLength(uniqueOrders.length);
-      expect(res.body.purchases[0].version.media.source).toBeTruthy();
-      expect(res.statusCode).toEqual(statusCodes.ok);
-    });
-
-    it("should limit user ownership to 1", async () => {
-      const limit = 1;
-      const res = await request(app, buyerToken).get(
-        `/api/users/${buyer.id}/ownership?cursor=&limit=${limit}`
-      );
-      expect(res.body.purchases).toHaveLength(limit);
-      expect(res.statusCode).toEqual(statusCodes.ok);
-    });
-    it("should limit user ownership to 1 and skip the first one", async () => {
-      const cursor = uniqueOrders[0].id;
-      const limit = 1;
-      const res = await request(app, buyerToken).get(
-        `/api/users/${buyer.id}/ownership?cursor=${cursor}&limit=${limit}`
-      );
-      expect(res.body.purchases[0].id).toEqual(uniqueOrders[1].id);
-      expect(res.statusCode).toEqual(statusCodes.ok);
-    });
-
-    it("should throw an error if user is not authenticated", async () => {
-      const res = await request(app).get(`/api/users/${buyer.id}/ownership`);
-      expect(res.body.message).toEqual(errors.forbiddenAccess.message);
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
-    });
-
-    it("should throw an error if user is not authorized", async () => {
-      const res = await request(app, buyerToken).get(
-        `/api/users/${seller.id}/ownership`
-      );
-      expect(res.body.message).toEqual(errors.notAuthorized.message);
-      expect(res.statusCode).toEqual(errors.notAuthorized.status);
     });
   });
 

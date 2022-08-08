@@ -7,6 +7,11 @@ import {
   getArtworkComments,
   getArtworkDetails,
   getArtworkEdit,
+  getUserArtworkById,
+  getUserArtworkByUsername,
+  getUserFavorites,
+  getUserOwnership,
+  getUserUploads,
   postNewArtwork,
   unfavoriteArtwork,
   updateArtwork,
@@ -153,5 +158,46 @@ router
       artworkId: req.params.artworkId,
     }))
   );
+
+router.route("/users/:userUsername/artwork").get(
+  handler(getUserArtworkByUsername, false, (req, res, next) => ({
+    userUsername: req.params.userUsername,
+    cursor: req.query.cursor,
+    limit: req.query.limit,
+  }))
+);
+
+router.route("/users/:userUsername/favorites").get(
+  handler(getUserFavorites, false, (req, res, next) => ({
+    userUsername: req.params.userUsername,
+    cursor: req.query.cursor,
+    limit: req.query.limit,
+  }))
+);
+
+router.route("/users/:userId/my_artwork").get(
+  [isAuthenticated, isAuthorized],
+  handler(getUserArtworkById, false, (req, res, next) => ({
+    userId: req.params.userId,
+    cursor: req.query.cursor,
+    limit: req.query.limit,
+  }))
+);
+router.route("/users/:userId/uploads").get(
+  [isAuthenticated, isAuthorized],
+  handler(getUserUploads, false, (req, res, next) => ({
+    userId: req.params.userId,
+    cursor: req.query.cursor,
+    limit: req.query.limit,
+  }))
+);
+router.route("/users/:userId/ownership").get(
+  [isAuthenticated, isAuthorized],
+  handler(getUserOwnership, false, (req, res, next) => ({
+    userId: req.params.userId,
+    cursor: req.query.cursor,
+    limit: req.query.limit,
+  }))
+);
 
 export default router;

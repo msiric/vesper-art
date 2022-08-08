@@ -8,13 +8,14 @@ import {
   profileValidation,
 } from "../common/validation";
 import { renderEmail } from "../emails/template";
-import { deleteS3Object, getSignedS3Object } from "../lib/s3";
+import { deleteS3Object } from "../lib/s3";
 import {
   deactivateArtworkVersion,
   deactivateExistingArtwork,
   removeArtworkVersion,
 } from "../services/artwork";
 import { logUserOut } from "../services/auth";
+import { fetchUserFavorites } from "../services/fetchAllUserArtwork";
 import {
   fetchOrdersByArtwork,
   fetchOrdersByBuyer,
@@ -31,22 +32,16 @@ import {
   editUserPassword,
   editUserPreferences,
   editUserProfile,
-  fetchAllUserArtwork,
-  fetchUserArtwork,
   fetchUserByAuth,
   fetchUserById,
-  fetchUserByUsername,
-  fetchUserFavorites,
   fetchUserIdByEmail,
   fetchUserIdByUsername,
   fetchUserMedia,
   fetchUserNotifications,
   fetchUserProfile,
   fetchUserPurchases,
-  fetchUserPurchasesWithMedia,
   fetchUserReviews,
   fetchUserSales,
-  fetchUserUploadsWithMedia,
   removeExistingIntent,
   removeUserAvatar,
 } from "../services/user";
@@ -75,123 +70,6 @@ export const getUserProfile = async ({ userUsername, connection }) => {
     connection,
   });
   if (!isObjectEmpty(foundUser)) return { user: foundUser };
-  throw createError(...formatError(errors.userNotFound));
-};
-
-export const getUserArtworkByUsername = async ({
-  userUsername,
-  cursor,
-  limit,
-  connection,
-}) => {
-  const foundId = await fetchUserIdByUsername({
-    userUsername,
-    connection,
-  });
-  if (foundId) {
-    const foundArtwork = await fetchUserArtwork({
-      userId: foundId,
-      cursor,
-      limit,
-      connection,
-    });
-    return { artwork: foundArtwork };
-  }
-  throw createError(...formatError(errors.userNotFound));
-};
-
-export const getUserArtworkById = async ({
-  userId,
-  cursor,
-  limit,
-  connection,
-}) => {
-  const foundArtwork = await fetchAllUserArtwork({
-    userId,
-    cursor,
-    limit,
-    connection,
-  });
-  return { artwork: foundArtwork };
-};
-
-export const getUserUploads = async ({ userId, cursor, limit, connection }) => {
-  const foundArtwork = await fetchUserUploadsWithMedia({
-    userId,
-    cursor,
-    limit,
-    connection,
-  });
-  const formattedUploads = await Promise.all(
-    foundArtwork.map(async (upload) => {
-      const { url, file } = await getSignedS3Object({
-        fileLink: upload.current.media.source,
-        folderName: "artworkMedia/",
-      });
-      return {
-        ...upload,
-        current: {
-          ...upload.current,
-          media: { ...upload.current.media, source: url },
-        },
-      };
-    })
-  );
-  return { artwork: formattedUploads };
-};
-
-export const getUserOwnership = async ({
-  userId,
-  cursor,
-  limit,
-  connection,
-}) => {
-  const foundPurchases = await fetchUserPurchasesWithMedia({
-    userId,
-    cursor,
-    limit,
-    connection,
-  });
-  const formattedPurchases = await Promise.all(
-    foundPurchases.map(async (purchase) => {
-      const { url, file } = await getSignedS3Object({
-        fileLink: purchase.version.media.source,
-        folderName: "artworkMedia/",
-      });
-      return {
-        ...purchase,
-        version: {
-          ...purchase.version,
-          media: { ...purchase.version.media, source: url },
-        },
-      };
-    })
-  );
-  return { purchases: formattedPurchases };
-};
-
-export const getUserFavorites = async ({
-  userUsername,
-  cursor,
-  limit,
-  connection,
-}) => {
-  const foundUser = await fetchUserByUsername({
-    userUsername,
-    connection,
-  });
-  if (!isObjectEmpty(foundUser)) {
-    if (foundUser.displayFavorites) {
-      const foundFavorites = await fetchUserFavorites({
-        userId: foundUser.id,
-        cursor,
-        limit,
-        connection,
-      });
-      return { favorites: foundFavorites };
-    }
-    throw createError(...formatError(errors.userFavoritesNotAllowed));
-  }
   throw createError(...formatError(errors.userNotFound));
 };
 

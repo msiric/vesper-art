@@ -6,7 +6,7 @@ import {
   isObjectEmpty,
 } from "../common/helpers";
 import { artworkValidation } from "../common/validation";
-import { deleteS3Object } from "../lib/s3";
+import { deleteS3Object, getSignedS3Object } from "../lib/s3";
 import {
   addNewArtwork,
   addNewCover,
@@ -16,6 +16,7 @@ import {
   deactivateArtworkVersion,
   deactivateExistingArtwork,
   fetchActiveArtworks,
+  fetchAllUserArtwork,
   fetchArtworkById,
   fetchArtworkComments,
   fetchArtworkDetails,
@@ -23,13 +24,21 @@ import {
   fetchArtworkMedia,
   fetchFavoriteByParents,
   fetchFavoritesCount,
+  fetchUserArtwork,
+  fetchUserFavorites,
+  fetchUserPurchasesWithMedia,
+  fetchUserUploadsWithMedia,
   removeArtworkVersion,
   removeExistingFavorite,
   updateArtworkVersion,
 } from "../services/artwork";
 import { fetchOrderByVersion, fetchOrdersByArtwork } from "../services/order";
 import { fetchStripeAccount } from "../services/stripe";
-import { fetchUserById } from "../services/user";
+import {
+  fetchUserById,
+  fetchUserByUsername,
+  fetchUserIdByUsername,
+} from "../services/user";
 import { USER_SELECTION } from "../utils/database";
 import {
   ARTWORK_KEYS,
@@ -371,4 +380,121 @@ export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
     throw createError(...formatError(errors.artworkUnfavoritedByOwner));
   }
   throw createError(...formatError(errors.artworkNotFound));
+};
+
+export const getUserArtworkByUsername = async ({
+  userUsername,
+  cursor,
+  limit,
+  connection,
+}) => {
+  const foundId = await fetchUserIdByUsername({
+    userUsername,
+    connection,
+  });
+  if (foundId) {
+    const foundArtwork = await fetchUserArtwork({
+      userId: foundId,
+      cursor,
+      limit,
+      connection,
+    });
+    return { artwork: foundArtwork };
+  }
+  throw createError(...formatError(errors.userNotFound));
+};
+
+export const getUserArtworkById = async ({
+  userId,
+  cursor,
+  limit,
+  connection,
+}) => {
+  const foundArtwork = await fetchAllUserArtwork({
+    userId,
+    cursor,
+    limit,
+    connection,
+  });
+  return { artwork: foundArtwork };
+};
+
+export const getUserUploads = async ({ userId, cursor, limit, connection }) => {
+  const foundArtwork = await fetchUserUploadsWithMedia({
+    userId,
+    cursor,
+    limit,
+    connection,
+  });
+  const formattedUploads = await Promise.all(
+    foundArtwork.map(async (upload) => {
+      const { url, file } = await getSignedS3Object({
+        fileLink: upload.current.media.source,
+        folderName: "artworkMedia/",
+      });
+      return {
+        ...upload,
+        current: {
+          ...upload.current,
+          media: { ...upload.current.media, source: url },
+        },
+      };
+    })
+  );
+  return { artwork: formattedUploads };
+};
+
+export const getUserOwnership = async ({
+  userId,
+  cursor,
+  limit,
+  connection,
+}) => {
+  const foundPurchases = await fetchUserPurchasesWithMedia({
+    userId,
+    cursor,
+    limit,
+    connection,
+  });
+  const formattedPurchases = await Promise.all(
+    foundPurchases.map(async (purchase) => {
+      const { url, file } = await getSignedS3Object({
+        fileLink: purchase.version.media.source,
+        folderName: "artworkMedia/",
+      });
+      return {
+        ...purchase,
+        version: {
+          ...purchase.version,
+          media: { ...purchase.version.media, source: url },
+        },
+      };
+    })
+  );
+  return { purchases: formattedPurchases };
+};
+
+export const getUserFavorites = async ({
+  userUsername,
+  cursor,
+  limit,
+  connection,
+}) => {
+  const foundUser = await fetchUserByUsername({
+    userUsername,
+    connection,
+  });
+  if (!isObjectEmpty(foundUser)) {
+    if (foundUser.displayFavorites) {
+      const foundFavorites = await fetchUserFavorites({
+        userId: foundUser.id,
+        cursor,
+        limit,
+        connection,
+      });
+      return { favorites: foundFavorites };
+    }
+    throw createError(...formatError(errors.userFavoritesNotAllowed));
+  }
+  throw createError(...formatError(errors.userNotFound));
 };
