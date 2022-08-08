@@ -1,11 +1,6 @@
 import { stripe } from "../lib/stripe";
 
-export const constructStripeEvent = async ({
-  body,
-  signature,
-  secret,
-  connection,
-}) => {
+export const constructStripeEvent = async ({ body, signature, secret }) => {
   const constructedEvent = await stripe.webhooks.constructEvent(
     body,
     signature,
@@ -14,11 +9,7 @@ export const constructStripeEvent = async ({
   return constructedEvent;
 };
 
-export const constructStripeLink = async ({
-  accountId,
-  serverDomain,
-  connection,
-}) => {
+export const constructStripeLink = async ({ accountId, serverDomain }) => {
   const createdLink = await stripe.accounts.createLoginLink(accountId, {
     redirect_url: `${serverDomain}/stripe/dashboard`,
   });
@@ -30,7 +21,6 @@ export const constructStripePayout = async ({
   payoutCurrency,
   payoutDescriptor,
   stripeId,
-  connection,
 }) => {
   const createdPayout = await stripe.payouts.create(
     {
@@ -46,7 +36,7 @@ export const constructStripePayout = async ({
 };
 
 // ovo je test za novi checkout (trenutno delayed)
-export const retrieveStripeIntent = async ({ intentId, connection }) => {
+export const retrieveStripeIntent = async ({ intentId }) => {
   const foundIntent = await stripe.paymentIntents.retrieve(intentId);
   console.log(foundIntent);
   return foundIntent;
@@ -59,7 +49,6 @@ export const constructStripeIntent = async ({
   intentFee,
   sellerId,
   orderData,
-  connection,
 }) => {
   console.log(
     "construct",
@@ -90,7 +79,6 @@ export const updateStripeIntent = async ({
   intentAmount,
   intentFee,
   orderData,
-  connection,
 }) => {
   const foundOrder = JSON.parse(intentData.metadata.orderData);
   const updatedIntent = await stripe.paymentIntents.update(intentData.id, {
@@ -107,19 +95,19 @@ export const updateStripeIntent = async ({
   return updatedIntent;
 };
 
-export const fetchStripeBalance = async ({ stripeId, connection }) => {
+export const fetchStripeBalance = async ({ stripeId }) => {
   const retrievedBalance = await stripe.balance.retrieve({
     stripe_account: stripeId,
   });
   return retrievedBalance;
 };
 
-export const fetchStripeAccount = async ({ accountId, connection }) => {
+export const fetchStripeAccount = async ({ accountId }) => {
   const retrievedAccount = await stripe.accounts.retrieve(accountId);
   return retrievedAccount;
 };
 
-export const issueStripeRefund = async ({ chargeData, connection }) => {
+export const issueStripeRefund = async ({ chargeData }) => {
   if (chargeData.length) {
     const refundedCharge = await stripe.refunds.create({
       charge: chargeData[0].id,

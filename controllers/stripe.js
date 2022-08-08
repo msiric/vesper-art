@@ -137,7 +137,6 @@ export const managePaymentIntent = async ({
             const verifiedIntent = !isObjectEmpty(foundIntent)
               ? await retrieveStripeIntent({
                   intentId: foundIntent.id,
-                  connection,
                 })
               : {};
             const shouldReinitialize =
@@ -227,14 +226,12 @@ export const managePaymentIntent = async ({
                         intentFee: platformTotal,
                         sellerId: foundVersion.artwork.owner.stripeId,
                         orderData,
-                        connection,
                       })
                     : await updateStripeIntent({
                         intentAmount: buyerTotal,
                         intentFee: platformTotal,
                         intentData: verifiedIntent,
                         orderData,
-                        connection,
                       });
                   // $TODO delete intent in the db if it succeeded or got canceled already
                   const savedIntent =
@@ -275,11 +272,7 @@ export const redirectToDashboard = () => {
   return { redirect: "/dashboard" };
 };
 
-export const redirectToStripe = async ({
-  accountId,
-  userOnboarded,
-  connection,
-}) => {
+export const redirectToStripe = async ({ accountId, userOnboarded }) => {
   if (!userOnboarded)
     throw createError(...formatError(errors.stripeOnboardingIncomplete));
   const loginLink = await constructStripeLink({
@@ -295,7 +288,6 @@ export const onboardUser = async ({
   locals,
   userBusinessAddress,
   userEmail,
-  connection,
 }) => {
   session.state = Math.random().toString(36).slice(2);
   session.id = locals.user.id;
@@ -354,8 +346,8 @@ export const assignStripeId = async ({ session, state, code, connection }) => {
   return { redirect: `${domain.client}/onboarded` };
 };
 
-export const fetchIntentById = async ({ userId, intentId, connection }) => {
-  const foundIntent = await retrieveStripeIntent({ intentId, connection });
+export const fetchIntentById = async ({ intentId }) => {
+  const foundIntent = await retrieveStripeIntent({ intentId });
   if (!isObjectEmpty(foundIntent)) {
     return {
       intent: foundIntent,
@@ -369,7 +361,6 @@ export const createPayout = async ({ userId, connection }) => {
   if (!isObjectEmpty(foundUser) && foundUser.stripeId) {
     const balance = await fetchStripeBalance({
       stripeId: foundUser.stripeId,
-      connection,
     });
     const { amount, currency } = balance.available[0];
     await constructStripePayout({
@@ -377,7 +368,6 @@ export const createPayout = async ({ userId, connection }) => {
       payoutCurrency: currency,
       payoutDescriptor: appName,
       stripeId: foundUser.stripeId,
-      connection,
     });
     return formatResponse(responses.payoutCreated);
   }
@@ -483,12 +473,10 @@ const processTransaction = async ({ intent, connection }) => {
     console.log("TRANSACTION FAILED", err);
     const foundIntent = await retrieveStripeIntent({
       intentId: intent.id,
-      connection,
     });
     if (!isObjectEmpty(foundIntent)) {
       const refundedCharge = await issueStripeRefund({
         chargeData: foundIntent.charges.data,
-        connection,
       });
     }
     throw createError(...formatError(errors.orderNotProcessed));
