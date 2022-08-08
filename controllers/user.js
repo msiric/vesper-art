@@ -16,7 +16,6 @@ import {
   removeArtworkVersion,
 } from "../services/artwork";
 import { logUserOut } from "../services/auth";
-import { fetchUserNotifications } from "../services/notification";
 import { fetchOrdersByArtwork } from "../services/order";
 import {
   addNewIntent,
@@ -184,40 +183,6 @@ export const getUserSettings = async ({ userId, connection }) => {
     return { user: foundUser };
   }
   throw createError(...formatError(errors.userNotFound));
-};
-
-export const getPreviousNotifications = async ({
-  userId,
-  cursor,
-  limit,
-  connection,
-}) => {
-  const direction = "previous";
-  const foundNotifications = await fetchUserNotifications({
-    userId,
-    cursor,
-    limit,
-    direction,
-    connection,
-  });
-  return { notifications: foundNotifications };
-};
-
-export const getLatestNotifications = async ({
-  userId,
-  cursor,
-  limit,
-  connection,
-}) => {
-  const direction = "latest";
-  const foundNotifications = await fetchUserNotifications({
-    userId,
-    cursor,
-    limit,
-    direction,
-    connection,
-  });
-  return { notifications: foundNotifications };
 };
 
 export const createUserIntent = async ({

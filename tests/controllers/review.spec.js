@@ -1,6 +1,6 @@
 import app from "../../app";
 import { errors as validationErrors } from "../../common/validation";
-import { fetchUserPurchases, fetchUserSales } from "../../services/order";
+import { fetchUserPurchases } from "../../services/order";
 import { fetchUserByUsername } from "../../services/user";
 import {
   closeConnection,
@@ -17,23 +17,18 @@ jest.setTimeout(3 * 60 * 1000);
 
 let connection,
   buyer,
-  buyerCookie,
   buyerToken,
   seller,
-  sellerCookie,
   sellerToken,
   buyerOrders,
-  sellerOrders,
   buyerOrdersWithReview,
-  buyerOrdersWithoutReview,
-  sellerOrdersWithReview,
-  sellerOrdersWithoutReview;
+  buyerOrdersWithoutReview;
 
 describe("Review tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();
-    [buyer, seller, buyerOrders, sellerOrders] = await Promise.all([
+    [buyer, seller, buyerOrders] = await Promise.all([
       fetchUserByUsername({
         userUsername: validUsers.buyer.username,
         selection: [
@@ -57,17 +52,11 @@ describe("Review tests", () => {
         connection,
       }),
       fetchUserPurchases({ userId: validUsers.buyer.id, connection }),
-      fetchUserSales({
-        userId: validUsers.seller.id,
-        connection,
-      }),
     ]);
-    ({ cookie: buyerCookie, token: buyerToken } = logUserIn(buyer));
-    ({ cookie: sellerCookie, token: sellerToken } = logUserIn(seller));
+    ({ token: buyerToken } = logUserIn(buyer));
+    ({ token: sellerToken } = logUserIn(seller));
     buyerOrdersWithReview = buyerOrders.filter((item) => !!item.review);
     buyerOrdersWithoutReview = buyerOrders.filter((item) => !item.review);
-    sellerOrdersWithReview = sellerOrders.filter((item) => !!item.review);
-    sellerOrdersWithoutReview = sellerOrders.filter((item) => !item.review);
   });
 
   afterAll(async () => {

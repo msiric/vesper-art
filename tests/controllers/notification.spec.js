@@ -8,7 +8,7 @@ import {
   USER_SELECTION,
 } from "../../utils/database";
 import { errors, responses } from "../../utils/statuses";
-import { validUsers } from "../fixtures/entities";
+import { entities, validUsers } from "../fixtures/entities";
 import { logUserIn, unusedUuid } from "../utils/helpers";
 import { request } from "../utils/request";
 
@@ -17,12 +17,9 @@ jest.setTimeout(3 * 60 * 1000);
 
 let connection,
   buyer,
-  buyerCookie,
   buyerToken,
   seller,
-  sellerCookie,
   sellerToken,
-  buyerNotifications,
   sellerNotifications,
   readNotificationsBySeller,
   unreadNotificationsBySeller;
@@ -31,38 +28,36 @@ describe("Notification tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();
-    [buyer, seller, buyerNotifications, sellerNotifications] =
-      await Promise.all([
-        fetchUserByUsername({
-          userUsername: validUsers.buyer.username,
-          selection: [
-            ...USER_SELECTION["ESSENTIAL_INFO"](),
-            ...USER_SELECTION["STRIPE_INFO"](),
-            ...USER_SELECTION["VERIFICATION_INFO"](),
-            ...USER_SELECTION["AUTH_INFO"](),
-            ...USER_SELECTION["LICENSE_INFO"](),
-          ],
-          connection,
-        }),
-        fetchUserByUsername({
-          userUsername: validUsers.seller.username,
-          selection: [
-            ...USER_SELECTION["ESSENTIAL_INFO"](),
-            ...USER_SELECTION["STRIPE_INFO"](),
-            ...USER_SELECTION["VERIFICATION_INFO"](),
-            ...USER_SELECTION["AUTH_INFO"](),
-            ...USER_SELECTION["LICENSE_INFO"](),
-          ],
-          connection,
-        }),
-        fetchExistingNotifications({ userId: validUsers.buyer.id, connection }),
-        fetchExistingNotifications({
-          userId: validUsers.seller.id,
-          connection,
-        }),
-      ]);
-    ({ cookie: buyerCookie, token: buyerToken } = logUserIn(buyer));
-    ({ cookie: sellerCookie, token: sellerToken } = logUserIn(seller));
+    [buyer, seller, sellerNotifications] = await Promise.all([
+      fetchUserByUsername({
+        userUsername: validUsers.buyer.username,
+        selection: [
+          ...USER_SELECTION["ESSENTIAL_INFO"](),
+          ...USER_SELECTION["STRIPE_INFO"](),
+          ...USER_SELECTION["VERIFICATION_INFO"](),
+          ...USER_SELECTION["AUTH_INFO"](),
+          ...USER_SELECTION["LICENSE_INFO"](),
+        ],
+        connection,
+      }),
+      fetchUserByUsername({
+        userUsername: validUsers.seller.username,
+        selection: [
+          ...USER_SELECTION["ESSENTIAL_INFO"](),
+          ...USER_SELECTION["STRIPE_INFO"](),
+          ...USER_SELECTION["VERIFICATION_INFO"](),
+          ...USER_SELECTION["AUTH_INFO"](),
+          ...USER_SELECTION["LICENSE_INFO"](),
+        ],
+        connection,
+      }),
+      fetchExistingNotifications({
+        userId: validUsers.seller.id,
+        connection,
+      }),
+    ]);
+    ({ token: buyerToken } = logUserIn(buyer));
+    ({ token: sellerToken } = logUserIn(seller));
     readNotificationsBySeller = sellerNotifications.filter((item) => item.read);
     unreadNotificationsBySeller = sellerNotifications.filter(
       (item) => !item.read
@@ -165,6 +160,112 @@ describe("Notification tests", () => {
         );
         expect(res.body.message).toEqual(errors.forbiddenAccess.message);
         expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
+      });
+    });
+
+    describe("/api/users/:userId/notifications/previous", () => {
+      let userNotifications;
+      beforeAll(() => {
+        userNotifications = entities.Notification.filter(
+          (item) => item.receiverId === seller.id
+        );
+      });
+      it("should fetch previous seller notifications", async () => {
+        const res = await request(app, sellerToken).get(
+          `/api/users/${seller.id}/notifications/previous`
+        );
+        expect(res.body.notifications).toHaveLength(userNotifications.length);
+        expect(res.statusCode).toEqual(statusCodes.ok);
+      });
+
+      it("should limit user notifications to 1", async () => {
+        const limit = 1;
+        const res = await request(app, sellerToken).get(
+          `/api/users/${seller.id}/notifications/previous?cursor=&limit=${limit}`
+        );
+        expect(res.body.notifications).toHaveLength(limit);
+        expect(res.statusCode).toEqual(statusCodes.ok);
+      });
+
+      it("should limit user notifications to 1 and skip the first one", async () => {
+        const cursor = userNotifications[userNotifications.length - 1].id;
+        const limit = 1;
+        const res = await request(app, sellerToken).get(
+          `/api/users/${seller.id}/notifications/previous?cursor=${cursor}&limit=${limit}`
+        );
+        expect(res.body.notifications[0].id).toEqual(
+          userNotifications[userNotifications.length - 2].id
+        );
+        expect(res.statusCode).toEqual(statusCodes.ok);
+      });
+
+      it("should throw an error if user is not authenticated", async () => {
+        const res = await request(app).get(
+          `/api/users/${seller.id}/notifications/previous`
+        );
+        expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
+      });
+
+      it("should throw an error if user is not authorized", async () => {
+        const res = await request(app, buyerToken).get(
+          `/api/users/${seller.id}/notifications/previous`
+        );
+        expect(res.body.message).toEqual(errors.notAuthorized.message);
+        expect(res.statusCode).toEqual(errors.notAuthorized.status);
+      });
+    });
+
+    describe("/api/users/:userId/notifications/latest", () => {
+      let userNotifications;
+      beforeAll(() => {
+        userNotifications = entities.Notification.filter(
+          (item) => item.receiverId === seller.id
+        );
+      });
+      it("should fetch latest seller notifications", async () => {
+        const res = await request(app, sellerToken).get(
+          `/api/users/${seller.id}/notifications/latest`
+        );
+        expect(res.body.notifications).toHaveLength(userNotifications.length);
+        expect(res.statusCode).toEqual(statusCodes.ok);
+      });
+
+      it("should limit user notifications to 1", async () => {
+        const limit = 1;
+        const res = await request(app, sellerToken).get(
+          `/api/users/${seller.id}/notifications/latest?cursor=&limit=${limit}`
+        );
+        expect(res.body.notifications).toHaveLength(limit);
+        expect(res.statusCode).toEqual(statusCodes.ok);
+      });
+
+      it("should limit user notifications to 1 and skip the first one", async () => {
+        const cursor = userNotifications[0].id;
+        const limit = 1;
+        const res = await request(app, sellerToken).get(
+          `/api/users/${seller.id}/notifications/latest?cursor=${cursor}&limit=${limit}`
+        );
+        expect(res.body.notifications[0].id).toEqual(
+          userNotifications[userNotifications.length - 1].id
+        );
+        expect(res.statusCode).toEqual(statusCodes.ok);
+      });
+
+      it("should throw an error if user is not authenticated", async () => {
+        const res = await request(app).get(
+          `/api/users/${seller.id}/notifications/latest`
+        );
+        expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
+      });
+
+      it("should throw an error if user is not authorized", async () => {
+        const res = await request(app, buyerToken).get(
+          `/api/users/${seller.id}/notifications/latest`
+        );
+        expect(res.body.message).toEqual(errors.notAuthorized.message);
+        expect(res.statusCode).toEqual(errors.notAuthorized.status);
       });
     });
   });

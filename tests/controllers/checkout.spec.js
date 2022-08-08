@@ -22,33 +22,14 @@ jest.setTimeout(3 * 60 * 1000);
 
 let connection,
   buyer,
-  buyerCookie,
   buyerToken,
   seller,
-  sellerCookie,
   sellerToken,
-  validResetUser,
-  validResetUserCookie,
-  validResetUserToken,
-  expiredResetUser,
-  expiredResetUserCookie,
-  expiredResetUserToken,
-  validVerificationUser,
-  validVerificationUserCookie,
-  validVerificationUserToken,
-  expiredVerificationUser,
-  expiredVerificationUserCookie,
-  expiredVerificationUserToken,
   artwork,
   artworkBySeller,
   artworkByBuyer,
   invisibleArtworkBySeller,
   inactiveArtworkBySeller,
-  visibleArtworkBySeller,
-  visibleArtworkByBuyer,
-  activeArtworkBySeller,
-  activeArtworkByBuyer,
-  invisibleAndInactiveArtworkBySeller,
   visibleAndActiveArtworkBySeller,
   visibleAndActiveArtworkByBuyer,
   orders,
@@ -58,16 +39,7 @@ describe("Checkout tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();
-    [
-      buyer,
-      seller,
-      validResetUser,
-      expiredResetUser,
-      validVerificationUser,
-      expiredVerificationUser,
-      artwork,
-      orders,
-    ] = await Promise.all([
+    [buyer, seller, artwork, orders] = await Promise.all([
       fetchUserByUsername({
         userUsername: validUsers.buyer.username,
         selection: [
@@ -90,67 +62,11 @@ describe("Checkout tests", () => {
         ],
         connection,
       }),
-      fetchUserByUsername({
-        userUsername: "validResetToken",
-        selection: [
-          ...USER_SELECTION["ESSENTIAL_INFO"](),
-          ...USER_SELECTION["STRIPE_INFO"](),
-          ...USER_SELECTION["VERIFICATION_INFO"](),
-          ...USER_SELECTION["AUTH_INFO"](),
-          ...USER_SELECTION["LICENSE_INFO"](),
-        ],
-        connection,
-      }),
-      fetchUserByUsername({
-        userUsername: "expiredResetToken",
-        selection: [
-          ...USER_SELECTION["ESSENTIAL_INFO"](),
-          ...USER_SELECTION["STRIPE_INFO"](),
-          ...USER_SELECTION["VERIFICATION_INFO"](),
-          ...USER_SELECTION["AUTH_INFO"](),
-          ...USER_SELECTION["LICENSE_INFO"](),
-        ],
-        connection,
-      }),
-      fetchUserByUsername({
-        userUsername: "validVerificationToken",
-        selection: [
-          ...USER_SELECTION["ESSENTIAL_INFO"](),
-          ...USER_SELECTION["STRIPE_INFO"](),
-          ...USER_SELECTION["VERIFICATION_INFO"](),
-          ...USER_SELECTION["AUTH_INFO"](),
-          ...USER_SELECTION["LICENSE_INFO"](),
-        ],
-        connection,
-      }),
-      fetchUserByUsername({
-        userUsername: "expiredVerificationToken",
-        selection: [
-          ...USER_SELECTION["ESSENTIAL_INFO"](),
-          ...USER_SELECTION["STRIPE_INFO"](),
-          ...USER_SELECTION["VERIFICATION_INFO"](),
-          ...USER_SELECTION["AUTH_INFO"](),
-          ...USER_SELECTION["LICENSE_INFO"](),
-        ],
-        connection,
-      }),
       fetchAllArtworks({ connection }),
       fetchUserPurchases({ userId: validUsers.buyer.id, connection }),
     ]);
-    ({ cookie: buyerCookie, token: buyerToken } = logUserIn(buyer));
-    ({ cookie: sellerCookie, token: sellerToken } = logUserIn(seller));
-    ({ cookie: validResetUserCookie, token: validResetUserToken } =
-      logUserIn(validResetUser));
-    ({ cookie: expiredResetUserCookie, token: expiredResetUserToken } =
-      logUserIn(expiredResetUser));
-    ({
-      cookie: validVerificationUserCookie,
-      token: validVerificationUserToken,
-    } = logUserIn(validVerificationUser));
-    ({
-      cookie: expiredVerificationUserCookie,
-      token: expiredVerificationUserToken,
-    } = logUserIn(expiredVerificationUser));
+    ({ token: buyerToken } = logUserIn(buyer));
+    ({ token: sellerToken } = logUserIn(seller));
 
     artworkBySeller = artwork.filter((item) => item.owner.id === seller.id);
     artworkByBuyer = artwork.filter((item) => item.owner.id === buyer.id);
@@ -159,22 +75,6 @@ describe("Checkout tests", () => {
     );
     inactiveArtworkBySeller = artworkBySeller.filter(
       (item) => item.active === false
-    );
-    visibleArtworkBySeller = artworkBySeller.filter(
-      (item) => item.visibility === ArtworkVisibility.visible
-    );
-    visibleArtworkByBuyer = artworkByBuyer.filter(
-      (item) => item.visibility === ArtworkVisibility.visible
-    );
-    activeArtworkBySeller = artworkBySeller.filter(
-      (item) => item.active === true
-    );
-    activeArtworkByBuyer = artworkByBuyer.filter(
-      (item) => item.active === true
-    );
-    invisibleAndInactiveArtworkBySeller = artworkBySeller.filter(
-      (item) =>
-        item.visibility === ArtworkVisibility.invisible && item.active === false
     );
     visibleAndActiveArtworkBySeller = artworkBySeller.filter(
       (item) =>

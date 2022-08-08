@@ -23,17 +23,12 @@ let connection,
   sellerCookie,
   sellerToken,
   validResetUser,
-  validResetUserCookie,
   validResetUserToken,
   expiredResetUser,
-  expiredResetUserCookie,
-  expiredResetUserToken,
   validVerificationUser,
   validVerificationUserCookie,
   validVerificationUserToken,
-  expiredVerificationUser,
-  expiredVerificationUserCookie,
-  expiredVerificationUserToken;
+  expiredVerificationUser;
 
 describe("Auth tests", () => {
   beforeEach(() => jest.clearAllMocks());
@@ -103,18 +98,11 @@ describe("Auth tests", () => {
       }),
     ]);
     ({ cookie: sellerCookie, token: sellerToken } = logUserIn(seller));
-    ({ cookie: validResetUserCookie, token: validResetUserToken } =
-      logUserIn(validResetUser));
-    ({ cookie: expiredResetUserCookie, token: expiredResetUserToken } =
-      logUserIn(expiredResetUser));
+    ({ token: validResetUserToken } = logUserIn(validResetUser));
     ({
       cookie: validVerificationUserCookie,
       token: validVerificationUserToken,
     } = logUserIn(validVerificationUser));
-    ({
-      cookie: expiredVerificationUserCookie,
-      token: expiredVerificationUserToken,
-    } = logUserIn(expiredVerificationUser));
   });
 
   afterAll(async () => {

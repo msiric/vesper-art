@@ -20,7 +20,6 @@ import { domain, stripe as stripeConfig } from "../config/secret";
 import socketApi from "../lib/socket";
 import { fetchVersionDetails } from "../services/artwork";
 import { fetchDiscountById } from "../services/discount";
-import { addNewLicense } from "../services/license";
 import { addNewNotification } from "../services/notification";
 import { addNewOrder, fetchArtworkOrders } from "../services/order";
 import {
@@ -41,6 +40,7 @@ import {
   fetchUserById,
   removeExistingIntent,
 } from "../services/user";
+import { addNewLicense } from "../services/verifier";
 import { USER_SELECTION } from "../utils/database";
 import { formatError, formatResponse, generateUuids } from "../utils/helpers";
 import { calculateTotalCharge } from "../utils/payment";

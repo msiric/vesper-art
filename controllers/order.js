@@ -1,21 +1,27 @@
 import createError from "http-errors";
 import { isObjectEmpty } from "../common/helpers";
+import { reviewValidation } from "../common/validation";
 import { getSignedS3Object } from "../lib/s3";
+import socketApi from "../lib/socket";
 import { fetchUserFavorites } from "../services/artwork";
+import { addNewNotification } from "../services/notification";
 import {
+  addOrderReview,
   fetchArtworkOrders,
   fetchOrderDetails,
   fetchOrderMedia,
   fetchOrdersByBuyer,
   fetchOrdersBySeller,
+  fetchUserPurchase,
   fetchUserPurchases,
   fetchUserReviews,
   fetchUserSales,
 } from "../services/order";
+import { addNewReview } from "../services/review";
 import { fetchStripeBalance } from "../services/stripe";
 import { fetchUserById } from "../services/user";
-import { formatError } from "../utils/helpers";
-import { errors } from "../utils/statuses";
+import { formatError, formatResponse, generateUuids } from "../utils/helpers";
+import { errors, responses } from "../utils/statuses";
 
 // ovo je test za novi checkout (trenutno delayed)
 // $TODO validacija licenci
@@ -135,4 +141,60 @@ export const getUserPurchases = async ({ userId, start, end, connection }) => {
   });
   // $TODO change name
   return { statistics: foundOrders };
+};
+
+export const postReview = async ({
+  userId,
+  reviewRating,
+  orderId,
+  connection,
+}) => {
+  await reviewValidation.validate({ reviewRating });
+  const foundOrder = await fetchUserPurchase({
+    orderId,
+    userId,
+    connection,
+  });
+  if (!isObjectEmpty(foundOrder)) {
+    if (!foundOrder.review) {
+      const { reviewId, notificationId } = generateUuids({
+        reviewId: null,
+        notificationId: null,
+      });
+      // $TODO should this be saved or just returned?
+      await addNewReview({
+        reviewId,
+        orderData: foundOrder,
+        reviewerId: userId,
+        revieweeId: foundOrder.sellerId,
+        reviewRating,
+        connection,
+      });
+      /*         const numerator = currency(foundOrder.seller.rating)
+          .multiply(foundOrder.seller.reviews)
+          .add(reviewRating);
+        const denominator = currency(foundOrder.seller.reviews).add(1);
+        const newRating = currency(numerator).divide(denominator); */
+      await addOrderReview({
+        reviewId,
+        orderId,
+        userId,
+        connection,
+      });
+      // new start
+      await addNewNotification({
+        notificationId,
+        notificationLink: foundOrder.id,
+        notificationRef: reviewId,
+        notificationType: "review",
+        notificationReceiver: foundOrder.sellerId,
+        connection,
+      });
+      socketApi.sendNotification(foundOrder.sellerId, foundOrder.id);
+      // new end
+      return formatResponse(responses.reviewCreated);
+    }
+    throw createError(...formatError(errors.reviewAlreadyExists));
+  }
+  throw createError(...formatError(errors.orderNotFound));
 };

@@ -1,6 +1,8 @@
 import express from "express";
 import {
+  getLatestNotifications,
   getNotifications,
+  getPreviousNotifications,
   readNotification,
   unreadNotification,
 } from "../../../controllers/notification";
@@ -41,5 +43,22 @@ router
       notificationId: req.params.notificationId,
     }))
   );
+
+router.route("/users/:userId/notifications/previous").get(
+  [isAuthenticated, isAuthorized],
+  handler(getPreviousNotifications, false, (req, res, next) => ({
+    userId: req.params.userId,
+    cursor: req.query.cursor,
+    limit: req.query.limit,
+  }))
+);
+router.route("/users/:userId/notifications/latest").get(
+  [isAuthenticated, isAuthorized],
+  handler(getLatestNotifications, false, (req, res, next) => ({
+    userId: req.params.userId,
+    cursor: req.query.cursor,
+    limit: req.query.limit,
+  }))
+);
 
 export default router;

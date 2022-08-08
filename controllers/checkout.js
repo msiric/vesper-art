@@ -13,10 +13,10 @@ import {
 } from "../common/validation";
 import socketApi from "../lib/socket";
 import { fetchVersionDetails } from "../services/artwork";
-import { addNewLicense } from "../services/license";
 import { addNewNotification } from "../services/notification";
 import { addNewOrder, fetchArtworkOrders } from "../services/order";
 import { fetchUserById } from "../services/user";
+import { addNewLicense } from "../services/verifier";
 import { USER_SELECTION } from "../utils/database";
 import { formatError, formatResponse, generateUuids } from "../utils/helpers";
 import { errors, responses } from "../utils/statuses";
