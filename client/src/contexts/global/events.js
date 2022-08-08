@@ -358,6 +358,7 @@ const initActions = (set, get) => ({
     }
   },
   redirectUser: ({
+    userId,
     notification,
     link,
     readNotification,
@@ -366,7 +367,7 @@ const initActions = (set, get) => ({
   }) => {
     closeMenu();
     history.push(link);
-    if (!notification.read) readNotification({ id: notification.id });
+    if (!notification.read) readNotification({ userId, id: notification.id });
   },
   resetEvents: () => {
     set({ ...initialState });

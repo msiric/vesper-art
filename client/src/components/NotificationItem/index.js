@@ -63,6 +63,7 @@ const NotificationItem = ({
       onClick={() =>
         !isUpdating &&
         handleRedirectClick({
+          userId,
           notification,
           link: data.link,
           readNotification: handleReadClick,
