@@ -534,8 +534,8 @@ export const fetchAllUserArtwork = async ({
     .getMany();
   return foundArtwork;
 };
-// $Needs testing (mongo -> postgres)
 
+// $Needs testing (mongo -> postgres)
 export const fetchUserArtwork = async ({
   userId,
   cursor,
@@ -658,8 +658,8 @@ export const fetchUserPurchasesWithMedia = async ({
     : sortedPurchases;
   return formattedPurchases;
 };
-// $Needs testing (mongo -> postgres)
 
+// $Needs testing (mongo -> postgres)
 export const fetchUserFavorites = async ({
   userId,
   cursor,
@@ -700,4 +700,39 @@ export const fetchUserFavorites = async ({
     .limit(limit)
     .getMany();
   return foundFavorites;
+};
+
+export const fetchUserMedia = async ({ userId, cursor, limit, connection }) => {
+  //
+  // return await Artwork.find({
+  //   where: [{ owner: userId, active: true }],
+  //   relations: ["current"],
+  //   skip: cursor,
+  //   take: limit,
+  // });
+  const queryBuilder = await connection
+    .getRepository(Artwork)
+    .createQueryBuilder("artwork");
+  const foundArtwork = await queryBuilder
+    .leftJoinAndSelect("artwork.current", "version")
+    .leftJoinAndSelect("version.cover", "cover")
+    .leftJoinAndSelect("version.media", "media")
+    .select([
+      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
+      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...COVER_SELECTION["ESSENTIAL_INFO"](),
+      ...MEDIA_SELECTION["ESSENTIAL_INFO"](),
+    ])
+    .where(
+      `artwork.ownerId = :userId AND artwork.active = :active AND artwork.serial > 
+      ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
+      {
+        userId,
+        active: USER_SELECTION["ACTIVE_STATUS"],
+      }
+    )
+    .orderBy("artwork.serial", "ASC")
+    .limit(limit)
+    .getMany();
+  return foundArtwork;
 };

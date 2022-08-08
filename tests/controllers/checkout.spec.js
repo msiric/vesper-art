@@ -5,7 +5,8 @@ import { errors as validationErrors, ranges } from "../../common/validation";
 import { ArtworkVisibility } from "../../entities/Artwork";
 import { LicenseType, LicenseUsage } from "../../entities/License";
 import { fetchAllArtworks } from "../../services/artwork";
-import { fetchUserByUsername, fetchUserPurchases } from "../../services/user";
+import { fetchUserPurchases } from "../../services/order";
+import { fetchUserByUsername } from "../../services/user";
 import {
   closeConnection,
   connectToDatabase,

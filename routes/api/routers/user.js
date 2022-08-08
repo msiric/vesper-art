@@ -4,13 +4,9 @@ import {
   createUserIntent,
   deactivateUser,
   deleteUserIntent,
-  getBuyerStatistics,
   getLatestNotifications,
   getPreviousNotifications,
-  getSellerStatistics,
   getUserProfile,
-  getUserPurchases,
-  getUserSales,
   getUserSettings,
   updateUserEmail,
   updateUserOrigin,
@@ -53,46 +49,6 @@ router
     handler(deactivateUser, true, (req, res, next) => ({
       userId: req.params.userId,
       response: res,
-    }))
-  );
-
-// FEATURE FLAG - dashboard
-featureFlags.dashboard &&
-  router.route("/users/:userId/statistics/sales").get(
-    [isAuthenticated, isAuthorized],
-    handler(getSellerStatistics, false, (req, res, next) => ({
-      userId: req.params.userId,
-    }))
-  );
-
-// FEATURE FLAG - dashboard
-featureFlags.dashboard &&
-  router.route("/users/:userId/statistics/purchases").get(
-    [isAuthenticated, isAuthorized],
-    handler(getBuyerStatistics, false, (req, res, next) => ({
-      userId: req.params.userId,
-    }))
-  );
-
-// FEATURE FLAG - dashboard
-featureFlags.dashboard &&
-  router.route("/users/:userId/sales").get(
-    [isAuthenticated, isAuthorized],
-    handler(getUserSales, false, (req, res, next) => ({
-      userId: req.params.userId,
-      start: req.query.start,
-      end: req.query.end,
-    }))
-  );
-
-// FEATURE FLAG - dashboard
-featureFlags.dashboard &&
-  router.route("/users/:userId/purchases").get(
-    [isAuthenticated, isAuthorized],
-    handler(getUserPurchases, false, (req, res, next) => ({
-      userId: req.params.userId,
-      start: req.query.start,
-      end: req.query.end,
     }))
   );
 

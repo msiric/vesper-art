@@ -22,7 +22,7 @@ import { fetchVersionDetails } from "../services/artwork";
 import { fetchDiscountById } from "../services/discount";
 import { addNewLicense } from "../services/license";
 import { addNewNotification } from "../services/notification";
-import { addNewOrder } from "../services/order";
+import { addNewOrder, fetchArtworkOrders } from "../services/order";
 import {
   constructStripeEvent,
   constructStripeIntent,
@@ -37,7 +37,6 @@ import {
 import {
   addNewIntent,
   editUserStripe,
-  fetchArtworkOrders,
   fetchIntentByParents,
   fetchUserById,
   removeExistingIntent,

@@ -1,10 +1,7 @@
 import app from "../../app";
 import { errors as validationErrors } from "../../common/validation";
-import {
-  fetchUserByUsername,
-  fetchUserPurchases,
-  fetchUserSales,
-} from "../../services/user";
+import { fetchUserPurchases, fetchUserSales } from "../../services/order";
+import { fetchUserByUsername } from "../../services/user";
 import {
   closeConnection,
   connectToDatabase,

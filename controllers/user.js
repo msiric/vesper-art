@@ -12,16 +12,12 @@ import { deleteS3Object } from "../lib/s3";
 import {
   deactivateArtworkVersion,
   deactivateExistingArtwork,
+  fetchUserMedia,
   removeArtworkVersion,
 } from "../services/artwork";
 import { logUserOut } from "../services/auth";
-import { fetchUserFavorites } from "../services/fetchAllUserArtwork";
-import {
-  fetchOrdersByArtwork,
-  fetchOrdersByBuyer,
-  fetchOrdersBySeller,
-} from "../services/order";
-import { fetchStripeBalance } from "../services/stripe";
+import { fetchUserNotifications } from "../services/notification";
+import { fetchOrdersByArtwork } from "../services/order";
 import {
   addNewIntent,
   addUserAvatar,
@@ -36,12 +32,7 @@ import {
   fetchUserById,
   fetchUserIdByEmail,
   fetchUserIdByUsername,
-  fetchUserMedia,
-  fetchUserNotifications,
   fetchUserProfile,
-  fetchUserPurchases,
-  fetchUserReviews,
-  fetchUserSales,
   removeExistingIntent,
   removeUserAvatar,
 } from "../services/user";
@@ -71,67 +62,6 @@ export const getUserProfile = async ({ userUsername, connection }) => {
   });
   if (!isObjectEmpty(foundUser)) return { user: foundUser };
   throw createError(...formatError(errors.userNotFound));
-};
-
-// $TODO ne valja nista
-export const getBuyerStatistics = async ({ userId, connection }) => {
-  // brisanje accounta
-  /*     stripe.accounts.del('acct_1Gi3zvL1KEMAcOES', function (err, confirmation) {
-    }); */
-  const [foundUser, foundFavorites, foundPurchases] = await Promise.all([
-    fetchUserById({ userId, connection }),
-    fetchUserFavorites({ userId, connection }),
-    fetchUserPurchases({ userId, connection }),
-  ]);
-  if (!isObjectEmpty(foundUser)) {
-    return {
-      purchases: foundPurchases,
-      favorites: foundFavorites,
-    };
-  }
-  throw createError(...formatError(errors.userNotFound));
-};
-
-export const getSellerStatistics = async ({ userId, connection }) => {
-  // brisanje accounta
-  /*     stripe.accounts.del('acct_1Gi3zvL1KEMAcOES', function (err, confirmation) {
-    }); */
-  const [foundUser, foundReviews, foundSales] = await Promise.all([
-    fetchUserById({ userId, connection }),
-    fetchUserReviews({ userId, connection }),
-    fetchUserSales({ userId, connection }),
-  ]);
-  if (!isObjectEmpty(foundUser)) {
-    const balance = await fetchStripeBalance({
-      stripeId: foundUser.stripeId,
-      connection,
-    });
-    const { amount } = balance.available[0];
-    return { sales: foundSales, amount, reviews: foundReviews };
-  }
-  throw createError(...formatError(errors.userNotFound));
-};
-
-export const getUserSales = async ({ userId, start, end, connection }) => {
-  const foundOrders = await fetchOrdersBySeller({
-    userId,
-    start,
-    end,
-    connection,
-  });
-  // $TODO change name
-  return { statistics: foundOrders };
-};
-
-export const getUserPurchases = async ({ userId, start, end, connection }) => {
-  const foundOrders = await fetchOrdersByBuyer({
-    userId,
-    start,
-    end,
-    connection,
-  });
-  // $TODO change name
-  return { statistics: foundOrders };
 };
 
 export const updateUserOrigin = async ({

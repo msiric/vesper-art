@@ -1,4 +1,3 @@
-import { addDays, format, isAfter, isBefore, isEqual } from "date-fns";
 import path from "path";
 import app from "../../app";
 import { countries, statusCodes } from "../../common/constants";
@@ -7,19 +6,15 @@ import * as s3Utils from "../../lib/s3";
 import * as artworkServices from "../../services/artwork";
 import { fetchAllArtworks } from "../../services/artwork";
 import * as authServices from "../../services/auth";
+import { fetchUserPurchases, fetchUserSales } from "../../services/order";
 import * as userServices from "../../services/user";
-import {
-  fetchUserByUsername,
-  fetchUserPurchases,
-  fetchUserSales,
-} from "../../services/user";
+import { fetchUserByUsername } from "../../services/user";
 import {
   closeConnection,
   connectToDatabase,
   USER_SELECTION,
 } from "../../utils/database";
 import * as emailUtils from "../../utils/email";
-import { resolveDateRange } from "../../utils/helpers";
 import { errors, responses } from "../../utils/statuses";
 import { entities, validUsers } from "../fixtures/entities";
 import {
@@ -33,7 +28,6 @@ import {
 import { request } from "../utils/request";
 
 const MEDIA_LOCATION = path.resolve(__dirname, "../../../tests/media");
-const DATE_FORMAT = "MM/dd/yyyy";
 
 jest.useFakeTimers();
 jest.setTimeout(3 * 60 * 1000);
@@ -67,59 +61,52 @@ let connection,
   artwork,
   artworkBySeller,
   activeArtworkBySeller,
-  buyerPurchases,
-  sellerSales,
   unorderedArtwork,
   onceOrderedArtworkWithNewVersion,
-  multiOrderedArtworkWithNoNewVersions,
-  firstOrderDate,
-  lastOrderDate,
-  startDate,
-  endDate;
+  multiOrderedArtworkWithNoNewVersions;
 
 describe("User tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();
-    [buyer, seller, avatar, artwork, buyerPurchases, sellerSales] =
-      await Promise.all([
-        fetchUserByUsername({
-          userUsername: validUsers.buyer.username,
-          selection: [
-            ...USER_SELECTION["ESSENTIAL_INFO"](),
-            ...USER_SELECTION["STRIPE_INFO"](),
-            ...USER_SELECTION["VERIFICATION_INFO"](),
-            ...USER_SELECTION["AUTH_INFO"](),
-            ...USER_SELECTION["LICENSE_INFO"](),
-          ],
-          connection,
-        }),
-        fetchUserByUsername({
-          userUsername: validUsers.seller.username,
-          selection: [
-            ...USER_SELECTION["ESSENTIAL_INFO"](),
-            ...USER_SELECTION["STRIPE_INFO"](),
-            ...USER_SELECTION["VERIFICATION_INFO"](),
-            ...USER_SELECTION["AUTH_INFO"](),
-            ...USER_SELECTION["LICENSE_INFO"](),
-          ],
-          connection,
-        }),
-        fetchUserByUsername({
-          userUsername: validUsers.avatar.username,
-          selection: [
-            ...USER_SELECTION["ESSENTIAL_INFO"](),
-            ...USER_SELECTION["STRIPE_INFO"](),
-            ...USER_SELECTION["VERIFICATION_INFO"](),
-            ...USER_SELECTION["AUTH_INFO"](),
-            ...USER_SELECTION["LICENSE_INFO"](),
-          ],
-          connection,
-        }),
-        fetchAllArtworks({ connection }),
-        fetchUserPurchases({ userId: validUsers.buyer.id, connection }),
-        fetchUserSales({ userId: validUsers.seller.id, connection }),
-      ]);
+    [buyer, seller, avatar, artwork] = await Promise.all([
+      fetchUserByUsername({
+        userUsername: validUsers.buyer.username,
+        selection: [
+          ...USER_SELECTION["ESSENTIAL_INFO"](),
+          ...USER_SELECTION["STRIPE_INFO"](),
+          ...USER_SELECTION["VERIFICATION_INFO"](),
+          ...USER_SELECTION["AUTH_INFO"](),
+          ...USER_SELECTION["LICENSE_INFO"](),
+        ],
+        connection,
+      }),
+      fetchUserByUsername({
+        userUsername: validUsers.seller.username,
+        selection: [
+          ...USER_SELECTION["ESSENTIAL_INFO"](),
+          ...USER_SELECTION["STRIPE_INFO"](),
+          ...USER_SELECTION["VERIFICATION_INFO"](),
+          ...USER_SELECTION["AUTH_INFO"](),
+          ...USER_SELECTION["LICENSE_INFO"](),
+        ],
+        connection,
+      }),
+      fetchUserByUsername({
+        userUsername: validUsers.avatar.username,
+        selection: [
+          ...USER_SELECTION["ESSENTIAL_INFO"](),
+          ...USER_SELECTION["STRIPE_INFO"](),
+          ...USER_SELECTION["VERIFICATION_INFO"](),
+          ...USER_SELECTION["AUTH_INFO"](),
+          ...USER_SELECTION["LICENSE_INFO"](),
+        ],
+        connection,
+      }),
+      fetchAllArtworks({ connection }),
+      fetchUserPurchases({ userId: validUsers.buyer.id, connection }),
+      fetchUserSales({ userId: validUsers.seller.id, connection }),
+    ]);
     ({ token: buyerToken } = logUserIn(buyer));
     ({ token: sellerToken } = logUserIn(seller));
     ({ token: avatarToken } = logUserIn(avatar));
@@ -136,15 +123,6 @@ describe("User tests", () => {
     multiOrderedArtworkWithNoNewVersions = findUniqueOrders(
       findMultiOrderedArtwork(entities.Order)
     );
-    firstOrderDate = format(new Date(sellerSales[0].created), DATE_FORMAT);
-    lastOrderDate = format(
-      new Date(sellerSales[sellerSales.length - 1].created),
-      DATE_FORMAT
-    );
-    ({ startDate, endDate } = resolveDateRange({
-      start: sellerSales[0].created,
-      end: sellerSales[sellerSales.length - 1].created,
-    }));
   });
 
   afterAll(async () => {
@@ -426,233 +404,6 @@ describe("User tests", () => {
         expect(res.body.message).toEqual(errors.notAuthorized.message);
         expect(res.statusCode).toEqual(errors.notAuthorized.status);
       });
-    });
-  });
-
-  describe("/api/users/:userId/statistics/sales", () => {
-    it("should fetch user selling statistics", async () => {
-      const res = await request(app, sellerToken).get(
-        `/api/users/${seller.id}/statistics/sales`
-      );
-      expect(res.body.sales).toHaveLength(
-        entities.Order.filter((item) => item.sellerId === seller.id).length
-      );
-      expect(res.body.reviews).toHaveLength(
-        entities.Review.filter((item) => item.revieweeId === seller.id).length
-      );
-      expect(res.body.amount).toBeTruthy();
-      expect(res.statusCode).toEqual(statusCodes.ok);
-    });
-
-    it("should throw an error if user is not authenticated", async () => {
-      const res = await request(app).get(
-        `/api/users/${seller.id}/statistics/sales`
-      );
-      expect(res.body.message).toEqual(errors.forbiddenAccess.message);
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
-    });
-
-    it("should throw an error if user is not authorized", async () => {
-      const res = await request(app, buyerToken).get(
-        `/api/users/${seller.id}/statistics/sales`
-      );
-      expect(res.body.message).toEqual(errors.notAuthorized.message);
-      expect(res.statusCode).toEqual(errors.notAuthorized.status);
-    });
-  });
-
-  describe("/api/users/:userId/statistics/purchases", () => {
-    it("should fetch user buying statistics", async () => {
-      const res = await request(app, buyerToken).get(
-        `/api/users/${buyer.id}/statistics/purchases`
-      );
-      expect(res.body.purchases).toHaveLength(
-        entities.Order.filter((item) => item.buyerId === buyer.id).length
-      );
-      expect(res.body.favorites).toHaveLength(
-        entities.Favorite.filter((item) => item.ownerId === buyer.id).length
-      );
-      expect(res.statusCode).toEqual(statusCodes.ok);
-    });
-
-    it("should throw an error if user is not authenticated", async () => {
-      const res = await request(app).get(
-        `/api/users/${buyer.id}/statistics/purchases`
-      );
-      expect(res.body.message).toEqual(errors.forbiddenAccess.message);
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
-    });
-
-    it("should throw an error if user is not authorized", async () => {
-      const res = await request(app, sellerToken).get(
-        `/api/users/${buyer.id}/statistics/purchases`
-      );
-      expect(res.body.message).toEqual(errors.notAuthorized.message);
-      expect(res.statusCode).toEqual(errors.notAuthorized.status);
-    });
-  });
-
-  describe("/api/users/:userId/purchases", () => {
-    it("should fetch buyer purchases for set dates", async () => {
-      const start = firstOrderDate;
-      const end = lastOrderDate;
-      const res = await request(app, buyerToken).get(
-        `/api/users/${buyer.id}/purchases?start=${start}&end=${end}`
-      );
-      expect(res.body.statistics).toHaveLength(
-        buyerPurchases.filter(
-          (item) =>
-            (isEqual(new Date(item.created), startDate) ||
-              isAfter(new Date(item.created), startDate)) &&
-            (isBefore(new Date(item.created), endDate) ||
-              isEqual(new Date(item.created), endDate))
-        ).length
-      );
-      expect(res.statusCode).toEqual(statusCodes.ok);
-    });
-
-    it("should throw an error if dates are not set", async () => {
-      const res = await request(app, buyerToken).get(
-        `/api/users/${buyer.id}/purchases`
-      );
-      expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
-      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
-    });
-
-    it("should throw an error if start param is invalid", async () => {
-      const start = "invalid";
-      const end = lastOrderDate;
-      const res = await request(app, buyerToken).get(
-        `/api/users/${buyer.id}/purchases?start=${start}&end=${end}`
-      );
-      expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
-      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
-    });
-
-    it("should throw an error if end param is invalid", async () => {
-      const start = firstOrderDate;
-      const end = "invalid";
-      const res = await request(app, buyerToken).get(
-        `/api/users/${buyer.id}/purchases?start=${start}&end=${end}`
-      );
-      expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
-      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
-    });
-
-    it("should throw an error if start param is in the future", async () => {
-      const start = format(addDays(new Date(), 1), DATE_FORMAT);
-      const end = lastOrderDate;
-      const res = await request(app, buyerToken).get(
-        `/api/users/${buyer.id}/purchases?start=${start}&end=${end}`
-      );
-      expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
-      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
-    });
-
-    it("should throw an error if end param is in the future", async () => {
-      const start = firstOrderDate;
-      const end = format(addDays(new Date(), 1), DATE_FORMAT);
-      const res = await request(app, buyerToken).get(
-        `/api/users/${buyer.id}/purchases?start=${start}&end=${end}`
-      );
-      expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
-      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
-    });
-
-    it("should throw an error if user is not authenticated", async () => {
-      const res = await request(app).get(`/api/users/${buyer.id}/purchases`);
-      expect(res.body.message).toEqual(errors.forbiddenAccess.message);
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
-    });
-
-    it("should throw an error if user is not authorized", async () => {
-      const res = await request(app, sellerToken).get(
-        `/api/users/${buyer.id}/purchases`
-      );
-      expect(res.body.message).toEqual(errors.notAuthorized.message);
-      expect(res.statusCode).toEqual(errors.notAuthorized.status);
-    });
-  });
-
-  describe("/api/users/:userId/sales", () => {
-    it("should fetch seller sales for set dates", async () => {
-      const start = firstOrderDate;
-      const end = lastOrderDate;
-      const res = await request(app, sellerToken).get(
-        `/api/users/${seller.id}/sales?start=${start}&end=${end}`
-      );
-      expect(res.body.statistics).toHaveLength(
-        sellerSales.filter(
-          (item) =>
-            (isEqual(new Date(item.created), startDate) ||
-              isAfter(new Date(item.created), startDate)) &&
-            (isBefore(new Date(item.created), endDate) ||
-              isEqual(new Date(item.created), endDate))
-        ).length
-      );
-      expect(res.statusCode).toEqual(statusCodes.ok);
-    });
-
-    it("should throw an error if dates are not set", async () => {
-      const res = await request(app, sellerToken).get(
-        `/api/users/${seller.id}/sales`
-      );
-      expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
-      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
-    });
-
-    it("should throw an error if start param is invalid", async () => {
-      const start = "invalid";
-      const end = lastOrderDate;
-      const res = await request(app, sellerToken).get(
-        `/api/users/${seller.id}/sales?start=${start}&end=${end}`
-      );
-      expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
-      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
-    });
-
-    it("should throw an error if end param is invalid", async () => {
-      const start = firstOrderDate;
-      const end = "invalid";
-      const res = await request(app, sellerToken).get(
-        `/api/users/${seller.id}/sales?start=${start}&end=${end}`
-      );
-      expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
-      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
-    });
-
-    it("should throw an error if start param is in the future", async () => {
-      const start = format(addDays(new Date(), 1), DATE_FORMAT);
-      const end = lastOrderDate;
-      const res = await request(app, sellerToken).get(
-        `/api/users/${seller.id}/sales?start=${start}&end=${end}`
-      );
-      expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
-      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
-    });
-
-    it("should throw an error if end param is in the future", async () => {
-      const start = firstOrderDate;
-      const end = format(addDays(new Date(), 1), DATE_FORMAT);
-      const res = await request(app, sellerToken).get(
-        `/api/users/${seller.id}/sales?start=${start}&end=${end}`
-      );
-      expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
-      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
-    });
-
-    it("should throw an error if user is not authenticated", async () => {
-      const res = await request(app).get(`/api/users/${buyer.id}/sales`);
-      expect(res.body.message).toEqual(errors.forbiddenAccess.message);
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
-    });
-
-    it("should throw an error if user is not authorized", async () => {
-      const res = await request(app, buyerToken).get(
-        `/api/users/${seller.id}/sales`
-      );
-      expect(res.body.message).toEqual(errors.notAuthorized.message);
-      expect(res.statusCode).toEqual(errors.notAuthorized.status);
     });
   });
 

@@ -1,25 +1,16 @@
-import { Artwork } from "../entities/Artwork";
 import { Avatar } from "../entities/Avatar";
 import { Favorite } from "../entities/Favorite";
 import { Intent } from "../entities/Intent";
 import { Notification } from "../entities/Notification";
-import { Order } from "../entities/Order";
 import { Review } from "../entities/Review";
 import { User } from "../entities/User";
 import {
-  ARTWORK_SELECTION,
   AVATAR_SELECTION,
-  COVER_SELECTION,
   FAVORITE_SELECTION,
   INTENT_SELECTION,
-  LICENSE_SELECTION,
-  MEDIA_SELECTION,
   NOTIFICATION_SELECTION,
-  ORDER_SELECTION,
-  resolveSubQuery,
   REVIEW_SELECTION,
   USER_SELECTION,
-  VERSION_SELECTION,
 } from "../utils/database";
 import { calculateRating } from "../utils/helpers";
 
@@ -237,125 +228,6 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-// $TODO remove @AfterLoad for earned, spent and fee
-export const fetchUserPurchases = async ({
-  userId,
-  cursor,
-  limit,
-  connection,
-}) => {
-  // return await Order.find({
-  //   where: [{ buyerId: userId }],
-  //   relations: ["seller", "version", "review"],
-  //   skip: cursor,
-  //   take: limit,
-  // });
-
-  const queryBuilder = await connection
-    .getRepository(Order)
-    .createQueryBuilder("order");
-  const foundPurchases = await queryBuilder
-    .leftJoinAndSelect("order.seller", "seller")
-    .leftJoinAndSelect("order.license", "license")
-    .leftJoinAndSelect("order.version", "version")
-    .leftJoinAndSelect("order.artwork", "artwork")
-    .leftJoinAndSelect("version.cover", "cover")
-    .leftJoinAndSelect("order.review", "review")
-    .select([
-      ...ORDER_SELECTION["ESSENTIAL_INFO"](),
-      ...ORDER_SELECTION["BUYER_SPENT"](),
-      ...USER_SELECTION["STRIPPED_INFO"]("seller"),
-      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
-      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
-      ...COVER_SELECTION["ESSENTIAL_INFO"](),
-      ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
-      ...LICENSE_SELECTION["ESSENTIAL_INFO"](),
-      ...LICENSE_SELECTION["ASSIGNOR_INFO"](),
-      ...LICENSE_SELECTION["USAGE_INFO"](),
-    ])
-    .where(
-      `order.buyerId = :userId AND order.serial > 
-      ${resolveSubQuery(queryBuilder, "order", Order, cursor, -1)}`,
-      { userId }
-    )
-    .orderBy("order.serial", "ASC")
-    .limit(limit)
-    .getMany();
-  return foundPurchases;
-};
-
-export const fetchArtworkOrders = async ({ userId, artworkId, connection }) => {
-  const foundPurchases = await connection
-    .getRepository(Order)
-    .createQueryBuilder("order")
-    .leftJoinAndSelect("order.license", "license")
-    .select([
-      ...ORDER_SELECTION["ESSENTIAL_INFO"](),
-      ...LICENSE_SELECTION["ESSENTIAL_INFO"](),
-      ...LICENSE_SELECTION["USAGE_INFO"](),
-      ...LICENSE_SELECTION["ASSIGNOR_INFO"](),
-    ])
-    .where("order.buyerId = :userId AND order.artworkId = :artworkId", {
-      userId,
-      artworkId,
-    })
-    .getMany();
-  return foundPurchases;
-};
-
-// $Needs testing (mongo -> postgres)
-export const fetchUserSales = async ({ userId, cursor, limit, connection }) => {
-  // return await Order.find({
-  //   where: [{ sellerId: userId }],
-  //   relations: ["buyer", "version", "review"],
-  //   skip: cursor,
-  //   take: limit,
-  // });
-
-  const queryBuilder = await connection
-    .getRepository(Order)
-    .createQueryBuilder("order");
-  const foundSales = await queryBuilder
-    .leftJoinAndSelect("order.buyer", "buyer")
-    .leftJoinAndSelect("order.license", "license")
-    .leftJoinAndSelect("order.version", "version")
-    .leftJoinAndSelect("order.artwork", "artwork")
-    .leftJoinAndSelect("version.cover", "cover")
-    .leftJoinAndSelect("order.review", "review")
-    .select([
-      ...ORDER_SELECTION["ESSENTIAL_INFO"](),
-      ...ORDER_SELECTION["SELLER_EARNED"](),
-      ...USER_SELECTION["STRIPPED_INFO"]("buyer"),
-      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
-      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
-      ...COVER_SELECTION["ESSENTIAL_INFO"](),
-      ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
-      ...LICENSE_SELECTION["ESSENTIAL_INFO"](),
-    ])
-    .where(
-      `order.sellerId = :userId AND order.serial > 
-      ${resolveSubQuery(queryBuilder, "order", Order, cursor, -1)}`,
-      { userId }
-    )
-    .orderBy("order.serial", "ASC")
-    .limit(limit)
-    .getMany();
-  return foundSales;
-};
-
-export const fetchUserReviews = async ({ userId, connection }) => {
-  const foundReviews = await connection
-    .getRepository(Review)
-    .createQueryBuilder("review")
-    .select([...REVIEW_SELECTION["ESSENTIAL_INFO"]()])
-    .where("review.revieweeId = :userId", {
-      userId,
-    })
-    .getMany();
-  return foundReviews;
-};
-
-// $Needs testing (mongo -> postgres)
 // $TODO add appropriate visiblity tag
 export const fetchUserProfile = async ({
   userUsername,
@@ -391,91 +263,6 @@ export const fetchUserProfile = async ({
     });
   }
   return foundUser;
-};
-
-export const fetchUserMedia = async ({ userId, cursor, limit, connection }) => {
-  //
-  // return await Artwork.find({
-  //   where: [{ owner: userId, active: true }],
-  //   relations: ["current"],
-  //   skip: cursor,
-  //   take: limit,
-  // });
-
-  const queryBuilder = await connection
-    .getRepository(Artwork)
-    .createQueryBuilder("artwork");
-  const foundArtwork = await queryBuilder
-    .leftJoinAndSelect("artwork.current", "version")
-    .leftJoinAndSelect("version.cover", "cover")
-    .leftJoinAndSelect("version.media", "media")
-    .select([
-      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
-      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
-      ...COVER_SELECTION["ESSENTIAL_INFO"](),
-      ...MEDIA_SELECTION["ESSENTIAL_INFO"](),
-    ])
-    .where(
-      `artwork.ownerId = :userId AND artwork.active = :active AND artwork.serial > 
-      ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
-      {
-        userId,
-        active: USER_SELECTION["ACTIVE_STATUS"],
-      }
-    )
-    .orderBy("artwork.serial", "ASC")
-    .limit(limit)
-    .getMany();
-  return foundArtwork;
-};
-
-// $Needs testing (mongo -> postgres)
-export const fetchUserNotifications = async ({
-  userId,
-  cursor,
-  limit,
-  direction,
-  connection,
-}) => {
-  // return await Notification.find({
-  //   where: [{ receiver: userId }],
-  //   skip: cursor,
-  //   take: limit,
-  //   relations: ["user"],
-  //   order: {
-  //     created: "DESC",
-  //   },
-  // });
-
-  const queryElements =
-    direction === "previous"
-      ? { sign: "<", threshold: Number.MAX_VALUE }
-      : { sign: ">", threshold: -1 };
-
-  const queryBuilder = await connection
-    .getRepository(Notification)
-    .createQueryBuilder("notification");
-  const foundNotifications = await queryBuilder
-    .select([...NOTIFICATION_SELECTION["ESSENTIAL_INFO"]()])
-    .where(
-      `notification.receiverId = :userId AND notification.serial ${
-        queryElements.sign
-      } 
-      ${resolveSubQuery(
-        queryBuilder,
-        "notification",
-        Notification,
-        cursor,
-        queryElements.threshold
-      )}`,
-      {
-        userId,
-      }
-    )
-    .orderBy("notification.serial", "DESC")
-    .limit(limit)
-    .getMany();
-  return foundNotifications;
 };
 
 export const fetchIntentByParents = async ({
