@@ -1,3 +1,4 @@
+import { useUserStore } from "@contexts/global/user";
 import { DeleteOutlineRounded as DeleteIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import PromptModal from "../../components/PromptModal/index";
@@ -9,6 +10,8 @@ import globalStyles from "../../styles/global";
 import { containsErrors, renderError } from "../../utils/helpers";
 
 const MyArtwork = ({}) => {
+  const userId = useUserStore((state) => state.id);
+
   const modal = useUserUploads((state) => state.modal);
   const retry = useUserUploads((state) => state.uploads.error.retry);
   const redirect = useUserUploads((state) => state.uploads.error.redirect);
@@ -21,7 +24,7 @@ const MyArtwork = ({}) => {
   const globalClasses = globalStyles();
 
   const handleArtworkDelete = async () => {
-    await removeArtwork({ artworkId: modal.id });
+    await removeArtwork({ userId, artworkId: modal.id });
   };
 
   const reinitializeState = () => {

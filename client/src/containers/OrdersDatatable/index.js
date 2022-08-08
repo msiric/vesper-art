@@ -1,3 +1,4 @@
+import { useUserStore } from "@contexts/global/user";
 import { useWindowDimensions } from "@hooks/useWindowDimensions";
 import { Rating } from "@material-ui/lab";
 import React, { useEffect } from "react";
@@ -141,6 +142,8 @@ const renderData = (orders, display, loading) =>
   ]);
 
 const OrdersDatatable = () => {
+  const userId = useUserStore((state) => state.id);
+
   const orders = useUserOrders((state) => state.orders.data);
   const loading = useUserOrders((state) => state.orders.loading);
   const display = useUserOrders((state) => state.display);
@@ -151,7 +154,7 @@ const OrdersDatatable = () => {
   const classes = ordersDatatableStyles();
 
   useEffect(() => {
-    fetchOrders({ display });
+    fetchOrders({ userId, display });
   }, [display]);
 
   return (

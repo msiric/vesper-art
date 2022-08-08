@@ -25,7 +25,7 @@ const DownloadCard = () => {
       </Typography>
       <AsyncButton
         startIcon={<DownloadIcon />}
-        onClick={() => downloadArtwork({ orderId: order.id, userId })}
+        onClick={() => downloadArtwork({ userId, orderId: order.id })}
         loading={loading}
       >
         Download

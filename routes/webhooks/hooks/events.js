@@ -6,8 +6,8 @@ const router = express.Router();
 // $TODO no automated tests
 router.route("/events").post(
   handler(receiveWebhookEvent, true, (req, res, next) => ({
-    stripeSignature: req.headers["stripe-signature"],
-    stripeBody: req.body,
+    signature: req.headers["stripe-signature"],
+    body: req.body,
   }))
 );
 

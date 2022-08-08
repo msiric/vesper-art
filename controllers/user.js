@@ -8,19 +8,15 @@ import {
   profileValidation,
 } from "../common/validation";
 import { renderEmail } from "../emails/template";
-import { deleteS3Object, getSignedS3Object } from "../lib/s3";
+import { deleteS3Object } from "../lib/s3";
 import {
   deactivateArtworkVersion,
   deactivateExistingArtwork,
+  fetchUserMedia,
   removeArtworkVersion,
 } from "../services/artwork";
 import { logUserOut } from "../services/auth";
-import {
-  fetchOrdersByArtwork,
-  fetchOrdersByBuyer,
-  fetchOrdersBySeller,
-} from "../services/order";
-import { fetchStripeBalance } from "../services/stripe";
+import { fetchOrdersByArtwork } from "../services/order";
 import {
   addNewIntent,
   addUserAvatar,
@@ -31,22 +27,11 @@ import {
   editUserPassword,
   editUserPreferences,
   editUserProfile,
-  fetchAllUserArtwork,
-  fetchUserArtwork,
   fetchUserByAuth,
   fetchUserById,
-  fetchUserByUsername,
-  fetchUserFavorites,
   fetchUserIdByEmail,
   fetchUserIdByUsername,
-  fetchUserMedia,
-  fetchUserNotifications,
   fetchUserProfile,
-  fetchUserPurchases,
-  fetchUserPurchasesWithMedia,
-  fetchUserReviews,
-  fetchUserSales,
-  fetchUserUploadsWithMedia,
   removeExistingIntent,
   removeUserAvatar,
 } from "../services/user";
@@ -76,184 +61,6 @@ export const getUserProfile = async ({ userUsername, connection }) => {
   });
   if (!isObjectEmpty(foundUser)) return { user: foundUser };
   throw createError(...formatError(errors.userNotFound));
-};
-
-export const getUserArtworkByUsername = async ({
-  userUsername,
-  cursor,
-  limit,
-  connection,
-}) => {
-  const foundId = await fetchUserIdByUsername({
-    userUsername,
-    connection,
-  });
-  if (foundId) {
-    const foundArtwork = await fetchUserArtwork({
-      userId: foundId,
-      cursor,
-      limit,
-      connection,
-    });
-    return { artwork: foundArtwork };
-  }
-  throw createError(...formatError(errors.userNotFound));
-};
-
-export const getUserArtworkById = async ({
-  userId,
-  cursor,
-  limit,
-  connection,
-}) => {
-  const foundArtwork = await fetchAllUserArtwork({
-    userId,
-    cursor,
-    limit,
-    connection,
-  });
-  return { artwork: foundArtwork };
-};
-
-export const getUserUploads = async ({ userId, cursor, limit, connection }) => {
-  const foundArtwork = await fetchUserUploadsWithMedia({
-    userId,
-    cursor,
-    limit,
-    connection,
-  });
-  const formattedUploads = await Promise.all(
-    foundArtwork.map(async (upload) => {
-      const { url, file } = await getSignedS3Object({
-        fileLink: upload.current.media.source,
-        folderName: "artworkMedia/",
-      });
-      return {
-        ...upload,
-        current: {
-          ...upload.current,
-          media: { ...upload.current.media, source: url },
-        },
-      };
-    })
-  );
-  return { artwork: formattedUploads };
-};
-
-export const getUserOwnership = async ({
-  userId,
-  cursor,
-  limit,
-  connection,
-}) => {
-  const foundPurchases = await fetchUserPurchasesWithMedia({
-    userId,
-    cursor,
-    limit,
-    connection,
-  });
-  const formattedPurchases = await Promise.all(
-    foundPurchases.map(async (purchase) => {
-      const { url, file } = await getSignedS3Object({
-        fileLink: purchase.version.media.source,
-        folderName: "artworkMedia/",
-      });
-      return {
-        ...purchase,
-        version: {
-          ...purchase.version,
-          media: { ...purchase.version.media, source: url },
-        },
-      };
-    })
-  );
-  return { purchases: formattedPurchases };
-};
-
-export const getUserFavorites = async ({
-  userUsername,
-  cursor,
-  limit,
-  connection,
-}) => {
-  const foundUser = await fetchUserByUsername({
-    userUsername,
-    connection,
-  });
-  if (!isObjectEmpty(foundUser)) {
-    if (foundUser.displayFavorites) {
-      const foundFavorites = await fetchUserFavorites({
-        userId: foundUser.id,
-        cursor,
-        limit,
-        connection,
-      });
-      return { favorites: foundFavorites };
-    }
-    throw createError(...formatError(errors.userFavoritesNotAllowed));
-  }
-  throw createError(...formatError(errors.userNotFound));
-};
-
-// $TODO ne valja nista
-export const getBuyerStatistics = async ({ userId, connection }) => {
-  // brisanje accounta
-  /*     stripe.accounts.del('acct_1Gi3zvL1KEMAcOES', function (err, confirmation) {
-    }); */
-  const [foundUser, foundFavorites, foundPurchases] = await Promise.all([
-    fetchUserById({ userId, connection }),
-    fetchUserFavorites({ userId, connection }),
-    fetchUserPurchases({ userId, connection }),
-  ]);
-  if (!isObjectEmpty(foundUser)) {
-    return {
-      purchases: foundPurchases,
-      favorites: foundFavorites,
-    };
-  }
-  throw createError(...formatError(errors.userNotFound));
-};
-
-export const getSellerStatistics = async ({ userId, connection }) => {
-  // brisanje accounta
-  /*     stripe.accounts.del('acct_1Gi3zvL1KEMAcOES', function (err, confirmation) {
-    }); */
-  const [foundUser, foundReviews, foundSales] = await Promise.all([
-    fetchUserById({ userId, connection }),
-    fetchUserReviews({ userId, connection }),
-    fetchUserSales({ userId, connection }),
-  ]);
-  if (!isObjectEmpty(foundUser)) {
-    const balance = await fetchStripeBalance({
-      stripeId: foundUser.stripeId,
-      connection,
-    });
-    const { amount } = balance.available[0];
-    return { sales: foundSales, amount, reviews: foundReviews };
-  }
-  throw createError(...formatError(errors.userNotFound));
-};
-
-export const getUserSales = async ({ userId, start, end, connection }) => {
-  const foundOrders = await fetchOrdersBySeller({
-    userId,
-    start,
-    end,
-    connection,
-  });
-  // $TODO change name
-  return { statistics: foundOrders };
-};
-
-export const getUserPurchases = async ({ userId, start, end, connection }) => {
-  const foundOrders = await fetchOrdersByBuyer({
-    userId,
-    start,
-    end,
-    connection,
-  });
-  // $TODO change name
-  return { statistics: foundOrders };
 };
 
 export const updateUserOrigin = async ({
@@ -378,40 +185,6 @@ export const getUserSettings = async ({ userId, connection }) => {
   throw createError(...formatError(errors.userNotFound));
 };
 
-export const getPreviousNotifications = async ({
-  userId,
-  cursor,
-  limit,
-  connection,
-}) => {
-  const direction = "previous";
-  const foundNotifications = await fetchUserNotifications({
-    userId,
-    cursor,
-    limit,
-    direction,
-    connection,
-  });
-  return { notifications: foundNotifications };
-};
-
-export const getLatestNotifications = async ({
-  userId,
-  cursor,
-  limit,
-  connection,
-}) => {
-  const direction = "latest";
-  const foundNotifications = await fetchUserNotifications({
-    userId,
-    cursor,
-    limit,
-    direction,
-    connection,
-  });
-  return { notifications: foundNotifications };
-};
-
 export const createUserIntent = async ({
   userId,
   versionId,
@@ -475,7 +248,7 @@ export const updateUserEmail = async ({
       emailContent: renderEmail({ ...emailValues.formattedProps }),
       emailAttachments: emailValues.formattedAttachments,
     });
-    logUserOut(response);
+    logUserOut({ response });
     return formatResponse(responses.emailAddressUpdated);
   }
   throw createError(...formatError(errors.emailAlreadyExists));
@@ -584,7 +357,7 @@ export const deactivateUser = async ({ userId, response, connection }) => {
     }
     await deleteUserNotifications({ userId: foundUser.id, connection });
     await deactivateExistingUser({ userId: foundUser.id, connection });
-    logUserOut(response);
+    logUserOut({ response });
     return formatResponse(responses.userDeactivated);
   }
   throw createError(...formatError(errors.userNotFound));

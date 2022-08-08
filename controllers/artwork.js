@@ -5,8 +5,9 @@ import {
   isFormAltered,
   isObjectEmpty,
 } from "../common/helpers";
-import { artworkValidation } from "../common/validation";
-import { deleteS3Object } from "../lib/s3";
+import { artworkValidation, commentValidation } from "../common/validation";
+import { deleteS3Object, getSignedS3Object } from "../lib/s3";
+import socketApi from "../lib/socket";
 import {
   addNewArtwork,
   addNewCover,
@@ -16,6 +17,7 @@ import {
   deactivateArtworkVersion,
   deactivateExistingArtwork,
   fetchActiveArtworks,
+  fetchAllUserArtwork,
   fetchArtworkById,
   fetchArtworkComments,
   fetchArtworkDetails,
@@ -23,13 +25,28 @@ import {
   fetchArtworkMedia,
   fetchFavoriteByParents,
   fetchFavoritesCount,
+  fetchUserArtwork,
+  fetchUserFavorites,
+  fetchUserPurchasesWithMedia,
+  fetchUserUploadsWithMedia,
   removeArtworkVersion,
   removeExistingFavorite,
   updateArtworkVersion,
 } from "../services/artwork";
+import {
+  addNewComment,
+  editExistingComment,
+  fetchCommentById,
+  removeExistingComment,
+} from "../services/comment";
+import { addNewNotification } from "../services/notification";
 import { fetchOrderByVersion, fetchOrdersByArtwork } from "../services/order";
 import { fetchStripeAccount } from "../services/stripe";
-import { fetchUserById } from "../services/user";
+import {
+  fetchUserById,
+  fetchUserByUsername,
+  fetchUserIdByUsername,
+} from "../services/user";
 import { USER_SELECTION } from "../utils/database";
 import {
   ARTWORK_KEYS,
@@ -266,12 +283,7 @@ export const updateArtwork = async ({
   throw createError(...formatError(errors.artworkNotFound));
 };
 
-export const deleteArtwork = async ({
-  userId,
-  artworkId,
-  data,
-  connection,
-}) => {
+export const deleteArtwork = async ({ userId, artworkId, connection }) => {
   const foundArtwork = await fetchArtworkMedia({
     artworkId,
     userId,
@@ -376,4 +388,204 @@ export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
     throw createError(...formatError(errors.artworkUnfavoritedByOwner));
   }
   throw createError(...formatError(errors.artworkNotFound));
+};
+
+export const getUserArtworkByUsername = async ({
+  userUsername,
+  cursor,
+  limit,
+  connection,
+}) => {
+  const foundId = await fetchUserIdByUsername({
+    userUsername,
+    connection,
+  });
+  if (foundId) {
+    const foundArtwork = await fetchUserArtwork({
+      userId: foundId,
+      cursor,
+      limit,
+      connection,
+    });
+    return { artwork: foundArtwork };
+  }
+  throw createError(...formatError(errors.userNotFound));
+};
+
+export const getUserArtworkById = async ({
+  userId,
+  cursor,
+  limit,
+  connection,
+}) => {
+  const foundArtwork = await fetchAllUserArtwork({
+    userId,
+    cursor,
+    limit,
+    connection,
+  });
+  return { artwork: foundArtwork };
+};
+
+export const getUserUploads = async ({ userId, cursor, limit, connection }) => {
+  const foundArtwork = await fetchUserUploadsWithMedia({
+    userId,
+    cursor,
+    limit,
+    connection,
+  });
+  const formattedUploads = await Promise.all(
+    foundArtwork.map(async (upload) => {
+      const { url, file } = await getSignedS3Object({
+        fileLink: upload.current.media.source,
+        folderName: "artworkMedia/",
+      });
+      return {
+        ...upload,
+        current: {
+          ...upload.current,
+          media: { ...upload.current.media, source: url },
+        },
+      };
+    })
+  );
+  return { artwork: formattedUploads };
+};
+
+export const getUserOwnership = async ({
+  userId,
+  cursor,
+  limit,
+  connection,
+}) => {
+  const foundPurchases = await fetchUserPurchasesWithMedia({
+    userId,
+    cursor,
+    limit,
+    connection,
+  });
+  const formattedPurchases = await Promise.all(
+    foundPurchases.map(async (purchase) => {
+      const { url, file } = await getSignedS3Object({
+        fileLink: purchase.version.media.source,
+        folderName: "artworkMedia/",
+      });
+      return {
+        ...purchase,
+        version: {
+          ...purchase.version,
+          media: { ...purchase.version.media, source: url },
+        },
+      };
+    })
+  );
+  return { purchases: formattedPurchases };
+};
+
+export const getUserFavorites = async ({
+  userUsername,
+  cursor,
+  limit,
+  connection,
+}) => {
+  const foundUser = await fetchUserByUsername({
+    userUsername,
+    connection,
+  });
+  if (!isObjectEmpty(foundUser)) {
+    if (foundUser.displayFavorites) {
+      const foundFavorites = await fetchUserFavorites({
+        userId: foundUser.id,
+        cursor,
+        limit,
+        connection,
+      });
+      return { favorites: foundFavorites };
+    }
+    throw createError(...formatError(errors.userFavoritesNotAllowed));
+  }
+  throw createError(...formatError(errors.userNotFound));
+};
+
+export const getComment = async ({ artworkId, commentId, connection }) => {
+  const foundComment = await fetchCommentById({
+    artworkId,
+    commentId,
+    connection,
+  });
+  return { comment: foundComment };
+};
+
+export const postComment = async ({
+  userId,
+  artworkId,
+  commentContent,
+  connection,
+}) => {
+  await commentValidation.validate({ commentContent });
+  const foundArtwork = await fetchArtworkById({ artworkId, connection });
+  if (!isObjectEmpty(foundArtwork)) {
+    const { commentId, notificationId } = generateUuids({
+      commentId: null,
+      notificationId: null,
+    });
+    const savedComment = await addNewComment({
+      commentId,
+      artworkId,
+      userId,
+      commentContent,
+      connection,
+    });
+    if (userId !== foundArtwork.ownerId) {
+      const savedNotification = await addNewNotification({
+        notificationId,
+        notificationLink: foundArtwork.id,
+        notificationRef: commentId,
+        notificationType: "comment",
+        notificationReceiver: foundArtwork.ownerId,
+        connection,
+      });
+      socketApi.sendNotification(
+        foundArtwork.ownerId,
+        // $TODO maybe this can be done better
+        savedNotification.raw[0]
+      );
+    }
+    return formatResponse({
+      ...responses.commentCreated,
+      payload: savedComment.raw[0],
+    });
+  }
+  throw createError(...formatError(errors.artworkNotFound));
+};
+
+export const patchComment = async ({
+  userId,
+  commentId,
+  commentContent,
+  connection,
+}) => {
+  await commentValidation.validate({ commentContent });
+  const updatedComment = await editExistingComment({
+    commentId,
+    userId,
+    commentContent,
+    connection,
+  });
+  if (updatedComment.affected !== 0) {
+    return formatResponse(responses.commentUpdated);
+  }
+  throw createError(...formatError(errors.commentNotFound));
+};
+
+export const deleteComment = async ({ userId, commentId, connection }) => {
+  const deletedComment = await removeExistingComment({
+    commentId,
+    userId,
+    connection,
+  });
+  if (deletedComment.affected !== 0) {
+    return formatResponse(responses.commentDeleted);
+  }
+  throw createError(...formatError(errors.commentNotFound));
 };

@@ -8,6 +8,7 @@ import {
 
 const router = express.Router();
 
+// Authenticated routes
 // FEATURE FLAG - stripe
 // FEATURE FLAG - payment
 featureFlags.stripe &&
@@ -18,7 +19,7 @@ featureFlags.stripe &&
     .get(
       [isAuthenticated],
       handler(getCheckout, false, (req, res, next) => ({
-        ...req.params,
+        versionId: req.params.versionId,
       }))
     );
 
@@ -28,8 +29,10 @@ router
   .post(
     [isAuthenticated],
     handler(postDownload, true, (req, res, next) => ({
-      ...req.params,
-      ...req.body,
+      versionId: req.params.versionId,
+      licenseUsage: req.body.licenseUsage,
+      licenseCompany: req.body.licenseCompany,
+      licenseType: req.body.licenseType,
     }))
   );
 

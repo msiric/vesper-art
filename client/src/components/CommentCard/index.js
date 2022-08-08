@@ -129,7 +129,7 @@ const CommentCard = ({
                   onSubmit={handleSubmit(
                     async () =>
                       await handleCommentEdit({
-                        artworkId,
+                        userId,
                         commentId: comment?.id,
                         values: getValues(),
                       })

@@ -2,14 +2,8 @@ import app from "../../app";
 import { statusCodes } from "../../common/constants";
 import { errors as validationErrors, ranges } from "../../common/validation";
 import { fetchAllArtworks } from "../../services/artwork";
-import { fetchUserByUsername } from "../../services/user";
-import {
-  closeConnection,
-  connectToDatabase,
-  USER_SELECTION,
-} from "../../utils/database";
+import { closeConnection, connectToDatabase } from "../../utils/database";
 import { validUsers } from "../fixtures/entities";
-import { logUserIn } from "../utils/helpers";
 import { request } from "../utils/request";
 
 jest.useFakeTimers();
@@ -18,48 +12,13 @@ jest.setTimeout(3 * 60 * 1000);
 const query = { artwork: "Free but", users: "validuser" };
 const type = { artwork: "artwork", users: "users" };
 
-let connection,
-  buyer,
-  buyerCookie,
-  buyerToken,
-  seller,
-  sellerCookie,
-  sellerToken,
-  artwork,
-  filteredArtwork,
-  filteredUsers;
+let connection, artwork, filteredArtwork, filteredUsers;
 
 describe("Search tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();
-    [buyer, seller, artwork] = await Promise.all([
-      fetchUserByUsername({
-        userUsername: validUsers.buyer.username,
-        selection: [
-          ...USER_SELECTION["ESSENTIAL_INFO"](),
-          ...USER_SELECTION["STRIPE_INFO"](),
-          ...USER_SELECTION["VERIFICATION_INFO"](),
-          ...USER_SELECTION["AUTH_INFO"](),
-          ...USER_SELECTION["LICENSE_INFO"](),
-        ],
-        connection,
-      }),
-      fetchUserByUsername({
-        userUsername: validUsers.seller.username,
-        selection: [
-          ...USER_SELECTION["ESSENTIAL_INFO"](),
-          ...USER_SELECTION["STRIPE_INFO"](),
-          ...USER_SELECTION["VERIFICATION_INFO"](),
-          ...USER_SELECTION["AUTH_INFO"](),
-          ...USER_SELECTION["LICENSE_INFO"](),
-        ],
-        connection,
-      }),
-      fetchAllArtworks({ connection }),
-    ]);
-    ({ cookie: buyerCookie, token: buyerToken } = logUserIn(buyer));
-    ({ cookie: sellerCookie, token: sellerToken } = logUserIn(seller));
+    [artwork] = await Promise.all([fetchAllArtworks({ connection })]);
     filteredArtwork = artwork.filter((item) =>
       item.current.title.includes(query.artwork)
     );

@@ -23,9 +23,10 @@ export const initialState = {
 const initState = () => ({ ...initialState });
 
 const initActions = (set, get) => ({
-  fetchOrder: async ({ orderId, query, highlightRef }) => {
+  fetchOrder: async ({ userId, orderId, query, highlightRef }) => {
     try {
       const { data } = await getOrder.request({
+        userId,
         orderId,
       });
       set((state) => ({
@@ -50,16 +51,17 @@ const initActions = (set, get) => ({
       }));
     }
   },
-  downloadArtwork: async ({ orderId }) => {
-    const { data } = await getDownload.request({ orderId });
+  downloadArtwork: async ({ userId, orderId }) => {
+    const { data } = await getDownload.request({ userId, orderId });
     const link = document.createElement("a");
     link.href = data.url;
     link.setAttribute("download", data.file);
     document.body.appendChild(link);
     link.click();
   },
-  submitRating: async ({ orderId, userId, values }) => {
+  submitRating: async ({ userId, orderId, values }) => {
     await postReview.request({
+      userId,
       orderId,
       reviewRating: values.reviewRating,
     });

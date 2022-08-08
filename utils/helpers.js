@@ -238,6 +238,8 @@ export const handleDelegatedError = ({ err }) => {
   const multerError = "MulterError";
   const knownErrors = [validationError, multerError];
 
+  console.log("err", err);
+
   return {
     status: knownErrors.includes(err.name)
       ? statusCodes.badRequest

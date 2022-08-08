@@ -2,27 +2,16 @@ import app from "../../app";
 import { statusCodes } from "../../common/constants";
 import { errors as validationErrors, ranges } from "../../common/validation";
 import { getOrderDetails } from "../../controllers/order";
-import { fetchUserByUsername } from "../../services/user";
-import {
-  closeConnection,
-  connectToDatabase,
-  USER_SELECTION,
-} from "../../utils/database";
+import { closeConnection, connectToDatabase } from "../../utils/database";
 import { errors } from "../../utils/statuses";
 import { entities, validUsers } from "../fixtures/entities";
-import { logUserIn, unusedFingerprint } from "../utils/helpers";
+import { unusedFingerprint } from "../utils/helpers";
 import { request } from "../utils/request";
 
 jest.useFakeTimers();
 jest.setTimeout(3 * 60 * 1000);
 
 let connection,
-  buyer,
-  buyerCookie,
-  buyerToken,
-  seller,
-  sellerCookie,
-  sellerToken,
   buyerOrder,
   sellerOrder,
   firstLicenseByBuyer,
@@ -32,29 +21,7 @@ describe("Verifier tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();
-    [buyer, seller, buyerOrder, sellerOrder] = await Promise.all([
-      fetchUserByUsername({
-        userUsername: validUsers.buyer.username,
-        selection: [
-          ...USER_SELECTION["ESSENTIAL_INFO"](),
-          ...USER_SELECTION["STRIPE_INFO"](),
-          ...USER_SELECTION["VERIFICATION_INFO"](),
-          ...USER_SELECTION["AUTH_INFO"](),
-          ...USER_SELECTION["LICENSE_INFO"](),
-        ],
-        connection,
-      }),
-      fetchUserByUsername({
-        userUsername: validUsers.seller.username,
-        selection: [
-          ...USER_SELECTION["ESSENTIAL_INFO"](),
-          ...USER_SELECTION["STRIPE_INFO"](),
-          ...USER_SELECTION["VERIFICATION_INFO"](),
-          ...USER_SELECTION["AUTH_INFO"](),
-          ...USER_SELECTION["LICENSE_INFO"](),
-        ],
-        connection,
-      }),
+    [buyerOrder, sellerOrder] = await Promise.all([
       getOrderDetails({
         userId: validUsers.buyer.id,
         orderId: entities.Order.find(
@@ -70,8 +37,6 @@ describe("Verifier tests", () => {
         connection,
       }),
     ]);
-    ({ cookie: buyerCookie, token: buyerToken } = logUserIn(buyer));
-    ({ cookie: sellerCookie, token: sellerToken } = logUserIn(seller));
     firstLicenseByBuyer = buyerOrder.order.license;
     firstLicenseBySeller = sellerOrder.order.license;
   });

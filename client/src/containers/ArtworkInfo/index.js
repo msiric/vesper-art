@@ -116,7 +116,7 @@ const ArtworkInfo = () => {
                       handleModalOpen={
                         orders.length
                           ? openModal
-                          : () => fetchOrders({ artworkId: artwork.id })
+                          : () => fetchOrders({ userId, artworkId: artwork.id })
                       }
                       submitting={ordersLoading}
                     />
@@ -141,7 +141,7 @@ const ArtworkInfo = () => {
                       handleModalOpen={
                         orders.length
                           ? openModal
-                          : () => fetchOrders({ artworkId: artwork.id })
+                          : () => fetchOrders({ userId, artworkId: artwork.id })
                       }
                       submitting={ordersLoading}
                     />

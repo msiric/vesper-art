@@ -20,9 +20,8 @@ import { domain, stripe as stripeConfig } from "../config/secret";
 import socketApi from "../lib/socket";
 import { fetchVersionDetails } from "../services/artwork";
 import { fetchDiscountById } from "../services/discount";
-import { addNewLicense } from "../services/license";
 import { addNewNotification } from "../services/notification";
-import { addNewOrder } from "../services/order";
+import { addNewOrder, fetchArtworkOrders } from "../services/order";
 import {
   constructStripeEvent,
   constructStripeIntent,
@@ -37,11 +36,11 @@ import {
 import {
   addNewIntent,
   editUserStripe,
-  fetchArtworkOrders,
   fetchIntentByParents,
   fetchUserById,
   removeExistingIntent,
 } from "../services/user";
+import { addNewLicense } from "../services/verifier";
 import { USER_SELECTION } from "../utils/database";
 import { formatError, formatResponse, generateUuids } from "../utils/helpers";
 import { calculateTotalCharge } from "../utils/payment";
@@ -51,39 +50,35 @@ export const isIntentPending = (intent) => {
   return intent.status !== "succeeded" && intent.status !== "canceled";
 };
 
-export const receiveWebhookEvent = async ({
-  stripeSignature,
-  stripeBody,
-  connection,
-}) => {
-  console.log("$TEST CHECKOUT RECEIVED WEBHOOK", stripeSignature, stripeBody);
-  const stripeSecret = stripeConfig.webhookSecret;
-  let stripeEvent;
+export const receiveWebhookEvent = async ({ signature, body, connection }) => {
+  console.log("$TEST CHECKOUT RECEIVED WEBHOOK", signature, body);
+  const secret = stripeConfig.webhookSecret;
+  let event;
 
   try {
-    stripeEvent = await constructStripeEvent({
-      stripeBody,
-      stripeSecret,
-      stripeSignature,
+    event = await constructStripeEvent({
+      body,
+      secret,
+      signature,
     });
   } catch (err) {
     console.log("$TEST CHECKOUT event error", err);
   }
 
-  switch (stripeEvent.type) {
+  switch (event.type) {
     case "payment_intent.succeeded":
-      console.log("$TEST CHECKOUT Payment success", stripeEvent.type);
+      console.log("$TEST CHECKOUT Payment success", event.type);
       // FEATURE FLAG - payment
       if (featureFlags.payment) {
-        const paymentIntent = stripeEvent.data.object;
-        await processTransaction({ stripeIntent: paymentIntent, connection });
+        const intent = event.data.object;
+        await processTransaction({ intent, connection });
       }
       break;
     case "payment_intent.payment_failed":
-      console.log("$TEST CHECKOUT Failed payment", stripeEvent.type);
+      console.log("$TEST CHECKOUT Failed payment", event.type);
       break;
     default:
-      console.log("$TEST CHECKOUT Invalid event", stripeEvent.type);
+      console.log("$TEST CHECKOUT Invalid event", event.type);
   }
 
   console.log("$TEST CHECKOUT done");
@@ -296,19 +291,19 @@ export const redirectToStripe = async ({
 };
 
 export const onboardUser = async ({
-  sessionData,
-  responseData,
+  session,
+  locals,
   userBusinessAddress,
   userEmail,
   connection,
 }) => {
-  sessionData.state = Math.random().toString(36).slice(2);
-  sessionData.id = responseData.user.id;
-  sessionData.name = responseData.user.name;
+  session.state = Math.random().toString(36).slice(2);
+  session.id = locals.user.id;
+  session.name = locals.user.name;
 
   const parameters = {
     client_id: stripeConfig.clientId,
-    state: sessionData.state,
+    state: session.state,
     redirect_uri: `${domain.server}/stripe/token`,
     "stripe_user[business_type]": "individual",
     "stripe_user[business_name]": undefined,
@@ -324,19 +319,15 @@ export const onboardUser = async ({
 };
 
 // $TODO cannot send headers (treba dobro testat)
-export const assignStripeId = async ({
-  sessionData,
-  queryData,
-  connection,
-}) => {
-  if (sessionData.state != queryData.state)
+export const assignStripeId = async ({ session, state, code, connection }) => {
+  if (session.state != state)
     throw createError(...formatError(errors.onboardingProcessInvalid));
 
   const formData = new FormData();
   formData.append("grant_type", "authorization_code");
   formData.append("client_id", stripeConfig.clientId);
   formData.append("client_secret", stripeConfig.secretKey);
-  formData.append("code", queryData.code);
+  formData.append("code", code);
 
   const expressAuthorized = await axios.post(stripeConfig.tokenUri, formData, {
     headers: formData.getHeaders(),
@@ -348,16 +339,16 @@ export const assignStripeId = async ({
     });
 
   await editUserStripe({
-    userId: sessionData.id,
+    userId: session.id,
     stripeId: expressAuthorized.data.stripe_user_id,
     connection,
   });
 
-  const username = sessionData.name;
+  const username = session.name;
 
-  sessionData.state = null;
-  sessionData.id = null;
-  sessionData.name = null;
+  session.state = null;
+  session.id = null;
+  session.name = null;
 
   // STRIPE ONBOARDING REDIRECT
   return { redirect: `${domain.client}/onboarded` };
@@ -397,16 +388,16 @@ export const createPayout = async ({ userId, connection }) => {
 // $TODO validacija svih ID-ova
 // $TODO validacija license i pricea
 // vjerojatno najbolje fetchat svaki od ID-ova i verifyat data-u
-const processTransaction = async ({ stripeIntent, connection }) => {
+const processTransaction = async ({ intent, connection }) => {
   try {
     console.log("PROCESS TRANSACTION STARTED");
-    const orderData = JSON.parse(stripeIntent.metadata.orderData);
+    const orderData = JSON.parse(intent.metadata.orderData);
     const buyerId = orderData.buyerId;
     const sellerId = orderData.sellerId;
     const artworkId = orderData.artworkId;
     const versionId = orderData.versionId;
     const discountId = orderData.discountId;
-    const intentId = stripeIntent.id;
+    const intentId = intent.id;
     console.log("IDS DECODED");
     console.log("ORDER DATA", orderData);
     const {
@@ -491,7 +482,7 @@ const processTransaction = async ({ stripeIntent, connection }) => {
   } catch (err) {
     console.log("TRANSACTION FAILED", err);
     const foundIntent = await retrieveStripeIntent({
-      intentId: stripeIntent.id,
+      intentId: intent.id,
       connection,
     });
     if (!isObjectEmpty(foundIntent)) {

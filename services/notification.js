@@ -1,5 +1,5 @@
 import { Notification } from "../entities/Notification";
-import { NOTIFICATION_SELECTION } from "../utils/database";
+import { NOTIFICATION_SELECTION, resolveSubQuery } from "../utils/database";
 
 export const fetchExistingNotifications = async ({ userId, connection }) => {
   const foundNotifications = await connection
@@ -85,4 +85,52 @@ export const removeAllNotifications = async ({ userId, connection }) => {
     })
     .execute();
   return deletedNotifications;
+};
+
+// $Needs testing (mongo -> postgres)
+export const fetchUserNotifications = async ({
+  userId,
+  cursor,
+  limit,
+  direction,
+  connection,
+}) => {
+  // return await Notification.find({
+  //   where: [{ receiver: userId }],
+  //   skip: cursor,
+  //   take: limit,
+  //   relations: ["user"],
+  //   order: {
+  //     created: "DESC",
+  //   },
+  // });
+  const queryElements =
+    direction === "previous"
+      ? { sign: "<", threshold: Number.MAX_VALUE }
+      : { sign: ">", threshold: -1 };
+
+  const queryBuilder = await connection
+    .getRepository(Notification)
+    .createQueryBuilder("notification");
+  const foundNotifications = await queryBuilder
+    .select([...NOTIFICATION_SELECTION["ESSENTIAL_INFO"]()])
+    .where(
+      `notification.receiverId = :userId AND notification.serial ${
+        queryElements.sign
+      } 
+      ${resolveSubQuery(
+        queryBuilder,
+        "notification",
+        Notification,
+        cursor,
+        queryElements.threshold
+      )}`,
+      {
+        userId,
+      }
+    )
+    .orderBy("notification.serial", "DESC")
+    .limit(limit)
+    .getMany();
+  return foundNotifications;
 };

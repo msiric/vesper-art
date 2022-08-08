@@ -3,12 +3,15 @@ import { verifyLicense } from "../../../controllers/verifier";
 import { requestHandler as handler } from "../../../middleware/index";
 const router = express.Router();
 
+// Public routes
 router
   .route("/verifier")
   // $TODO not tested
   .post(
     handler(verifyLicense, true, (req, res, next) => ({
-      ...req.body,
+      licenseFingerprint: req.body.licenseFingerprint,
+      assigneeIdentifier: req.body.assigneeIdentifier,
+      assignorIdentifier: req.body.assignorIdentifier,
     }))
   );
 

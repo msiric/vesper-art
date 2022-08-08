@@ -29,14 +29,6 @@ const dirname = path.resolve();
     })
   );
 
-  /*   app.use(
-    bodyParser.json({
-      verify: (req, res, buf) => {
-        if (req.originalUrl.startsWith("/stripe")) req.rawBody = buf.toString();
-      },
-    })
-  ); */
-
   app.use(morgan("dev"));
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());

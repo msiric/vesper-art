@@ -1,3 +1,4 @@
+import { useUserStore } from "@contexts/global/user";
 import { makeStyles } from "@material-ui/core";
 import { DeleteOutlineRounded as DeleteIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
@@ -19,6 +20,8 @@ const useEditorStyles = makeStyles((muiTheme) => ({
 }));
 
 const EditArtwork = ({ match }) => {
+  const userId = useUserStore((state) => state.id);
+
   const artworkRetry = useArtworkUpdate((state) => state.artwork.error.retry);
   const artworkRedirect = useArtworkUpdate(
     (state) => state.artwork.error.redirect
@@ -54,7 +57,7 @@ const EditArtwork = ({ match }) => {
   const classes = useEditorStyles();
 
   const handleDeleteArtwork = async () => {
-    await removeArtwork({ artworkId: artwork.id });
+    await removeArtwork({ userId, artworkId: artwork.id });
     history.push("/");
   };
 

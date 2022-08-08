@@ -14,7 +14,7 @@ const RatingWrapper = ({ paramId }) => {
     <RatingModal
       open={modal.open}
       handleConfirm={(values) =>
-        submitRating({ orderId: paramId, userId, values })
+        submitRating({ userId, orderId: paramId, values })
       }
       handleClose={toggleModal}
       ariaLabel="Artist rating"

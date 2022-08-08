@@ -29,8 +29,8 @@ export const getComment = {
   error: { message: "Failed to fetch comment", variant: "error" },
 };
 export const deleteComment = {
-  request: async ({ artworkId, commentId }) =>
-    await ax.delete(`/api/artwork/${artworkId}/comments/${commentId}`),
+  request: async ({ userId, commentId }) =>
+    await ax.delete(`/api/users/${userId}/comments/${commentId}`),
   success: { message: "Comment successfully deleted", variant: "success" },
   error: { message: "Failed to delete comment", variant: "error" },
 };
@@ -43,8 +43,8 @@ export const getComments = {
   error: { message: "Failed to fetch comments", variant: "error" },
 };
 export const patchComment = {
-  request: async ({ artworkId, commentId, data }) =>
-    await ax.patch(`/api/artwork/${artworkId}/comments/${commentId}`, data),
+  request: async ({ userId, commentId, data }) =>
+    await ax.patch(`/api/users/${userId}/comments/${commentId}`, data),
   success: { message: "Comment successfully updated", variant: "success" },
   error: { message: "Failed to update comment", variant: "error" },
 };
@@ -55,20 +55,20 @@ export const postComment = {
   error: { message: "Failed to post comment", variant: "error" },
 };
 export const editArtwork = {
-  request: async ({ artworkId }) =>
-    await ax.get(`/api/artwork/${artworkId}/edit`),
+  request: async ({ userId, artworkId }) =>
+    await ax.get(`/api/users/${userId}/artwork/${artworkId}`),
   success: { message: "Artwork successfully fetched", variant: "success" },
   error: { message: "Failed to fetch artwork", variant: "error" },
 };
 export const deleteArtwork = {
-  request: async ({ artworkId }) =>
-    await ax.delete(`/api/artwork/${artworkId}`),
+  request: async ({ userId, artworkId }) =>
+    await ax.delete(`/api/users/${userId}/artwork/${artworkId}`),
   success: { message: "Artwork successfully deleted", variant: "success" },
   error: { message: "Failed to delete artwork", variant: "error" },
 };
 export const patchArtwork = {
-  request: async ({ artworkId, data }) =>
-    await ax.patch(`/api/artwork/${artworkId}`, data),
+  request: async ({ userId, artworkId, data }) =>
+    await ax.patch(`/api/users/${userId}/artwork/${artworkId}`, data),
   success: { message: "Artwork successfully updated", variant: "success" },
   error: { message: "Failed to update artwork", variant: "error" },
 };

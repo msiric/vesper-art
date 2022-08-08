@@ -3,6 +3,7 @@ import {
   editReadNotification,
   editUnreadNotification,
   fetchExistingNotifications,
+  fetchUserNotifications,
   removeAllNotifications,
 } from "../services/notification";
 import { formatError, formatResponse } from "../utils/helpers";
@@ -56,4 +57,38 @@ export const deleteUserNotifications = async ({ userId, connection }) => {
     connection,
   });
   return formatResponse(responses.notificationsDeleted);
+};
+
+export const getPreviousNotifications = async ({
+  userId,
+  cursor,
+  limit,
+  connection,
+}) => {
+  const direction = "previous";
+  const foundNotifications = await fetchUserNotifications({
+    userId,
+    cursor,
+    limit,
+    direction,
+    connection,
+  });
+  return { notifications: foundNotifications };
+};
+
+export const getLatestNotifications = async ({
+  userId,
+  cursor,
+  limit,
+  connection,
+}) => {
+  const direction = "latest";
+  const foundNotifications = await fetchUserNotifications({
+    userId,
+    cursor,
+    limit,
+    direction,
+    connection,
+  });
+  return { notifications: foundNotifications };
 };

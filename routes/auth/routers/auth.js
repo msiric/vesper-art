@@ -4,7 +4,6 @@ import {
   postLogIn,
   postLogOut,
   postRefreshToken,
-  postRevokeToken,
   postSignUp,
   resendToken,
   resetPassword,
@@ -19,99 +18,89 @@ import {
 
 const router = express.Router();
 
-router
-  .route("/signup")
-  // $DONE works
-  .post(
-    isNotAuthenticated,
-    handler(postSignUp, true, (req, res, next) => ({
-      ...req.body,
-    }))
-  );
-
-router
-  .route("/login")
-  // $DONE works
-  .post(
-    isNotAuthenticated,
-    handler(postLogIn, true, (req, res, next) => ({
-      res,
-      ...req.body,
-    }))
-  );
-
-// $TODO Bolje to treba
-router
-  .route("/logout")
-  // $DONE works
-  .post(
-    isAuthenticated,
-    handler(postLogOut, true, (req, res, next) => ({
-      res,
-    }))
-  );
-
-// $TODO Bolje to treba
-router
-  .route("/refresh_token")
-  // $DONE works
-  .post(
-    handler(postRefreshToken, true, (req, res, next) => ({
-      req,
-      res,
-      next,
-    }))
-  );
+// Public routes
+router.route("/refresh_token").post(
+  handler(postRefreshToken, true, (req, res, next) => ({
+    cookies: req.cookies,
+    response: res,
+  }))
+);
 
 // $TODO only for admin (remove in prod)
-router
-  .route("/revoke_token/:userId")
-  // $TODO not tested
-  .post(handler(postRevokeToken, true, (req, res, next) => ({})));
+// router
+//   .route("/revoke_token/:userId")
+//   // $TODO not tested
+//   .post(handler(postRevokeToken, true, (req, res, next) => ({})));
+
+// Unauthenticated routes
+router.route("/signup").post(
+  [isNotAuthenticated],
+  handler(postSignUp, true, (req, res, next) => ({
+    userName: req.body.userName,
+    userEmail: req.body.userEmail,
+    userUsername: req.body.userUsername,
+    userPassword: req.body.userPassword,
+    userConfirm: req.body.userConfirm,
+  }))
+);
+
+router.route("/login").post(
+  [isNotAuthenticated],
+  handler(postLogIn, true, (req, res, next) => ({
+    userUsername: req.body.userUsername,
+    userPassword: req.body.userPassword,
+    response: res,
+  }))
+);
 
 router
   .route("/verify_token/:tokenId")
-  // $DONE works
+  //
   .get(
-    isNotAuthenticated,
-    handler(verifyRegisterToken, true, (req, res, next) => ({
-      ...req.params,
-    }))
-  );
-
-router
-  .route("/forgot_password")
-  // $TODO not tested
-  .post(
-    isNotAuthenticated,
-    handler(forgotPassword, true, (req, res, next) => ({
-      ...req.body,
-    }))
-  );
-
-router
-  .route("/reset_password/user/:userId/token/:tokenId")
-  // $TODO not tested
-  // implement check params token middleware?
-  .post(
     [isNotAuthenticated],
-    handler(resetPassword, true, (req, res, next) => ({
-      ...req.params,
-      ...req.body,
+    handler(verifyRegisterToken, true, (req, res, next) => ({
+      tokenId: req.params.tokenId,
     }))
   );
+
+router.route("/forgot_password").post(
+  [isNotAuthenticated],
+  handler(forgotPassword, true, (req, res, next) => ({
+    userEmail: req.body.userEmail,
+  }))
+);
+
+router.route("/reset_password/user/:userId/token/:tokenId").post(
+  [isNotAuthenticated],
+  handler(resetPassword, true, (req, res, next) => ({
+    userId: req.params.userId,
+    tokenId: req.params.tokenId,
+    userPassword: req.body.userPassword,
+    userConfirm: req.body.userConfirm,
+  }))
+);
 
 router.route("/resend_token").post(
-  isNotAuthenticated,
+  [isNotAuthenticated],
   handler(resendToken, true, (req, res, next) => ({
-    ...req.body,
+    userEmail: req.body.userEmail,
   }))
 );
 
 router.route("/update_email").post(
-  isNotAuthenticated,
+  [isNotAuthenticated],
   handler(updateEmail, true, (req, res, next) => ({
-    ...req.body,
+    userEmail: req.body.userEmail,
+    userUsername: req.body.userUsername,
+    userPassword: req.body.userPassword,
+  }))
+);
+
+// Authenticated routes
+router.route("/logout").post(
+  [isAuthenticated],
+  handler(postLogOut, true, (req, res, next) => ({
+    response: res,
   }))
 );
 
