@@ -7,7 +7,7 @@ import events from "./hooks/events";
 
 const router = express.Router();
 
-router.use("/", express.raw({ type: "application/json" }), events);
+router.use("/", events);
 
 router.use((req, res, next) => {
   createError(statusCodes.internalError, errors.internalServerError.message);

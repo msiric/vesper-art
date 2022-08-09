@@ -51,18 +51,18 @@ export const isIntentPending = (intent) => {
 };
 
 export const receiveWebhookEvent = async ({ signature, body, connection }) => {
-  console.log("$TEST CHECKOUT RECEIVED WEBHOOK", signature, body);
   const secret = stripeConfig.webhookSecret;
   let event;
 
   try {
     event = await constructStripeEvent({
       body,
-      secret,
       signature,
+      secret,
     });
   } catch (err) {
-    console.log("$TEST CHECKOUT event error", err);
+    console.log("$TEST CHECKOUT event error", err.message);
+    throw createError(...formatError(errors.paymentNotProcessed));
   }
 
   switch (event.type) {
