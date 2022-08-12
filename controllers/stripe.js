@@ -42,7 +42,12 @@ import {
 } from "../services/user";
 import { addNewLicense } from "../services/verifier";
 import { USER_SELECTION } from "../utils/database";
-import { formatError, formatResponse, generateUuids } from "../utils/helpers";
+import {
+  dynamicError,
+  formatError,
+  formatResponse,
+  generateUuids,
+} from "../utils/helpers";
 import { calculateTotalCharge } from "../utils/payment";
 import { errors, responses } from "../utils/statuses";
 
@@ -62,7 +67,7 @@ export const receiveWebhookEvent = async ({ signature, body, connection }) => {
     });
   } catch (err) {
     console.log("$TEST CHECKOUT event error", err.message);
-    throw createError(...formatError(errors.paymentNotProcessed));
+    throw createError(...formatError(dynamicError(err.message)));
   }
 
   switch (event.type) {
@@ -71,18 +76,16 @@ export const receiveWebhookEvent = async ({ signature, body, connection }) => {
       // FEATURE FLAG - payment
       if (featureFlags.payment) {
         const intent = event.data.object;
-        await processTransaction({ intent, connection });
+        return await processTransaction({ intent, connection });
       }
       break;
     case "payment_intent.payment_failed":
       console.log("$TEST CHECKOUT Failed payment", event.type);
-      break;
+      throw createError(...formatError(errors.paymentNotProcessed));
     default:
-      console.log("$TEST CHECKOUT Invalid event", event.type);
+      console.log("$TEST CHECKOUT Unknown event", event.type);
+      return formatResponse(responses.eventReceived);
   }
-
-  console.log("$TEST CHECKOUT done");
-  return formatResponse(responses.eventReceived);
 };
 
 export const getStripeUser = async ({ accountId }) => {

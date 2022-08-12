@@ -319,3 +319,9 @@ export const verifyHash = async (storedHash, givenString) =>
   await argon2.verify(storedHash, givenString);
 
 export const hashString = async (givenString) => await argon2.hash(givenString);
+
+export const dynamicError = (
+  message,
+  status = statusCodes.badRequest,
+  expose = true
+) => ({ status, message, expose });

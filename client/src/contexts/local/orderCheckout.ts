@@ -195,6 +195,8 @@ const initActions = (set, get) => ({
       stripeData
     );
 
+    console.log("paymentIntent", paymentIntent, "err", error);
+
     if (error) {
       console.log("fail");
       console.log(error);

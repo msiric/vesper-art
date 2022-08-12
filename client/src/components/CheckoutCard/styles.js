@@ -16,7 +16,7 @@ const checkoutCardStyles = makeStyles((muiTheme) => ({
     flexDirection: "column",
   },
   text: {
-    padding: "0 16px",
+    padding: "8px 0",
     margin: 0,
   },
 }));

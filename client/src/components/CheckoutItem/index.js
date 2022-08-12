@@ -2,11 +2,11 @@ import AnimatedNumber from "animated-number-react";
 import React from "react";
 import NumberFormat from "react-number-format";
 import { formatArtworkPrice } from "../../../../common/helpers";
-import SkeletonWrapper from "../SkeletonWrapper/index";
 import Box from "../../domain/Box";
 import ListItem from "../../domain/ListItem";
 import ListItemText from "../../domain/ListItemText";
 import Typography from "../../domain/Typography";
+import SkeletonWrapper from "../SkeletonWrapper/index";
 import checkoutItemStyles from "./styles";
 
 const CheckoutItem = ({
@@ -33,6 +33,7 @@ const CheckoutItem = ({
             {description}
           </Typography>
         }
+        className={classes.label}
       />
       <ListItemText
         primary={<Typography loading={loading}>{amount}</Typography>}
@@ -60,7 +61,7 @@ const CheckoutItem = ({
             </SkeletonWrapper>
           </Box>
         }
-        className={classes.wrapper}
+        className={classes.value}
       />
     </ListItem>
   );

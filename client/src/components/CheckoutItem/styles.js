@@ -10,7 +10,10 @@ const checkoutItemStyles = makeStyles((muiTheme) => ({
     fontSize: "1.2rem",
     fontWeight: "bold",
   },
-  wrapper: {
+  label: {
+    maxWidth: 260,
+  },
+  value: {
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-end",
