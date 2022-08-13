@@ -1,12 +1,10 @@
+import { stripePublishableKey } from "@shared/constants";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import React from "react";
-import { stripe } from "../../../../config/secret";
 import CheckoutProcessor from "../CheckoutProcessor";
 
-const stripePromise = stripe.publishableKey
-  ? loadStripe(stripe.publishableKey)
-  : null;
+const stripePromise = loadStripe(stripePublishableKey);
 
 const CheckoutContent = () => {
   return (

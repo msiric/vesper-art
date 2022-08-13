@@ -1,4 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
+// improves Stripe's fraud detection
+import "@stripe/stripe-js";
 import React, { lazy, Suspense, useEffect } from "react";
 import { Redirect, Route, Router, Switch, useLocation } from "react-router-dom";
 import { featureFlags } from "../../common/constants";

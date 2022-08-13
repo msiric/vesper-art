@@ -21,3 +21,9 @@ export const socialLinks = {
   twitter: "https://twitter.com/vesper_crew",
   reddit: "https://www.reddit.com/r/vesperart/",
 };
+
+// $TODO set node_env to production appropriately when deploying
+export const stripePublishableKey =
+  process.env.NODE_ENV === "production"
+    ? ""
+    : "pk_test_xi0qpLTPs3WI8YPUfTyeeyzt00tNwou20z";

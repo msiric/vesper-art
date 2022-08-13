@@ -49,7 +49,6 @@ const CheckoutProcessor = () => {
 
   const version = useOrderCheckout((state) => state.version.data);
   const orders = useOrderCheckout((state) => state.orders.data);
-  const intent = useOrderCheckout((state) => state.intent.data);
   const discount = useOrderCheckout((state) => state.discount.data);
   const license = useOrderCheckout((state) => state.license);
   const secret = useOrderCheckout((state) => state.secret);
