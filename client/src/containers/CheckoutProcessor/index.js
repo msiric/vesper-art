@@ -266,6 +266,7 @@ const CheckoutProcessor = () => {
                             <ListItems
                               items={licenseOptions}
                               loading={initialLoading}
+                              className={classes.list}
                             />
                           )}
                         </Box>

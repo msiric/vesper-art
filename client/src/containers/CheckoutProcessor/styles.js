@@ -26,6 +26,9 @@ const checkoutProcessorStyles = makeStyles((muiTheme) => ({
     display: "flex",
     justifyContent: "space-between",
   },
+  list: {
+    marginTop: 24,
+  },
 }));
 
 export default checkoutProcessorStyles;

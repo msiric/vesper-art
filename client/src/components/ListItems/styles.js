@@ -5,6 +5,9 @@ const listItemsStyles = makeStyles((muiTheme) => ({
     paddingTop: 0,
     paddingBottom: 0,
   },
+  box: {
+    marginRight: 32,
+  },
   avatar: {
     height: 24,
     width: 24,

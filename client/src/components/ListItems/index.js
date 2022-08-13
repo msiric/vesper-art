@@ -1,3 +1,4 @@
+import Box from "@domain/Box";
 import { FiberManualRecord as ItemDot } from "@material-ui/icons";
 import React from "react";
 import Avatar from "../../domain/Avatar";
@@ -23,7 +24,9 @@ const ListItems = ({
         : items.map((item) => (
             <ListItem className={noPadding && classes.item}>
               {loading ? (
-                <Avatar loading={loading} className={classes.avatar} />
+                <Box className={classes.box}>
+                  <Avatar loading={loading} className={classes.avatar} />
+                </Box>
               ) : (
                 <ListItemIcon className={!item.icon && classes.wrapper}>
                   {item.icon || <ItemDot className={classes.icon} />}
