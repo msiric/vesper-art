@@ -12,6 +12,12 @@ const checkoutItemStyles = makeStyles((muiTheme) => ({
   },
   label: {
     maxWidth: 260,
+    "&>span": {
+      display: "flex",
+    },
+    "&>p": {
+      display: "flex",
+    },
   },
   value: {
     display: "flex",

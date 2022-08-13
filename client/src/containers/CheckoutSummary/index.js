@@ -1,3 +1,4 @@
+import Box from "@domain/Box";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   ArrowUpwardRounded as SubmitIcon,
@@ -49,7 +50,7 @@ const CheckoutSummary = ({
 
   const summaryItems = [
     <CheckoutItem
-      label={version.title}
+      label={version.title ?? "Fetching artwork title info"}
       description={
         state.summary.license
           ? `${state.summary.license} license`
@@ -179,9 +180,11 @@ const CheckoutSummary = ({
   return (
     <Card className={classes.container}>
       <CardContent className={classes.content}>
-        <Typography variant="h6" gutterBottom loading={loading}>
-          Order summary
-        </Typography>
+        <Box className={classes.wrapper}>
+          <Typography variant="h6" gutterBottom loading={loading}>
+            Order summary
+          </Typography>
+        </Box>
         <Grid item xs={12} className={classes.card}>
           <CheckoutCard version={version} loading={loading} />
         </Grid>

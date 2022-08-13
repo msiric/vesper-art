@@ -8,23 +8,25 @@ import checkoutCardStyles from "./styles";
 
 const CheckoutCard = ({ version, loading }) => {
   const classes = checkoutCardStyles({
-    height: version.cover.height / 6,
-    width: version.cover.width / 6,
+    height: loading ? 80 : version.cover.height / 6,
+    width: loading ? 80 : version.cover.width / 6,
   });
 
   return (
     <Grid container className={classes.container}>
-      <CardMedia
-        className={classes.media}
-        image={version.cover.source}
-        title={version.title}
-        loading={loading}
-      />
+      <Box className={classes.wrapper}>
+        <CardMedia
+          className={classes.media}
+          image={version.cover.source}
+          title={version.title}
+          loading={loading}
+        />
+      </Box>
       <Box className={classes.wrapper}>
         <CardHeader
           title={
             <Typography loading={loading}>
-              {version.title || "Artwork title"}
+              {version.title || "Fetching artwork title info"}
             </Typography>
           }
           subheader={

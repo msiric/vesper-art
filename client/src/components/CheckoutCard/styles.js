@@ -4,6 +4,7 @@ const checkoutCardStyles = makeStyles((muiTheme) => ({
   container: {
     padding: 0,
     margin: "16px 0",
+    flexDirection: "column",
   },
   media: {
     height: ({ height }) => height,
@@ -13,11 +14,13 @@ const checkoutCardStyles = makeStyles((muiTheme) => ({
   },
   wrapper: {
     display: "flex",
-    flexDirection: "column",
   },
   text: {
     padding: "8px 0",
     margin: 0,
+    "&>div>span": {
+      display: "flex",
+    },
   },
 }));
 
