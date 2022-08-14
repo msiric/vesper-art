@@ -1,7 +1,10 @@
+import PaymentDisclaimer from "@components/PaymentDisclaimer";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   CheckRounded as CheckIcon,
   CreditCardRounded as PayIcon,
+  ErrorOutline as InfoIcon,
+  HttpsOutlined as SecureIcon,
   NavigateBeforeRounded as BackIcon,
   NavigateNextRounded as NextIcon,
 } from "@material-ui/icons";
@@ -106,10 +109,8 @@ const CheckoutProcessor = () => {
     errors,
     control,
     setValue,
-    trigger,
     getValues,
     watch,
-    reset,
   } = useForm({
     defaultValues: setDefaultValues(),
     resolver:
@@ -131,8 +132,8 @@ const CheckoutProcessor = () => {
     formState.isSubmitting ||
     !licenseStatus.valid;
 
-  const licenseOptions =
-    license === "personal"
+  const disclaimerOptions = [
+    initialLoading || license === "personal"
       ? [
           {
             icon: <CheckIcon />,
@@ -167,7 +168,37 @@ const CheckoutProcessor = () => {
             label:
               "The personal use license is not suitable for commercial activities",
           },
-        ];
+        ],
+    [
+      {
+        icon: <InfoIcon />,
+        label: "The information you enter here is displayed on the invoice",
+      },
+      {
+        icon: <InfoIcon />,
+        label: "Provides another layer of protection and security",
+      },
+      {
+        icon: <InfoIcon />,
+        label:
+          "You will not be charged until you complete the form on the next page",
+      },
+    ],
+    [
+      {
+        icon: <SecureIcon />,
+        label: "TLS Secure Payment protocol",
+      },
+      {
+        icon: <SecureIcon />,
+        label: "AES-256 card information encryption",
+      },
+      {
+        icon: <SecureIcon />,
+        label: "3D Secure verification",
+      },
+    ],
+  ];
 
   const onSubmit = async (values) => {
     const isFirstStep = step.current === 0;
@@ -261,12 +292,13 @@ const CheckoutProcessor = () => {
                         )}
                         <Box className={classes.multiform}>
                           {renderForm(step.current)}
-                          {step.current === 0 && (
-                            <ListItems
-                              items={licenseOptions}
-                              loading={initialLoading}
-                              className={classes.list}
-                            />
+                          <ListItems
+                            items={disclaimerOptions[step.current]}
+                            loading={initialLoading}
+                            className={classes.list}
+                          />
+                          {step.current === step.length - 1 && (
+                            <PaymentDisclaimer />
                           )}
                         </Box>
                       </Box>

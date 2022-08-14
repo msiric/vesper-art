@@ -17,6 +17,8 @@ const Input = ({
   variant = "text",
   loading = false,
   adornment = null,
+  autoHighlight = true,
+  autoSelect = true,
   ...props
 }) => {
   const classes = autocompleteInputStyles();
@@ -30,6 +32,8 @@ const Input = ({
       openOnFocus
       options={options}
       loading={loading}
+      autoHighlight={autoHighlight}
+      autoSelect={autoSelect}
       renderInput={(params) => (
         <TextField
           InputProps={{

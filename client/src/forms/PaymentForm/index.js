@@ -1,5 +1,5 @@
-import { Grid, TextField, Typography } from "@material-ui/core";
-import { fade, useTheme } from "@material-ui/core/styles";
+import { Grid, TextField } from "@material-ui/core";
+import { fade, makeStyles, useTheme } from "@material-ui/core/styles";
 import {
   CardCvcElement,
   CardExpiryElement,
@@ -93,23 +93,19 @@ export const StripeTextField = ({ loading, ...props }) => {
   );
 };
 
+const paymentFormStyles = makeStyles((muiTheme) => ({
+  container: {
+    "&>div": {
+      padding: "0px 8px !important",
+    },
+  },
+}));
+
 const PaymentForm = ({ secret, version, loading }) => {
   const errors = useOrderCheckout((state) => state.errors);
   const reflectErrors = useOrderCheckout((state) => state.reflectErrors);
 
-  console.log("STATE ERRORS", errors);
-  const cardsLogo = [
-    "amex",
-    "cirrus",
-    "diners",
-    "dankort",
-    "discover",
-    "jcb",
-    "maestro",
-    "mastercard",
-    "visa",
-    "visaelectron",
-  ];
+  const classes = paymentFormStyles();
 
   const onChange = (event) => {
     reflectErrors({ event });
@@ -167,68 +163,63 @@ const PaymentForm = ({ secret, version, loading }) => {
     }
   }; */
 
-  console.log("ERRORSSSSS", errors);
-
   return (
     <>
-      <Grid container item xs={12}>
-        <Grid item xs={12} sm={3}>
-          <Typography variant="h6">Payment Data</Typography>
+      <Grid container spacing={2} className={classes.container}>
+        <Grid item xs={12} sm={12}>
+          <StripeTextField
+            error={!!errors.cardNumber}
+            helperText={errors.cardNumber}
+            label="Card Number"
+            inputProps={{
+              options: {
+                showIcon: true,
+              },
+            }}
+            onChange={onChange}
+            stripeElement={CardNumberElement}
+            variant="outlined"
+            margin="dense"
+            loading={loading}
+            fullWidth
+          />
         </Grid>
-      </Grid>
-      <Grid item xs={12}>
-        <StripeTextField
-          error={!!errors.cardNumber}
-          helperText={errors.cardNumber}
-          label="Card Number"
-          inputProps={{
-            options: {
-              showIcon: true,
-            },
-          }}
-          onChange={onChange}
-          stripeElement={CardNumberElement}
-          variant="outlined"
-          margin="dense"
-          loading={loading}
-          fullWidth
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <StripeTextField
-          error={!!errors.cardExpiry}
-          helperText={errors.cardExpiry}
-          label="Card expiry date"
-          inputProps={{
-            options: {
-              showIcon: true,
-            },
-          }}
-          onChange={onChange}
-          stripeElement={CardExpiryElement}
-          variant="outlined"
-          margin="dense"
-          loading={loading}
-          fullWidth
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <StripeTextField
-          error={!!errors.cardCvc}
-          helperText={errors.cardCvc}
-          label="Card CVC"
-          inputProps={{
-            options: {
-              showIcon: true,
-            },
-          }}
-          onChange={onChange}
-          stripeElement={CardCvcElement}
-          variant="outlined"
-          margin="dense"
-          loading={loading}
-          fullWidth
-        />
+        <Grid item xs={12} sm={6}>
+          <StripeTextField
+            error={!!errors.cardExpiry}
+            helperText={errors.cardExpiry}
+            label="Card expiry date"
+            inputProps={{
+              options: {
+                showIcon: true,
+              },
+            }}
+            onChange={onChange}
+            stripeElement={CardExpiryElement}
+            variant="outlined"
+            margin="dense"
+            loading={loading}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <StripeTextField
+            error={!!errors.cardCvc}
+            helperText={errors.cardCvc}
+            label="Card CVC"
+            inputProps={{
+              options: {
+                showIcon: true,
+              },
+            }}
+            onChange={onChange}
+            stripeElement={CardCvcElement}
+            variant="outlined"
+            margin="dense"
+            loading={loading}
+            fullWidth
+          />
+        </Grid>
       </Grid>
     </>
   );

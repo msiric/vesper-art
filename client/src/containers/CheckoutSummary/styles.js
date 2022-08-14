@@ -4,6 +4,7 @@ const checkoutSummaryStyles = makeStyles((muiTheme) => ({
   container: {
     height: "100%",
     display: "flex",
+    flexDirection: "column",
   },
   content: {
     height: "100%",
