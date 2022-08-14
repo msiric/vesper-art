@@ -132,73 +132,79 @@ const CheckoutProcessor = () => {
     formState.isSubmitting ||
     !licenseStatus.valid;
 
-  const disclaimerOptions = [
-    initialLoading || license === "personal"
+  const licenseOptions =
+    initialLoading || watchedValues.licenseType === "personal"
       ? [
           {
             icon: <CheckIcon />,
-            label: "Personal blogging, websites and social media",
+            label:
+              "Personal projects, websites, social media and other non-commercial activities",
           },
           {
             icon: <CheckIcon />,
-            label:
-              "Home printing, art and craft projects, personal portfolios and gifts",
+            label: "Must not, directly or indirectly, result in financial gain",
           },
-          { icon: <CheckIcon />, label: "Students and charities" },
           {
             icon: <CheckIcon />,
-            label:
-              "The personal use license is not suitable for commercial activities",
+            label: "No digital rights management restrictions ",
+          },
+          {
+            icon: <CheckIcon />,
+            label: "Verifiable at all times using the license signature",
           },
         ]
       : [
           {
             icon: <CheckIcon />,
             label:
-              "Print and digital advertising, broadcasts, product packaging, presentations, websites and blogs",
+              "Advertising, promotion, product integration and other commercial activities",
           },
           {
             icon: <CheckIcon />,
-            label:
-              "Home printing, art and craft projects, personal portfolios and gifts",
+            label: "Can, directly or indirectly, result in financial gain",
           },
-          { icon: <CheckIcon />, label: "Students and charities" },
           {
             icon: <CheckIcon />,
-            label:
-              "The personal use license is not suitable for commercial activities",
+            label: "No digital rights management restrictions ",
           },
-        ],
-    [
-      {
-        icon: <InfoIcon />,
-        label: "The information you enter here is displayed on the invoice",
-      },
-      {
-        icon: <InfoIcon />,
-        label: "Provides another layer of protection and security",
-      },
-      {
-        icon: <InfoIcon />,
-        label:
-          "You will not be charged until you complete the form on the next page",
-      },
-    ],
-    [
-      {
-        icon: <SecureIcon />,
-        label: "TLS Secure Payment protocol",
-      },
-      {
-        icon: <SecureIcon />,
-        label: "AES-256 card information encryption",
-      },
-      {
-        icon: <SecureIcon />,
-        label: "3D Secure verification",
-      },
-    ],
+          {
+            icon: <CheckIcon />,
+            label: "Verifiable at all times using the license signature",
+          },
+        ];
+
+  const billingOptions = [
+    {
+      icon: <InfoIcon />,
+      label: "The information you enter here is displayed on the invoice",
+    },
+    {
+      icon: <InfoIcon />,
+      label: "Provides another layer of protection and security",
+    },
+    {
+      icon: <InfoIcon />,
+      label:
+        "You will not be charged until you complete the form on the next page",
+    },
   ];
+
+  const paymentOptions = [
+    {
+      icon: <SecureIcon />,
+      label: "TLS Secure Payment protocol",
+    },
+    {
+      icon: <SecureIcon />,
+      label: "AES-256 card information encryption",
+    },
+    {
+      icon: <SecureIcon />,
+      label: "3D Secure verification",
+    },
+  ];
+
+  const disclaimerOptions = [licenseOptions, billingOptions, paymentOptions];
 
   const onSubmit = async (values) => {
     const isFirstStep = step.current === 0;
