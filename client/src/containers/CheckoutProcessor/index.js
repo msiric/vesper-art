@@ -298,11 +298,13 @@ const CheckoutProcessor = () => {
                         )}
                         <Box className={classes.multiform}>
                           {renderForm(step.current)}
-                          <ListItems
-                            items={disclaimerOptions[step.current]}
-                            loading={initialLoading}
-                            className={classes.list}
-                          />
+                          {step.current !== step.length && (
+                            <ListItems
+                              items={disclaimerOptions[step.current]}
+                              loading={initialLoading}
+                              className={classes.list}
+                            />
+                          )}
                           {step.current === step.length - 1 && (
                             <PaymentDisclaimer />
                           )}
