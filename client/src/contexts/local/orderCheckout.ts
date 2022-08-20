@@ -30,7 +30,7 @@ export const initialState = {
   license: "",
   discount: { data: null, loading: false, error: false },
   intent: { data: null, loading: false, error: false },
-  payment: { success: false, message: "" },
+  payment: { success: false, heading: "", message: "" },
   step: {
     current: 3,
     length: STEPS.length,
@@ -163,6 +163,7 @@ const initActions = (set, get) => ({
         payment: {
           ...state.payment,
           success: false,
+          heading: "",
           message:
             "Payment couldn't be processed because Stripe wasn't initialized. Please try again.",
         },
@@ -203,7 +204,12 @@ const initActions = (set, get) => ({
       set((state) => ({
         ...state,
         intent: { ...state.intent, loading: false },
-        payment: { ...state.payment, success: false, message: error.message },
+        payment: {
+          ...state.payment,
+          success: false,
+          heading: "",
+          message: error.message,
+        },
       }));
     } else if (paymentIntent && paymentIntent.status === "succeeded") {
       console.log("success");
@@ -229,6 +235,7 @@ const initActions = (set, get) => ({
         payment: {
           ...state.payment,
           success: true,
+          heading: "",
           message:
             "Payment successful! Your order will appear in the Orders page soon.",
         },

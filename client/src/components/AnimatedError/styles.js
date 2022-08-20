@@ -1,16 +1,19 @@
 import { makeStyles } from "@material-ui/core/styles";
+import { artepunktTheme } from "@styles/theme";
 
 const animatedErrorStyles = makeStyles((muiTheme) => ({
   error: {
-    width: 50,
-    height: 50,
+    position: "absolute",
+    width: 80,
+    height: 80,
+    top: "47%",
   },
   icon: {
     overflow: "visible",
   },
   circle: {
     fill: "transparent",
-    stroke: "#eb4034",
+    stroke: artepunktTheme.palette.error.main,
     strokeWidth: 4,
     strokeDasharray: 224,
     transformOrigin: "50%",
@@ -19,7 +22,7 @@ const animatedErrorStyles = makeStyles((muiTheme) => ({
   },
   line: {
     opacity: 0,
-    fill: "#eb4034",
+    fill: artepunktTheme.palette.error.main,
     animationName: "$rotate",
     animationDuration: "0.7s",
     animationDelay: "0.3s",

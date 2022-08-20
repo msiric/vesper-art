@@ -1,17 +1,19 @@
 import { makeStyles } from "@material-ui/core/styles";
+import { artepunktTheme } from "@styles/theme";
 
 const animatedSuccessStyles = makeStyles((muiTheme) => ({
   success: {
-    width: 50,
-    height: 50,
-    display: "inline-block",
+    position: "absolute",
+    width: 80,
+    height: 80,
+    top: "47%",
   },
   icon: {
     overflow: "visible",
   },
   circle: {
     fill: "transparent",
-    stroke: "#639939",
+    stroke: artepunktTheme.palette.success.main,
     strokeWidth: 4,
     strokeDasharray: 224,
     transformOrigin: "50%",
@@ -21,7 +23,7 @@ const animatedSuccessStyles = makeStyles((muiTheme) => ({
   check: {
     fill: "none",
     opacity: 0,
-    stroke: "#639939",
+    stroke: artepunktTheme.palette.success.main,
     strokeWidth: "4px",
     strokeLocation: "inside",
     strokeDasharray: "0 100",

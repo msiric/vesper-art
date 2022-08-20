@@ -57,6 +57,7 @@ const CheckoutProcessor = () => {
   const secret = useOrderCheckout((state) => state.secret);
   const step = useOrderCheckout((state) => state.step);
   const paymentSuccess = useOrderCheckout((state) => state.payment.success);
+  const paymentHeading = useOrderCheckout((state) => state.payment.heading);
   const paymentMessage = useOrderCheckout((state) => state.payment.message);
   const versionLoading = useOrderCheckout((state) => state.version.loading);
   const ordersLoading = useOrderCheckout((state) => state.orders.loading);
@@ -131,6 +132,8 @@ const CheckoutProcessor = () => {
     !isFormAltered(getValues(), setDefaultValues()) ||
     formState.isSubmitting ||
     !licenseStatus.valid;
+
+  const isLastStep = step.current === step.length;
 
   const licenseOptions =
     initialLoading || watchedValues.licenseType === "personal"
@@ -260,6 +263,7 @@ const CheckoutProcessor = () => {
         return (
           <CheckoutStatus
             success={paymentSuccess}
+            heading={paymentHeading}
             message={paymentMessage}
             version={version}
           />
@@ -288,17 +292,15 @@ const CheckoutProcessor = () => {
               <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
                 <Card elevation={5} className={classes.card}>
                   <CardContent className={classes.content}>
-                    {!!orders.length && (
+                    {!!orders.length && !isLastStep && (
                       <LicenseAlert licenseStatus={licenseStatus} />
                     )}
                     {stripe ? (
                       <Box className={classes.wrapper}>
-                        {step.current !== STEPS.length && (
-                          <CheckoutStepper step={step} />
-                        )}
+                        {!isLastStep && <CheckoutStepper step={step} />}
                         <Box className={classes.multiform}>
                           {renderForm(step.current)}
-                          {step.current !== step.length && (
+                          {!isLastStep && (
                             <ListItems
                               items={disclaimerOptions[step.current]}
                               loading={initialLoading}
