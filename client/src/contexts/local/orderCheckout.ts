@@ -32,7 +32,7 @@ export const initialState = {
   intent: { data: null, loading: false, error: false },
   payment: { success: false, message: "" },
   step: {
-    current: 0,
+    current: 3,
     length: STEPS.length,
   },
   errors: {},

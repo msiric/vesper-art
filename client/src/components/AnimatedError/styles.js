@@ -4,7 +4,6 @@ const animatedErrorStyles = makeStyles((muiTheme) => ({
   error: {
     width: 50,
     height: 50,
-    display: "inline-block",
   },
   icon: {
     overflow: "visible",
@@ -13,6 +12,10 @@ const animatedErrorStyles = makeStyles((muiTheme) => ({
     fill: "transparent",
     stroke: "#eb4034",
     strokeWidth: 4,
+    strokeDasharray: 224,
+    transformOrigin: "50%",
+    animation:
+      "$spinner 1s linear 0s, $offset 1s ease-in-out 0s, $array 1s forwards",
   },
   line: {
     opacity: 0,
@@ -31,6 +34,31 @@ const animatedErrorStyles = makeStyles((muiTheme) => ({
     "100%": {
       opacity: 1,
       transform: "rotate(315deg)",
+    },
+  },
+  "@keyframes offset": {
+    "0%": {
+      strokeDashoffset: 224,
+    },
+    "100%": {
+      strokeDashoffset: 0,
+      transform: "rotate(360deg)",
+    },
+  },
+  "@keyframes spinner": {
+    "0%": {
+      transform: "rotate(0deg)",
+    },
+    "100%": {
+      transform: "rotate(270deg)",
+    },
+  },
+  "@keyframes array": {
+    "0%": {
+      strokeDasharray: 224,
+    },
+    "100%": {
+      strokeDasharray: 284,
     },
   },
 }));

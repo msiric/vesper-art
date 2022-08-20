@@ -26,7 +26,7 @@ const CheckoutStatus = ({ success, message, version }) => {
 
   return (
     <Grid container className={classes.container}>
-      {!success ? <AnimatedSuccess /> : <AnimatedError />}
+      {success ? <AnimatedSuccess /> : <AnimatedError />}
       <Typography variant="h5" className={classes.message}>
         {message}
       </Typography>
