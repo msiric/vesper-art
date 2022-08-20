@@ -13,9 +13,7 @@ import Typography from "../../domain/Typography";
 import SyncButton from "../SyncButton/index";
 import checkoutStatusStyles from "./styles";
 
-const CheckoutStatus = ({ success, version }) => {
-  const heading = "Payment failed";
-  const message = "Something went wrong with processing your order.";
+const CheckoutStatus = ({ success, heading, summary, message, version }) => {
   const history = useHistory();
 
   const classes = checkoutStatusStyles();
@@ -35,7 +33,7 @@ const CheckoutStatus = ({ success, version }) => {
       </Typography>
       <Box className={classes.wrapper}>
         <Typography variant="body" className={classes.summary}>
-          Order was not created successfully
+          {summary}
         </Typography>
         <Box className={classes.animation}>
           <AnimatedCard />

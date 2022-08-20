@@ -30,9 +30,9 @@ export const initialState = {
   license: "",
   discount: { data: null, loading: false, error: false },
   intent: { data: null, loading: false, error: false },
-  payment: { success: false, heading: "", message: "" },
+  payment: { success: false, heading: "", summary: "", message: "" },
   step: {
-    current: 3,
+    current: 0,
     length: STEPS.length,
   },
   errors: {},
@@ -163,9 +163,12 @@ const initActions = (set, get) => ({
         payment: {
           ...state.payment,
           success: false,
-          heading: "",
-          message:
-            "Payment couldn't be processed because Stripe wasn't initialized. Please try again.",
+          heading: "Payment failed",
+          summary: "Order was not processed",
+          message: `Payment failed. 
+            Card couldn't be processed because Stripe wasn't initialized.
+            Please try again.
+            `,
         },
       }));
       // $TODO Enqueue error;
@@ -207,8 +210,12 @@ const initActions = (set, get) => ({
         payment: {
           ...state.payment,
           success: false,
-          heading: "",
-          message: error.message,
+          heading: "Payment failed",
+          summary: "Order was not processed",
+          message: `Payment failed.
+          Could not finalize your order due to the following reason:
+          ${error.message}
+          `,
         },
       }));
     } else if (paymentIntent && paymentIntent.status === "succeeded") {
@@ -235,9 +242,12 @@ const initActions = (set, get) => ({
         payment: {
           ...state.payment,
           success: true,
-          heading: "",
-          message:
-            "Payment successful! Your order will appear in the Orders page soon.",
+          heading: "Payment succeeded",
+          summary: "Order was processed",
+          message: `Payment successful!
+          Your order was finalized and will appear in the Orders page soon.
+          Thank you.
+          `,
         },
       }));
     }
