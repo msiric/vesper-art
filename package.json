@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "cross-env NODE_ENV=test yarn run transpile && jest --silent --runInBand ./dist",
+    "test:fresh": "yarn run seed:test && cross-env NODE_ENV=test yarn run transpile && jest --silent --runInBand ./dist",
     "test:watch": "cross-env NODE_ENV=test yarn run transpile:watch-silent \"tsc-alias && jest --watch --silent --runInBand ./dist\"",
     "test:coverage": "cross-env NODE_ENV=test yarn run transpile && jest --coverage --silent --runInBand ./dist",
     "client": "cd client && yarn start",

@@ -1,27 +1,25 @@
 import express from "express";
 import {
   deleteArtwork,
+  deleteComment,
   favoriteArtwork,
   fetchArtworkFavorites,
   getArtwork,
   getArtworkComments,
   getArtworkDetails,
   getArtworkEdit,
+  getComment,
   getUserArtworkById,
   getUserArtworkByUsername,
   getUserFavorites,
   getUserOwnership,
   getUserUploads,
+  patchComment,
+  postComment,
   postNewArtwork,
   unfavoriteArtwork,
   updateArtwork,
 } from "../../../controllers/artwork";
-import {
-  deleteComment,
-  getComment,
-  patchComment,
-  postComment,
-} from "../../../controllers/comment";
 import multerApi from "../../../lib/multer";
 import {
   isAuthenticated,
