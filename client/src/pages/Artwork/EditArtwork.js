@@ -81,10 +81,7 @@ const EditArtwork = ({ match }) => {
       {artworkLoading || capabilitiesLoading || artwork.id ? (
         <Grid container spacing={2}>
           <Grid item xs={12} className={classes.wrapper}>
-            <MainHeading
-              text="Edit artwork"
-              className={globalClasses.mainHeading}
-            />
+            <MainHeading text="Edit artwork" />
             <ArtworkModifier paramId={paramId} />
           </Grid>
         </Grid>

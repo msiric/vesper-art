@@ -14,6 +14,9 @@ const pricingCardStyles = makeStyles((muiTheme) => ({
     display: "flex",
     justifyContent: "center",
   },
+  extraMargin: {
+    marginTop: 8,
+  },
   priceWrapper: {
     display: "flex",
     alignItems: "flex-end",

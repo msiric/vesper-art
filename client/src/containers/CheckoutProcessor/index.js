@@ -288,7 +288,7 @@ const CheckoutProcessor = () => {
   }, [version.artwork.id]);
 
   return (
-    <Grid container spacing={2} className={classes.container}>
+    <Grid container spacing={2}>
       {initialLoading || version.id ? (
         <>
           <Grid item xs={12} md={8}>

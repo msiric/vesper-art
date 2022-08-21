@@ -12,9 +12,6 @@ const commentSectionStyles = makeStyles((muiTheme) => ({
     justifyContent: "center",
     alignItems: "center",
   },
-  heading: {
-    marginBottom: "12px",
-  },
   button: {
     marginBottom: 4,
   },

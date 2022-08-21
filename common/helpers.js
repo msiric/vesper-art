@@ -255,7 +255,7 @@ export const formatArtworkPrice = ({
 }) =>
   price && price > 0
     ? withAbbreviation
-      ? `${prefix}${abbreviate(price, 2)}`
+      ? `${prefix}${abbreviate(price.toFixed(2), 2)}`
       : `${prefix}${currency(price, {
           separator: ",",
           precision: withPrecision ? 2 : 0,

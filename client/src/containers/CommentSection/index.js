@@ -62,7 +62,7 @@ const CommentSection = ({
   return (
     <Card>
       <CardContent className={classes.wrapper}>
-        <MainHeading text="Comments" className={classes.heading} />
+        <MainHeading text="Comments" />
         <FormProvider control={control}>
           <form
             onSubmit={handleSubmit(

@@ -63,7 +63,7 @@ const Settings = ({ location }) => {
 
   return !containsErrors(retry, redirect) ? (
     <Container key={location.key} className={globalClasses.gridContainer}>
-      <MainHeading text="Settings" className={globalClasses.mainHeading} />
+      <MainHeading text="Settings" />
       <Grid container spacing={2} className={classes.container}>
         <Grid item xs={12} sm={6} md={4} className={classes.wrapper}>
           <SettingsProfile />

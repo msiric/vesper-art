@@ -3,6 +3,7 @@ import MainHeading from "../../components/MainHeading";
 import CheckoutContent from "../../containers/CheckoutContent";
 import { useOrderCheckout } from "../../contexts/local/orderCheckout";
 import Container from "../../domain/Container";
+import globalStyles from "../../styles/global";
 import { containsErrors, renderError } from "../../utils/helpers";
 
 const Checkout = ({ location }) => {
@@ -20,6 +21,8 @@ const Checkout = ({ location }) => {
   const ordersMessage = useOrderCheckout((state) => state.orders.error.message);
   const resetArtwork = useOrderCheckout((state) => state.resetArtwork);
 
+  const globalClasses = globalStyles();
+
   const reinitializeState = () => {
     resetArtwork();
   };
@@ -36,7 +39,7 @@ const Checkout = ({ location }) => {
     ordersRetry,
     ordersRedirect
   ) ? (
-    <Container key={location.key}>
+    <Container key={location.key} className={globalClasses.gridContainer}>
       <MainHeading text="Checkout" />
       <CheckoutContent />
     </Container>

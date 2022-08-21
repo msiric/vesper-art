@@ -33,10 +33,7 @@ const AddArtwork = () => {
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <MainHeading
-            text="Add artwork"
-            className={globalClasses.mainHeading}
-          />
+          <MainHeading text="Add artwork" />
           <ArtworkCreator />
         </Grid>
       </Grid>

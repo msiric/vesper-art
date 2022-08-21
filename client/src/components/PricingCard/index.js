@@ -41,7 +41,9 @@ const PricingCard = ({
   return (
     <Card className={classes.container}>
       <CardContent className={classes.content}>
-        <Box className={classes.dataWrapper}>
+        <Box
+          className={`${classes.dataWrapper} ${!!price && classes.extraMargin}`}
+        >
           {!!price && (
             <Typography variant="h5" color="textSecondary">
               $
