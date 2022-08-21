@@ -59,6 +59,7 @@ const CheckoutProcessor = () => {
   const paymentSuccess = useOrderCheckout((state) => state.payment.success);
   const paymentHeading = useOrderCheckout((state) => state.payment.heading);
   const paymentSummary = useOrderCheckout((state) => state.payment.summary);
+  const paymentTitle = useOrderCheckout((state) => state.payment.title);
   const paymentMessage = useOrderCheckout((state) => state.payment.message);
   const versionLoading = useOrderCheckout((state) => state.version.loading);
   const ordersLoading = useOrderCheckout((state) => state.orders.loading);
@@ -266,6 +267,7 @@ const CheckoutProcessor = () => {
             success={paymentSuccess}
             heading={paymentHeading}
             summary={paymentSummary}
+            title={paymentTitle}
             message={paymentMessage}
             version={version}
           />

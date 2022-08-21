@@ -24,8 +24,10 @@ const checkoutStatusStyles = makeStyles((muiTheme) => ({
   summary: {
     marginBottom: 18,
   },
-  message: {
+  title: {
     marginTop: 32,
+  },
+  message: {
     textAlign: "center",
     whiteSpace: "pre-wrap",
   },

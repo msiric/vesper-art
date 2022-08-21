@@ -478,7 +478,7 @@ const processTransaction = async ({ intent, connection }) => {
       intentId: intent.id,
     });
     if (!isObjectEmpty(foundIntent)) {
-      const refundedCharge = await issueStripeRefund({
+      await issueStripeRefund({
         chargeData: foundIntent.charges.data,
       });
     }

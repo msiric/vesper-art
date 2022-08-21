@@ -15,6 +15,21 @@ const STEPS = [
   "Payment information",
 ];
 
+const PAYMENT_STATUS = {
+  HEADING: {
+    SUCCESS: "Payment succeeded",
+    ERROR: "Payment failed",
+  },
+  SUMMARY: {
+    SUCCESS: "Order was processed",
+    ERROR: "Order was not processed",
+  },
+  TITLE: {
+    SUCCESS: "Payment successful!",
+    ERROR: "Payment error.",
+  },
+};
+
 export const initialState = {
   secret: null,
   version: {
@@ -30,7 +45,7 @@ export const initialState = {
   license: "",
   discount: { data: null, loading: false, error: false },
   intent: { data: null, loading: false, error: false },
-  payment: { success: false, heading: "", summary: "", message: "" },
+  payment: { success: false, heading: "", summary: "", title: "", message: "" },
   step: {
     current: 0,
     length: STEPS.length,
@@ -163,10 +178,10 @@ const initActions = (set, get) => ({
         payment: {
           ...state.payment,
           success: false,
-          heading: "Payment failed",
-          summary: "Order was not processed",
-          message: `Payment failed. 
-            Card couldn't be processed because Stripe wasn't initialized.
+          heading: PAYMENT_STATUS.HEADING.ERROR,
+          summary: PAYMENT_STATUS.SUMMARY.ERROR,
+          title: PAYMENT_STATUS.TITLE.ERROR,
+          message: `Card couldn't be processed because Stripe wasn't initialized.
             Please try again.
             `,
         },
@@ -210,42 +225,26 @@ const initActions = (set, get) => ({
         payment: {
           ...state.payment,
           success: false,
-          heading: "Payment failed",
-          summary: "Order was not processed",
-          message: `Payment failed.
-          Could not finalize your order due to the following reason:
+          heading: PAYMENT_STATUS.HEADING.ERROR,
+          summary: PAYMENT_STATUS.SUMMARY.ERROR,
+          title: PAYMENT_STATUS.TITLE.ERROR,
+          message: `Could not finalize your order due to the following reason:
           ${error.message}
           `,
         },
       }));
     } else if (paymentIntent && paymentIntent.status === "succeeded") {
       console.log("success");
-      /*         enqueueSnackbar('Payment successful', {
-            variant: 'success',
-            autoHideDuration: 1000,
-            anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center',
-            },
-          });
-          enqueueSnackbar('Your purchase will appear in the "orders" page soon', {
-            variant: 'success',
-            autoHideDuration: 3000,
-            anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center',
-            },
-          }); */
       set((state) => ({
         ...state,
         intent: { ...state.intent, loading: false },
         payment: {
           ...state.payment,
           success: true,
-          heading: "Payment succeeded",
-          summary: "Order was processed",
-          message: `Payment successful!
-          Your order was finalized and will appear in the Orders page soon.
+          heading: PAYMENT_STATUS.HEADING.SUCCESS,
+          summary: PAYMENT_STATUS.SUMMARY.SUCCESS,
+          title: PAYMENT_STATUS.TITLE.SUCCESS,
+          message: `Your order was finalized and will appear in the Orders page soon.
           Thank you.
           `,
         },
