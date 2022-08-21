@@ -1,11 +1,11 @@
 import React from "react";
 import animatedSuccessStyles from "./styles";
 
-const AnimatedSuccess = (props) => {
+const AnimatedSuccess = ({ styles }) => {
   const classes = animatedSuccessStyles();
 
   return (
-    <div className={classes.success} {...props}>
+    <div className={`${classes.success} ${styles}`}>
       <svg
         className={classes.icon}
         xmlns="http://www.w3.org/2000/svg"

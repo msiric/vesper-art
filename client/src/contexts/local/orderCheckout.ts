@@ -25,8 +25,8 @@ const PAYMENT_STATUS = {
     ERROR: "Order was not processed",
   },
   TITLE: {
-    SUCCESS: "Payment successful!",
-    ERROR: "Payment error.",
+    SUCCESS: "Payment successful",
+    ERROR: "Payment error",
   },
 };
 

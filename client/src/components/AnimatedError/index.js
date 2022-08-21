@@ -1,11 +1,11 @@
 import React from "react";
 import animatedErrorStyles from "./styles";
 
-const AnimatedError = (props) => {
+const AnimatedError = ({ styles }) => {
   const classes = animatedErrorStyles();
 
   return (
-    <div className={classes.error} {...props}>
+    <div className={`${classes.error} ${styles}`}>
       <svg
         className={classes.icon}
         xmlns="http://www.w3.org/2000/svg"

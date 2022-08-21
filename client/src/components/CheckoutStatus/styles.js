@@ -15,6 +15,17 @@ const checkoutStatusStyles = makeStyles((muiTheme) => ({
     justifyContent: "center",
     alignItems: "center",
   },
+  card: {
+    [muiTheme.breakpoints.down(480)]: {
+      display: "none",
+    },
+  },
+  status: {
+    [muiTheme.breakpoints.down(480)]: {
+      position: "static",
+      marginTop: 14,
+    },
+  },
   animation: {
     position: "relative",
     display: "flex",
@@ -29,7 +40,7 @@ const checkoutStatusStyles = makeStyles((muiTheme) => ({
   },
   message: {
     textAlign: "center",
-    whiteSpace: "pre-wrap",
+    whiteSpace: "pre-line",
   },
 }));
 

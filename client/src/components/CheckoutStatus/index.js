@@ -4,7 +4,7 @@ import AnimatedSuccess from "@components/AnimatedSuccess";
 import Box from "@domain/Box";
 import {
   ArrowBackRounded as BackIcon,
-  PhotoLibraryOutlined as OrdersIcon
+  PhotoLibraryOutlined as OrdersIcon,
 } from "@material-ui/icons";
 import React from "react";
 import { useHistory } from "react-router-dom";
@@ -13,7 +13,14 @@ import Typography from "../../domain/Typography";
 import SyncButton from "../SyncButton/index";
 import checkoutStatusStyles from "./styles";
 
-const CheckoutStatus = ({ success, heading, summary, title, message, version }) => {
+const CheckoutStatus = ({
+  success,
+  heading,
+  summary,
+  title,
+  message,
+  version,
+}) => {
   const history = useHistory();
 
   const classes = checkoutStatusStyles();
@@ -36,8 +43,12 @@ const CheckoutStatus = ({ success, heading, summary, title, message, version }) 
           {summary}
         </Typography>
         <Box className={classes.animation}>
-          <AnimatedCard />
-          {success ? <AnimatedSuccess /> : <AnimatedError />}
+          <AnimatedCard styles={classes.card} />
+          {success ? (
+            <AnimatedSuccess styles={classes.status} />
+          ) : (
+            <AnimatedError styles={classes.status} />
+          )}
         </Box>
         <Typography variant="h6" className={classes.title}>
           {title}

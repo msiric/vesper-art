@@ -1,7 +1,7 @@
 import React from "react";
 import animatedCardStyles from "./styles";
 
-const AnimatedCard = () => {
+const AnimatedCard = ({ styles }) => {
   const classes = animatedCardStyles();
 
   return (
@@ -9,7 +9,7 @@ const AnimatedCard = () => {
       width="420"
       height="238"
       xmlns="http://www.w3.org/2000/svg"
-      className={classes.container}
+      className={`${classes.container} ${styles}`}
     >
       <g>
         <path
