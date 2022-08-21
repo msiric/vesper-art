@@ -9,13 +9,12 @@ import {
   getSellerStatistics,
   getSoldOrders,
   getUserPurchases,
-  getUserSales,
+  getUserSales, postReview
 } from "../../../controllers/order";
-import { postReview } from "../../../controllers/review";
 import {
   isAuthenticated,
   isAuthorized,
-  requestHandler as handler,
+  requestHandler as handler
 } from "../../../middleware/index";
 
 const router = express.Router();

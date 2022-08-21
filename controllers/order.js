@@ -6,7 +6,7 @@ import socketApi from "../lib/socket";
 import { fetchUserFavorites } from "../services/artwork";
 import { addNewNotification } from "../services/notification";
 import {
-  addOrderReview,
+  addNewReview, addOrderReview,
   fetchArtworkOrders,
   fetchOrderDetails,
   fetchOrderMedia,
@@ -15,9 +15,8 @@ import {
   fetchUserPurchase,
   fetchUserPurchases,
   fetchUserReviews,
-  fetchUserSales,
+  fetchUserSales
 } from "../services/order";
-import { addNewReview } from "../services/review";
 import { fetchStripeBalance } from "../services/stripe";
 import { fetchUserById } from "../services/user";
 import { formatError, formatResponse, generateUuids } from "../utils/helpers";

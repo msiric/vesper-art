@@ -3,49 +3,39 @@ import {
   formatArtworkValues,
   isArrayEmpty,
   isFormAltered,
-  isObjectEmpty,
+  isObjectEmpty
 } from "../common/helpers";
 import { artworkValidation, commentValidation } from "../common/validation";
 import { deleteS3Object, getSignedS3Object } from "../lib/s3";
 import socketApi from "../lib/socket";
 import {
-  addNewArtwork,
-  addNewCover,
+  addNewArtwork, addNewComment, addNewCover,
   addNewFavorite,
   addNewMedia,
   addNewVersion,
   deactivateArtworkVersion,
-  deactivateExistingArtwork,
-  fetchActiveArtworks,
+  deactivateExistingArtwork, editExistingComment, fetchActiveArtworks,
   fetchAllUserArtwork,
   fetchArtworkById,
   fetchArtworkComments,
   fetchArtworkDetails,
   fetchArtworkEdit,
-  fetchArtworkMedia,
-  fetchFavoriteByParents,
+  fetchArtworkMedia, fetchCommentById, fetchFavoriteByParents,
   fetchFavoritesCount,
   fetchUserArtwork,
   fetchUserFavorites,
   fetchUserPurchasesWithMedia,
   fetchUserUploadsWithMedia,
-  removeArtworkVersion,
-  removeExistingFavorite,
-  updateArtworkVersion,
+  removeArtworkVersion, removeExistingComment, removeExistingFavorite,
+  updateArtworkVersion
 } from "../services/artwork";
-import {
-  addNewComment,
-  editExistingComment,
-  fetchCommentById,
-  removeExistingComment,
-} from "../services/comment";
 import { addNewNotification } from "../services/notification";
 import { fetchOrderByVersion, fetchOrdersByArtwork } from "../services/order";
 import { fetchStripeAccount } from "../services/stripe";
 import {
   fetchUserById,
   fetchUserByUsername,
-  fetchUserIdByUsername,
+  fetchUserIdByUsername
 } from "../services/user";
 import { USER_SELECTION } from "../utils/database";
 import {
@@ -53,7 +43,7 @@ import {
   formatError,
   formatResponse,
   generateUuids,
-  verifyVersionValidity,
+  verifyVersionValidity
 } from "../utils/helpers";
 import { formatArtworkPrices } from "../utils/payment";
 import { errors, responses } from "../utils/statuses";
@@ -136,8 +126,8 @@ export const postNewArtwork = async ({
     if (!isObjectEmpty(foundUser)) {
       const foundAccount = foundUser.stripeId
         ? await fetchStripeAccount({
-            accountId: foundUser.stripeId,
-          })
+          accountId: foundUser.stripeId,
+        })
         : null;
       verifyVersionValidity({ data: formattedData, foundUser, foundAccount });
       const { coverId, mediaId, versionId, artworkId } = generateUuids({
@@ -218,8 +208,8 @@ export const updateArtwork = async ({
       if (!isObjectEmpty(foundUser)) {
         const foundAccount = foundUser.stripeId
           ? await fetchStripeAccount({
-              accountId: foundUser.stripeId,
-            })
+            accountId: foundUser.stripeId,
+          })
           : null;
         verifyVersionValidity({ data: formattedData, foundUser, foundAccount });
         if (shouldUpdate) {
