@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="52.715 0.89 20.57 22.11" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+		tspan { white-space:pre }
+	</style>
+  </defs>
+  <path id="vesper " fill="#d68024" aria-label="vesper" d="M 65.805 23 L 64.045 23 L 56.565 0.89 L 58.325 0.89 L 63.055 14.8 L 67.675 0.89 L 69.435 0.89 L 63.875 17.34 L 64.925 20.41 L 71.525 0.89 L 73.285 0.89 L 65.805 23 Z M 60.195 23 L 52.715 0.89 L 54.475 0.89 L 61.955 23 L 60.195 23 Z"/>
+</svg>
