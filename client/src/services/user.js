@@ -26,15 +26,6 @@ export const patchUser = {
   success: { message: "User successfully updated", variant: "success" },
   error: { message: "Failed to update user", variant: "error" },
 };
-export const patchOrigin = {
-  request: async ({ userId, data }) =>
-    await ax.patch(`/api/users/${userId}/origin`, data),
-  success: {
-    message: "Business address successfully updated",
-    variant: "success",
-  },
-  error: { message: "Failed to update business address", variant: "error" },
-};
 export const postMedia = {
   request: async ({ data }) => await ax.post("/api/profile_image_upload", data),
   success: { message: "Avatar successfully uploaded", variant: "success" },

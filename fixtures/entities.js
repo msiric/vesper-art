@@ -685,7 +685,6 @@ export const entities = [
       avatarId: null,
       description: "Just vibin'",
       country: "HR",
-      businessAddress: "",
       displayFavorites: true,
       resetToken: "",
       jwtVersion: 0,

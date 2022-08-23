@@ -270,7 +270,6 @@ export const formatTokenData = ({ user }) => {
     active: user.active,
     stripeId: user.stripeId,
     country: user.country,
-    businessAddress: user.businessAddress,
     jwtVersion: user.jwtVersion,
     favorites: user.favorites,
   };

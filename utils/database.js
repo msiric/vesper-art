@@ -107,10 +107,7 @@ export const USER_SELECTION = {
     `${selector}.active`,
     `${selector}.created`,
   ],
-  STRIPE_INFO: (selector = DEFAULT_VALUES.USER) => [
-    `${selector}.businessAddress`,
-    `${selector}.stripeId`,
-  ],
+  STRIPE_INFO: (selector = DEFAULT_VALUES.USER) => [`${selector}.stripeId`],
   DETAILED_INFO: (selector = DEFAULT_VALUES.USER) => [
     `${selector}.customWork`,
     `${selector}.displayFavorites`,

@@ -8,7 +8,7 @@ import {
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
-import { appName, countries } from "../../../../common/constants";
+import { appName } from "../../../../common/constants";
 import { originValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import HelpBox from "../../components/HelpBox/index";
@@ -22,7 +22,6 @@ import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
 import OnboardingForm from "../../forms/OnboardingForm/index";
 import { postAuthorize } from "../../services/stripe";
-import { patchOrigin } from "../../services/user";
 import globalStyles from "../../styles/global";
 import { isFormDisabled } from "../../utils/helpers";
 
@@ -90,7 +89,6 @@ const onboardingItems = [
 const Onboarding = () => {
   const userId = useUserStore((state) => state.id);
   const userEmail = useUserStore((state) => state.email);
-  const userAddress = useUserStore((state) => state.businessAddress);
   const stripeId = useUserStore((state) => state.stripeId);
 
   const history = useHistory();
@@ -118,13 +116,6 @@ const Onboarding = () => {
   const onSubmit = async (values) => {
     try {
       if (!stripeId) {
-        await patchOrigin.request({
-          userId,
-          data: {
-            ...values,
-            userBusinessAddress: values.userBusinessAddress,
-          },
-        });
         const { data } = await postAuthorize.request({
           userBusinessAddress: values.userBusinessAddress,
           userEmail,
@@ -167,23 +158,9 @@ const Onboarding = () => {
                   privacy and compliance.
                 </Typography>
                 <ListItems className={classes.list} items={onboardingItems} />
-                {/* $TODO Refactor supportedCountries */}
-                {userAddress ? (
-                  countries[userAddress] && countries[userAddress].supported ? (
-                    <Typography color="textSecondary" className={classes.label}>
-                      Please confirm your registered business address
-                    </Typography>
-                  ) : (
-                    <Typography color="textSecondary" className={classes.label}>
-                      Your currently saved registered business address is not
-                      supported for Stripe payments
-                    </Typography>
-                  )
-                ) : (
-                  <Typography color="textSecondary" className={classes.label}>
-                    Please select your registered business address
-                  </Typography>
-                )}
+                <Typography color="textSecondary" className={classes.label}>
+                  Please select your registered business address
+                </Typography>
                 <FormProvider control={control}>
                   <form
                     className={classes.form}

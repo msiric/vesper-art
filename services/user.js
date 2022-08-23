@@ -517,27 +517,6 @@ export const removeExistingIntent = async ({ intentId, connection }) => {
   return deletedIntent;
 };
 
-// $Needs testing (mongo -> postgres)
-export const editUserOrigin = async ({
-  userId,
-  userBusinessAddress,
-  connection,
-}) => {
-  /*   if (userBusinessAddress) foundUser.businessAddress = userBusinessAddress;
-  return await User.save(foundUser); */
-
-  const updatedUser = await connection
-    .createQueryBuilder()
-    .update(User)
-    .set({ businessAddress: userBusinessAddress })
-    .where("id = :userId AND active = :active", {
-      userId,
-      active: USER_SELECTION["ACTIVE_STATUS"],
-    })
-    .execute();
-  return updatedUser;
-};
-
 // needs testing (better way to update already found user)
 // not tested
 // needs transaction (not tested)
@@ -550,7 +529,6 @@ export const deactivateExistingUser = async ({ userId, connection }) => {
   foundUser.avatar = null;
   foundUser.description = "";
   foundUser.country = "";
-  foundUser.businessAddress = "";
   foundUser.resetToken = "";
   foundUser.resetExpiry = null;
   foundUser.verificationToken = "";
@@ -572,7 +550,6 @@ export const deactivateExistingUser = async ({ userId, connection }) => {
       verified: false,
       description: "",
       country: "",
-      businessAddress: "",
       resetToken: "",
       resetExpiry: null,
       verificationToken: "",

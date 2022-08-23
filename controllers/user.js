@@ -2,7 +2,6 @@ import createError from "http-errors";
 import { isArrayEmpty, isObjectEmpty } from "../common/helpers";
 import {
   emailValidation,
-  originValidation,
   passwordValidation,
   preferencesValidation,
   profileValidation,
@@ -23,7 +22,6 @@ import {
   deactivateExistingUser,
   editUserAvatar,
   editUserEmail,
-  editUserOrigin,
   editUserPassword,
   editUserPreferences,
   editUserProfile,
@@ -60,24 +58,6 @@ export const getUserProfile = async ({ userUsername, connection }) => {
     connection,
   });
   if (!isObjectEmpty(foundUser)) return { user: foundUser };
-  throw createError(...formatError(errors.userNotFound));
-};
-
-export const updateUserOrigin = async ({
-  userId,
-  userBusinessAddress,
-  connection,
-}) => {
-  await originValidation.validate({ userBusinessAddress });
-  const foundUser = await fetchUserById({ userId, connection });
-  if (!isObjectEmpty(foundUser)) {
-    await editUserOrigin({
-      userId: foundUser.id,
-      userBusinessAddress,
-      connection,
-    });
-    return formatResponse(responses.businessAddressUpdated);
-  }
   throw createError(...formatError(errors.userNotFound));
 };
 

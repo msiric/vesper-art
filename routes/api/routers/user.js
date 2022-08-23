@@ -60,14 +60,6 @@ router
     }))
   );
 
-router.route("/users/:userId/origin").patch(
-  [isAuthenticated, isAuthorized],
-  handler(updateUserOrigin, true, (req, res, next) => ({
-    userId: req.params.userId,
-    userBusinessAddress: req.body.userBusinessAddress,
-  }))
-);
-
 router.route("/users/:userId/preferences").patch(
   [isAuthenticated, isAuthorized],
   handler(updateUserPreferences, true, (req, res, next) => ({

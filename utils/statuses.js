@@ -408,11 +408,6 @@ export const responses = {
     message: "Order processed successfully",
     expose: true,
   },
-  businessAddressUpdated: {
-    status: statusCodes.ok,
-    message: "User business address updated",
-    expose: true,
-  },
   userDetailsUpdated: {
     status: statusCodes.ok,
     message: "User details updated",

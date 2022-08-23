@@ -47,9 +47,6 @@ export class User extends BaseEntity {
   @Column({ default: "" })
   country: string;
 
-  @Column({ default: "" })
-  businessAddress: string;
-
   @Column({ default: false })
   customWork: boolean;
 
