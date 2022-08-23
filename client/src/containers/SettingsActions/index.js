@@ -22,10 +22,10 @@ const SettingsActions = () => {
         </Typography>
         <Typography loading={loading}>
           Deactivating your account will result in all your data being deleted,
-          except for essential artwork information (if you have any sold artwork
-          as a seller) and essential license information (if you have any
-          purchased artwork as a buyer) that are parts of other users' orders.
-          This action is irreversible.
+          except for essential artwork information (if you have sold artwork as
+          a seller) and essential license information (if you have purchased
+          artwork as a buyer) that are parts of other users' orders. This action
+          is irreversible.
         </Typography>
       </CardContent>
       <CardActions className={classes.actions}>
