@@ -119,3 +119,7 @@ export const issueStripeRefund = async ({ chargeData }) => {
     return {};
   }
 };
+
+export const deleteStripeAccount = async ({ stripeId }) => {
+  await stripe.accounts.del(stripeId);
+};

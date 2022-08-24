@@ -26,6 +26,7 @@ export const initialState = {
     type: "purchases",
     label: "spent",
   },
+  redirecting: false,
   range: [new Date(subDays(new Date(), 7)), new Date()],
 };
 
@@ -185,9 +186,17 @@ const initActions = (set) => ({
     }));
   },
   redirectDashboard: async ({ stripeId }) => {
+    set((state) => ({
+      ...state,
+      redirecting: true,
+    }));
     const { data } = await getDashboard.request({
       stripeId,
     });
+    set((state) => ({
+      ...state,
+      redirecting: false,
+    }));
     window.location.href = data.url;
   },
   resetStats: () => {

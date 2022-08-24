@@ -2,6 +2,12 @@ import currency from "currency.js";
 import { payment } from "../common/constants";
 import { isObjectEmpty } from "../common/helpers";
 
+export const STRIPE_BALANCE_TYPES = [
+  "available",
+  "connect_reserved",
+  "pending",
+];
+
 export const calculateTotalCharge = ({
   foundVersion,
   foundDiscount,

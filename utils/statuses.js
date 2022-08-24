@@ -33,6 +33,18 @@ export const errors = {
       "Please complete your Stripe account before making your artwork commercially available",
     expose: true,
   },
+  stripeDashboardUnavailable: {
+    status: statusCodes.unprocessable,
+    message:
+      "You need to complete the onboarding process before accessing your Stripe dashboard",
+    expose: true,
+  },
+  stripeBalanceUncleared: {
+    status: statusCodes.unprocessable,
+    message:
+      "Cannot delete your account until all balances in your Stripe dashboard are zero",
+    expose: true,
+  },
   notificationNotFound: {
     status: statusCodes.notFound,
     message: "Notification not found",
@@ -183,12 +195,7 @@ export const errors = {
     message: "Could not process the payment",
     expose: true,
   },
-  stripeDashboardUnavailable: {
-    status: statusCodes.unprocessable,
-    message:
-      "You need to complete the onboarding process before accessing your Stripe dashboard",
-    expose: true,
-  },
+
   onboardingProcessInvalid: {
     status: statusCodes.internalError,
     message: "There was an error in the onboarding process",

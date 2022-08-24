@@ -16,6 +16,7 @@ const DashboardToolbar = () => {
   const loading = useUserStats((state) => state.aggregateStats.loading);
   const changeSelection = useUserStats((state) => state.changeSelection);
   const redirectDashboard = useUserStats((state) => state.redirectDashboard);
+  const redirecting = useUserStats((state) => state.redirecting);
 
   const menuItems = [
     { value: "purchases", text: "Purchases" },
@@ -33,6 +34,8 @@ const DashboardToolbar = () => {
             variant="outlined"
             onClick={() => redirectDashboard({ stripeId })}
             startIcon={<StripeIcon />}
+            disabled={redirecting}
+            submitting={redirecting}
           >
             Stripe dashboard
           </AsyncButton>

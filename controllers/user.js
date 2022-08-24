@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import { featureFlags } from "../common/constants";
 import { isArrayEmpty, isObjectEmpty } from "../common/helpers";
 import {
   emailValidation,
@@ -16,6 +17,7 @@ import {
 } from "../services/artwork";
 import { logUserOut } from "../services/auth";
 import { fetchOrdersByArtwork } from "../services/order";
+import { deleteStripeAccount, fetchStripeBalance } from "../services/stripe";
 import {
   addNewIntent,
   addUserAvatar,
@@ -43,6 +45,7 @@ import {
   hashString,
   verifyHash,
 } from "../utils/helpers";
+import { STRIPE_BALANCE_TYPES } from "../utils/payment";
 import { errors, responses } from "../utils/statuses";
 import { finalizeMediaUpload } from "../utils/upload";
 import { deleteUserNotifications } from "./notification";
@@ -287,10 +290,32 @@ export const updateUserPreferences = async ({
 export const deactivateUser = async ({ userId, response, connection }) => {
   const foundUser = await fetchUserById({
     userId,
-    selection: [...AVATAR_SELECTION["ESSENTIAL_INFO"]()],
+    selection: [
+      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["STRIPE_INFO"](),
+    ],
     connection,
   });
+  debugger;
+  let shouldDeleteStripe = false;
   if (!isObjectEmpty(foundUser)) {
+    // FEATURE FLAG - stripe
+    if (featureFlags.stripe) {
+      if (foundUser.stripeId) {
+        const userBalance = await fetchStripeBalance({
+          stripeId: foundUser.stripeId,
+        });
+        if (
+          STRIPE_BALANCE_TYPES.some((type) =>
+            userBalance[type]?.some((item) => item.amount > 0)
+          )
+        ) {
+          throw createError(...formatError(errors.stripeBalanceUncleared));
+        } else {
+          shouldDeleteStripe = true;
+        }
+      }
+    }
     const foundArtwork = await fetchUserMedia({
       userId,
       connection,
@@ -337,6 +362,9 @@ export const deactivateUser = async ({ userId, response, connection }) => {
     }
     await deleteUserNotifications({ userId: foundUser.id, connection });
     await deactivateExistingUser({ userId: foundUser.id, connection });
+    if (shouldDeleteStripe) {
+      await deleteStripeAccount({ stripeId: foundUser.stripeId });
+    }
     logUserOut({ response });
     return formatResponse(responses.userDeactivated);
   }

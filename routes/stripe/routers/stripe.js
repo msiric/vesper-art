@@ -2,7 +2,6 @@ import express from "express";
 import { featureFlags } from "../../../common/constants";
 import {
   assignStripeId,
-  createPayout,
   fetchIntentById,
   getStripeUser,
   managePaymentIntent,
@@ -79,9 +78,9 @@ router.route("/token").get(
   }))
 );
 
-router.route("/payout").post(
-  isAuthenticated,
-  handler(createPayout, true, (req, res, next) => ({}))
-);
+// router.route("/payout").post(
+//   isAuthenticated,
+//   handler(createPayout, true, (req, res, next) => ({}))
+// );
 
 export default router;
