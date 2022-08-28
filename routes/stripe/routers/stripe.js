@@ -17,6 +17,8 @@ import {
 // $TODO no automated tests
 const router = express.Router();
 
+// $TODO the four routes below need proper authorization
+
 router.route("/account/:accountId").get(
   isAuthenticated,
   handler(getStripeUser, false, (req, res, next) => ({
@@ -34,6 +36,17 @@ featureFlags.payment &&
     }))
   );
 
+router
+  .route("/dashboard/")
+  .get(handler(redirectToDashboard, false, (req, res, next) => ({})));
+
+router.route("/dashboard/:accountId").get(
+  isAuthenticated,
+  handler(redirectToStripe, false, (req, res, next) => ({
+    accountId: req.params.accountId,
+  }))
+);
+
 // FEATURE FLAG - payment
 featureFlags.payment &&
   router.route("/intent/:versionId").post(
@@ -46,17 +59,6 @@ featureFlags.payment &&
       licenseType: req.body.licenseType,
     }))
   );
-
-router
-  .route("/dashboard/")
-  .get(handler(redirectToDashboard, false, (req, res, next) => ({})));
-
-router.route("/dashboard/:accountId").get(
-  isAuthenticated,
-  handler(redirectToStripe, false, (req, res, next) => ({
-    accountId: req.params.accountId,
-  }))
-);
 
 // $TODO Bolje treba sredit
 router.route("/authorize").post(
