@@ -29,19 +29,19 @@ const EditArtwork = ({ match }) => {
   const artworkMessage = useArtworkUpdate(
     (state) => state.artwork.error.message
   );
-  const capabilitiesRetry = useArtworkUpdate(
-    (state) => state.capabilities.error.retry
+  const requirementsRetry = useArtworkUpdate(
+    (state) => state.requirements.error.retry
   );
-  const capabilitiesRedirect = useArtworkUpdate(
-    (state) => state.capabilities.error.redirect
+  const requirementsRedirect = useArtworkUpdate(
+    (state) => state.requirements.error.redirect
   );
-  const capabilitiesMessage = useArtworkUpdate(
-    (state) => state.capabilities.error.message
+  const requirementsMessage = useArtworkUpdate(
+    (state) => state.requirements.error.message
   );
   const artwork = useArtworkUpdate((state) => state.artwork.data);
   const artworkLoading = useArtworkUpdate((state) => state.artwork.loading);
-  const capabilitiesLoading = useArtworkUpdate(
-    (state) => state.capabilities.loading
+  const requirementsLoading = useArtworkUpdate(
+    (state) => state.requirements.loading
   );
   const modal = useArtworkUpdate((state) => state.modal);
   const isDeleting = useArtworkUpdate((state) => state.isDeleting);
@@ -74,11 +74,11 @@ const EditArtwork = ({ match }) => {
   return !containsErrors(
     artworkRetry,
     artworkRedirect,
-    capabilitiesRetry,
-    capabilitiesRedirect
+    requirementsRetry,
+    requirementsRedirect
   ) ? (
     <Container className={globalClasses.gridContainer}>
-      {artworkLoading || capabilitiesLoading || artwork.id ? (
+      {artworkLoading || requirementsLoading || artwork.id ? (
         <Grid container spacing={2}>
           <Grid item xs={12} className={classes.wrapper}>
             <MainHeading text="Edit artwork" />
@@ -109,9 +109,9 @@ const EditArtwork = ({ match }) => {
         message: artworkMessage,
       },
       {
-        retry: capabilitiesRetry,
-        redirect: capabilitiesRedirect,
-        message: capabilitiesMessage,
+        retry: requirementsRetry,
+        redirect: requirementsRedirect,
+        message: requirementsMessage,
       }
     )
   );

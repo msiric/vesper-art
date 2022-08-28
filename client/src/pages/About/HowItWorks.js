@@ -102,7 +102,7 @@ const SELLER_ILLUSTRATIONS = [
     illustration: <MonitorDashboard />,
   },
   {
-    heading: "Get payed for your work",
+    heading: "Get paid for your work",
     paragraph:
       "All the transactions are securely processed by Stripe and reliably kept in your account balance for you to transfer to a destination of your choice.",
     illustration: <EarnMoney />,

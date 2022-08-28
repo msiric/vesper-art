@@ -5,10 +5,8 @@ import {
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
-import { featureFlags } from "../../../../common/constants";
 import { artworkValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
-import HelpBox from "../../components/HelpBox/index";
 import SyncButton from "../../components/SyncButton/index";
 import { useUserStore } from "../../contexts/global/user";
 import { useArtworkUpdate } from "../../contexts/local/artworkUpdate";
@@ -17,28 +15,29 @@ import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import ArtworkForm from "../../forms/ArtworkForm/index";
 import { useArtworkValidator } from "../../hooks/useArtworkValidator";
-import { isFormDisabled } from "../../utils/helpers";
+import { displayOnboardingWarning, isFormDisabled } from "../../utils/helpers";
 import artworkModifierClasses from "./styles";
 
 const ArtworkModifier = ({ paramId }) => {
   const userId = useUserStore((state) => state.id);
   const stripeId = useUserStore((state) => state.stripeId);
+  const onboarded = useUserStore((state) => state.onboarded);
 
   const artwork = useArtworkUpdate((state) => state.artwork.data);
-  const capabilities = useArtworkUpdate((state) => state.capabilities.data);
   const artworkLoading = useArtworkUpdate((state) => state.artwork.loading);
-  const capabilitiesLoading = useArtworkUpdate(
-    (state) => state.capabilities.loading
+  const requirements = useArtworkUpdate((state) => state.requirements.data);
+  const requirementsLoading = useArtworkUpdate(
+    (state) => state.requirements.loading
   );
   const isDeleting = useArtworkUpdate((state) => state.isDeleting);
   const fetchArtwork = useArtworkUpdate((state) => state.fetchArtwork);
-  const fetchCapabilities = useArtworkUpdate(
-    (state) => state.fetchCapabilities
+  const fetchRequirements = useArtworkUpdate(
+    (state) => state.fetchRequirements
   );
   const updateArtwork = useArtworkUpdate((state) => state.updateArtwork);
   const toggleModal = useArtworkUpdate((state) => state.toggleModal);
 
-  const loading = artworkLoading || capabilitiesLoading;
+  const loading = artworkLoading || requirementsLoading;
 
   const resolver = useArtworkValidator(artworkValidation);
 
@@ -89,29 +88,6 @@ const ArtworkModifier = ({ paramId }) => {
     });
   };
 
-  const renderHelpBox = () => {
-    // FEATURE FLAG - stripe
-    const stripeDisabled = "Creating commercial artwork is not yet available";
-    const notOnboarded =
-      'To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process';
-    const pendingVerification =
-      "To make your artwork commercially available, please wait for Stripe to verify the information you entered";
-    const incompleteInformation =
-      "To make your artwork commercially available, finish entering your Stripe account information";
-
-    return !loading ? (
-      !featureFlags.stripe ? (
-        <HelpBox type="alert" label={stripeDisabled} />
-      ) : !stripeId ? (
-        <HelpBox type="alert" label={notOnboarded} />
-      ) : capabilities.platformPayments === "pending" ? (
-        <HelpBox type="alert" label={pendingVerification} />
-      ) : capabilities.platformPayments !== "active" ? (
-        <HelpBox type="alert" label={incompleteInformation} />
-      ) : null
-    ) : null;
-  };
-
   const watchedValues = watch();
 
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
@@ -119,7 +95,7 @@ const ArtworkModifier = ({ paramId }) => {
   useEffect(() => {
     Promise.all([
       fetchArtwork({ userId, artworkId: paramId }),
-      ...(stripeId && [fetchCapabilities({ stripeId })]),
+      ...(stripeId && [fetchRequirements({ stripeId })]),
     ]);
   }, []);
 
@@ -129,12 +105,11 @@ const ArtworkModifier = ({ paramId }) => {
 
   return (
     <Card>
-      {renderHelpBox()}
+      {displayOnboardingWarning(loading, stripeId, onboarded, requirements)}
       <FormProvider control={control}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent>
             <ArtworkForm
-              capabilities={capabilities}
               preview={artwork.current.cover.source}
               errors={errors}
               setValue={setValue}

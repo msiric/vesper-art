@@ -2,13 +2,12 @@ import { ArrowUpwardRounded as SubmitIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
-import { featureFlags, pricing } from "../../../../common/constants";
+import { pricing } from "../../../../common/constants";
 import {
   artworkValidation,
   mediaValidation,
 } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
-import HelpBox from "../../components/HelpBox/index";
 import { useUserStore } from "../../contexts/global/user";
 import { useArtworkCreate } from "../../contexts/local/artworkCreate";
 import Card from "../../domain/Card";
@@ -16,16 +15,17 @@ import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import ArtworkForm from "../../forms/ArtworkForm/index";
 import { useArtworkValidator } from "../../hooks/useArtworkValidator";
-import { isFormDisabled } from "../../utils/helpers";
+import { displayOnboardingWarning, isFormDisabled } from "../../utils/helpers";
 import artworkCreatorStyles from "./styles";
 
 const ArtworkCreator = () => {
   const stripeId = useUserStore((state) => state.stripeId);
+  const onboarded = useUserStore((state) => state.onboarded);
 
-  const capabilities = useArtworkCreate((state) => state.capabilities.data);
-  const loading = useArtworkCreate((state) => state.capabilities.loading);
-  const fetchCapabilities = useArtworkCreate(
-    (state) => state.fetchCapabilities
+  const requirements = useArtworkCreate((state) => state.requirements.data);
+  const loading = useArtworkCreate((state) => state.requirements.loading);
+  const fetchRequirements = useArtworkCreate(
+    (state) => state.fetchRequirements
   );
   const createArtwork = useArtworkCreate((state) => state.createArtwork);
 
@@ -79,41 +79,17 @@ const ArtworkCreator = () => {
     });
   };
 
-  const renderHelpBox = () => {
-    // FEATURE FLAG - stripe
-    const stripeDisabled = "Creating commercial artwork is not yet available";
-    const notOnboarded =
-      'To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process';
-    const pendingVerification =
-      "To make your artwork commercially available, please wait for Stripe to verify the information you entered";
-    const incompleteInformation =
-      "To make your artwork commercially available, finish entering your Stripe account information";
-
-    return !loading ? (
-      !featureFlags.stripe ? (
-        <HelpBox type="alert" label={stripeDisabled} />
-      ) : !stripeId ? (
-        <HelpBox type="alert" label={notOnboarded} />
-      ) : capabilities.platformPayments === "pending" ? (
-        <HelpBox type="alert" label={pendingVerification} />
-      ) : capabilities.platformPayments !== "active" ? (
-        <HelpBox type="alert" label={incompleteInformation} />
-      ) : null
-    ) : null;
-  };
-
   useEffect(() => {
-    if (stripeId) fetchCapabilities({ stripeId });
+    if (stripeId) fetchRequirements({ stripeId });
   }, []);
 
   return (
     <Card>
-      {renderHelpBox()}
+      {displayOnboardingWarning(loading, stripeId, onboarded, requirements)}
       <FormProvider control={control}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent>
             <ArtworkForm
-              capabilities={capabilities}
               preview={false}
               errors={errors}
               setValue={setValue}

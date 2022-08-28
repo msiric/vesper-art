@@ -305,10 +305,7 @@ export const verifyVersionValidity = ({ data, foundUser, foundAccount }) => {
     if (!foundUser.stripeId) {
       throw createError(...formatError(errors.stripeOnboardingIncomplete));
     }
-    if (
-      (data.artworkPersonal || data.artworkCommercial) &&
-      (!foundAccount || foundAccount.capabilities.transfers !== "active")
-    ) {
+    if (!foundAccount || !foundUser.onboarded) {
       throw createError(...formatError(errors.stripeAccountIncomplete));
     }
   }
@@ -325,3 +322,9 @@ export const dynamicError = (
   status = statusCodes.badRequest,
   expose = true
 ) => ({ status, message, expose });
+
+export const isFullyOnboarded = ({
+  capabilities,
+  detailsSubmitted,
+  payoutsEnabled,
+}) => detailsSubmitted && payoutsEnabled && capabilities.transfers === "active";

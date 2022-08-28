@@ -30,7 +30,7 @@ export const initialState = {
     loading: true,
     error: { retry: false, redirect: false, message: "" },
   },
-  capabilities: {
+  requirements: {
     data: {},
     loading: false,
     error: { retry: false, redirect: false, message: "" },
@@ -71,32 +71,32 @@ const initActions = (set, get) => ({
       }));
     }
   },
-  fetchCapabilities: async ({ stripeId }) => {
+  fetchRequirements: async ({ stripeId }) => {
     // FEATURE FLAG - stripe
     if (featureFlags.stripe) {
       try {
         set((state) => ({
           ...state,
-          capabilities: {
-            ...state.capabilities,
+          requirements: {
+            ...state.requirements,
             loading: true,
           },
         }));
         const { data } = await getUser.request({ stripeId });
         set((state) => ({
           ...state,
-          capabilities: {
-            ...state.capabilities,
-            data: data.account.capabilities.transfers,
+          requirements: {
+            ...state.requirements,
+            data: data.account.requirements.pending_verification,
             loading: false,
-            error: { ...initialState.capabilities.error },
+            error: { ...initialState.requirements.error },
           },
         }));
       } catch (err) {
         set((state) => ({
           ...state,
-          capabilities: {
-            ...state.capabilities,
+          requirements: {
+            ...state.requirements,
             loading: false,
             error: resolveAsyncError(err),
           },

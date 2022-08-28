@@ -97,7 +97,7 @@ const OnboardingCard = () => {
       {!stripeId && (
         <HelpBox
           type="alert"
-          label="Stripe currently only supports countries found in the dropdown below"
+          label={`${appName} currently only supports countries found in the dropdown below`}
         />
       )}
       <CardContent className={classes.content}>

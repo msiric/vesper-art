@@ -47,6 +47,7 @@ import {
   formatError,
   formatResponse,
   generateUuids,
+  isFullyOnboarded,
 } from "../utils/helpers";
 import { calculateTotalCharge } from "../utils/payment";
 import { errors, responses } from "../utils/statuses";
@@ -224,15 +225,16 @@ export const managePaymentIntent = async ({
                   const paymentIntent = shouldReinitialize
                     ? await constructStripeIntent({
                         intentMethod: "card",
-                        intentAmount: buyerTotal,
+                        intentPaid: buyerTotal,
+                        intentSold: sellerTotal,
                         intentCurrency: "usd",
-                        intentFee: platformTotal,
                         sellerId: foundVersion.artwork.owner.stripeId,
                         orderData,
                       })
                     : await updateStripeIntent({
                         intentAmount: buyerTotal,
-                        intentFee: platformTotal,
+                        intentPaid: buyerTotal,
+                        intentSold: sellerTotal,
                         intentData: verifiedIntent,
                         orderData,
                       });
@@ -356,12 +358,13 @@ export const onboardUser = async ({ userId, connection }) => {
       const foundAccount = await fetchStripeAccount({
         accountId: foundUser.stripeId,
       });
-      // add condition for
-      // "capabilities": {
-      //  "card_payments": "active",
-      //  "transfers": "active"
-      // }
-      if (foundAccount.details_submitted) {
+      if (
+        isFullyOnboarded({
+          capabilities: foundAccount.capabilities,
+          detailsSubmitted: foundAccount.details_submitted,
+          payoutsEnabled: foundAccount.payouts_enabled,
+        })
+      ) {
         await editUserOnboarded({ onboarded: true, userId, connection });
         return { onboarded: true };
       }

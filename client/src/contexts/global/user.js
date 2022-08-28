@@ -80,6 +80,12 @@ const initActions = (set, get) => ({
       favorites,
     }));
   },
+  updateOnboarded: ({ onboarded }) => {
+    set((state) => ({
+      ...state,
+      onboarded,
+    }));
+  },
   updateToken: ({ token }) => {
     set((state) => ({
       ...state,

@@ -47,6 +47,8 @@ const renderOnboardedItems = (onboarded) => [
 const OnboardedCard = () => {
   const stripeId = useUserStore((state) => state.stripeId);
   const userUsername = useUserStore((state) => state.name);
+  const updateOnboarded = useUserStore((state) => state.updateOnboarded);
+
   const onboarded = useUserOnboarded((state) => state.details.data);
   const loading = useUserOnboarded((state) => state.details.loading);
   const fetchDetails = useUserOnboarded((state) => state.fetchDetails);
@@ -60,7 +62,7 @@ const OnboardedCard = () => {
       if (!stripeId) {
         history.push("/onboarding");
       } else {
-        fetchDetails();
+        fetchDetails({ updateOnboarded });
       }
     }
   }, [userUsername, stripeId]);
@@ -81,7 +83,7 @@ const OnboardedCard = () => {
         >
           {onboarded
             ? "You can now upload commercially available artwork, have full control of the level of interaction you want to allow and choose the pricing of the licenses you want to offer. Visit the dashboard for an overview of your account's activities and access your Stripe profile at any time."
-            : "There are still steps you need to go through before the onboarding process is finalized. Make sure to submit all the required information to Stripe and uploaded all the necessary documents for verification, if needed. Check the list below to understand what you might have missed."}
+            : "There are still steps you need to go through before the onboarding process is finalized. Make sure to submit all the required information to Stripe and upload all the necessary documents for verification, if needed. Check the list below to understand what you might have missed."}
         </Typography>
         <ListItems
           className={classes.list}

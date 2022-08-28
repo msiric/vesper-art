@@ -10,7 +10,6 @@ import SelectInput from "../../controls/SelectInput/index";
 import TextInput from "../../controls/TextInput/index";
 
 const ArtworkForm = ({
-  capabilities,
   preview,
   errors,
   setValue,
@@ -20,16 +19,13 @@ const ArtworkForm = ({
   editable,
   loading,
 }) => {
-  const stripeId = useUserStore((state) => state.stripeId);
+  const onboarded = useUserStore((state) => state.onboarded);
 
   const { artworkAvailability, artworkType, artworkLicense, artworkUse } =
     watchables;
 
   // FEATURE FLAG - stripe
-  const isDisabled =
-    !featureFlags.stripe ||
-    !stripeId ||
-    (stripeId && !(capabilities.platformPayments === "active"));
+  const isDisabled = !featureFlags.stripe || !onboarded;
 
   return (
     <Box>

@@ -1,3 +1,4 @@
+import HelpBox from "@components/HelpBox";
 import Box from "@domain/Box";
 import Typography from "@domain/Typography";
 import { artepunktTheme } from "@styles/theme";
@@ -139,4 +140,33 @@ export const renderTableBody = (value, loading, width = null) => {
       {value}
     </Box>
   );
+};
+
+export const displayOnboardingWarning = (
+  loading,
+  stripeId,
+  onboarded,
+  requirements
+) => {
+  // FEATURE FLAG - stripe
+  const stripeDisabled =
+    "Creating commercially available artwork is not yet available";
+  const notOnboarded =
+    'To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process';
+  const pendingVerification =
+    "To make your artwork commercially available, please wait for Stripe to verify the information you entered";
+  const incompleteInformation =
+    "To make your artwork commercially available, finish entering your Stripe account information";
+
+  return !loading ? (
+    !featureFlags.stripe ? (
+      <HelpBox type="alert" label={stripeDisabled} />
+    ) : !stripeId ? (
+      <HelpBox type="alert" label={incompleteInformation} />
+    ) : requirements.length ? (
+      <HelpBox type="alert" label={pendingVerification} />
+    ) : !onboarded ? (
+      <HelpBox type="alert" label={notOnboarded} />
+    ) : null
+  ) : null;
 };

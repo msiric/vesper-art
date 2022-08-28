@@ -13,7 +13,7 @@ export const initialState = {
 const initState = () => ({ ...initialState });
 
 const initActions = (set) => ({
-  fetchDetails: async () => {
+  fetchDetails: async ({ updateOnboarded }) => {
     try {
       const { data } = await getOnboarded.request();
       set((state) => ({
@@ -24,6 +24,9 @@ const initActions = (set) => ({
           error: { ...initialState.details.error },
         },
       }));
+      if (data.onboarded) {
+        updateOnboarded({ onboarded: data.onboarded });
+      }
     } catch (err) {
       set((state) => ({
         ...state,

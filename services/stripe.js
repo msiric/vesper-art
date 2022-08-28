@@ -54,27 +54,27 @@ export const retrieveStripeIntent = async ({ intentId }) => {
 
 export const constructStripeIntent = async ({
   intentMethod,
-  intentAmount,
+  intentPaid,
+  intentSold,
   intentCurrency,
-  intentFee,
   sellerId,
   orderData,
 }) => {
   console.log(
     "construct",
     intentMethod,
-    intentAmount,
+    intentPaid,
+    intentSold,
     intentCurrency,
-    intentFee,
     sellerId,
     orderData
   );
   const createdIntent = await stripe.paymentIntents.create({
     payment_method_types: [intentMethod],
-    amount: intentAmount,
+    amount: intentPaid,
     currency: intentCurrency,
-    application_fee_amount: intentFee,
     transfer_data: {
+      amount: intentSold,
       destination: sellerId,
     },
     metadata: {
@@ -86,14 +86,17 @@ export const constructStripeIntent = async ({
 
 export const updateStripeIntent = async ({
   intentData,
-  intentAmount,
-  intentFee,
+  intentPaid,
+  intentSold,
   orderData,
 }) => {
   const foundOrder = JSON.parse(intentData.metadata.orderData);
   const updatedIntent = await stripe.paymentIntents.update(intentData.id, {
-    amount: intentAmount,
-    application_fee_amount: intentFee,
+    amount: intentPaid,
+    transfer_data: {
+      ...intentData.transfer_data,
+      amount: intentSold,
+    },
     metadata: {
       orderData: JSON.stringify({
         ...foundOrder,

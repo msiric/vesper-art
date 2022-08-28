@@ -5,7 +5,7 @@ import { getUser } from "../../services/stripe";
 import { deleteEmptyValues, resolveAsyncError } from "../../utils/helpers";
 
 export const initialState = {
-  capabilities: {
+  requirements: {
     data: {},
     loading: false,
     error: { retry: false, redirect: false, message: "" },
@@ -17,30 +17,30 @@ const initState = () => ({
 });
 
 const initActions = (set, get) => ({
-  fetchCapabilities: async ({ stripeId }) => {
+  fetchRequirements: async ({ stripeId }) => {
     try {
       set((state) => ({
         ...state,
-        capabilities: {
-          ...state.capabilities,
+        requirements: {
+          ...state.requirements,
           loading: true,
         },
       }));
       const { data } = await getUser.request({ stripeId });
       set((state) => ({
         ...state,
-        capabilities: {
-          ...state.capabilities,
-          data: data.account.capabilities.transfers,
+        requirements: {
+          ...state.requirements,
+          data: data.account.requirements.pending_verification,
           loading: false,
-          error: { ...initialState.capabilities.error },
+          error: { ...initialState.requirements.error },
         },
       }));
     } catch (err) {
       set((state) => ({
         ...state,
-        capabilities: {
-          ...state.capabilities,
+        requirements: {
+          ...state.requirements,
           loading: false,
           error: resolveAsyncError(err),
         },
@@ -59,7 +59,7 @@ const initActions = (set, get) => ({
     }
     await postArtwork.request({ data: formData });
   },
-  resetCapabilities: () => {
+  resetRequirements: () => {
     set({ ...initialState });
   },
 });
