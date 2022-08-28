@@ -9,11 +9,21 @@ export const constructStripeEvent = async ({ body, signature, secret }) => {
   return constructedEvent;
 };
 
-export const constructStripeLink = async ({ accountId, serverDomain }) => {
+export const constructLoginLink = async ({ accountId, serverDomain }) => {
   const createdLink = await stripe.accounts.createLoginLink(accountId, {
     redirect_url: `${serverDomain}/stripe/dashboard`,
   });
   return createdLink;
+};
+
+export const constructRedirectLink = async ({ linkParams }) => {
+  const createdLink = await stripe.accountLinks.create(linkParams);
+  return createdLink;
+};
+
+export const createStripeAccount = async ({ accountParams }) => {
+  const createdAccount = await stripe.accounts.create(accountParams);
+  return createdAccount;
 };
 
 export const constructStripePayout = async ({

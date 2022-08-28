@@ -190,14 +190,13 @@ const initActions = (set) => ({
       ...state,
       redirecting: true,
     }));
-    const { data } = await getDashboard.request({
+    await getDashboard.request({
       stripeId,
     });
     set((state) => ({
       ...state,
       redirecting: false,
     }));
-    window.location.href = data.url;
   },
   resetStats: () => {
     set({ ...initialState });

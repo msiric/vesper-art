@@ -1,7 +1,4 @@
-import axios from "axios";
-import FormData from "form-data";
 import createError from "http-errors";
-import querystring from "querystring";
 import { appName, featureFlags } from "../common/constants";
 import {
   formatLicenseValues,
@@ -23,10 +20,12 @@ import { fetchDiscountById } from "../services/discount";
 import { addNewNotification } from "../services/notification";
 import { addNewOrder, fetchArtworkOrders } from "../services/order";
 import {
+  constructLoginLink,
+  constructRedirectLink,
   constructStripeEvent,
   constructStripeIntent,
-  constructStripeLink,
   constructStripePayout,
+  createStripeAccount,
   fetchStripeAccount,
   fetchStripeBalance,
   issueStripeRefund,
@@ -35,6 +34,7 @@ import {
 } from "../services/stripe";
 import {
   addNewIntent,
+  editUserOnboarded,
   editUserStripe,
   fetchIntentByParents,
   fetchUserById,
@@ -88,13 +88,13 @@ export const receiveWebhookEvent = async ({ signature, body, connection }) => {
   }
 };
 
+// change method to return full stripe user but first find user
+// in pg database by accountId and compare to userId passed as argument
 export const getStripeUser = async ({ accountId }) => {
   const foundAccount = await fetchStripeAccount({ accountId });
   if (!isObjectEmpty(foundAccount)) {
     return {
-      capabilities: {
-        platformPayments: foundAccount.capabilities.transfers,
-      },
+      account: foundAccount,
     };
   }
   throw createError(...formatError(errors.userNotFound));
@@ -236,9 +236,7 @@ export const managePaymentIntent = async ({
                         intentData: verifiedIntent,
                         orderData,
                       });
-                  // $TODO delete intent in the db if it succeeded or got canceled already
-                  const savedIntent =
-                    shouldReinitialize &&
+                  shouldReinitialize &&
                     (await addNewIntent({
                       intentId: paymentIntent.id,
                       userId: foundUser.id,
@@ -275,78 +273,102 @@ export const redirectToDashboard = () => {
   return { redirect: "/dashboard" };
 };
 
-export const redirectToStripe = async ({ accountId, userOnboarded }) => {
-  if (!userOnboarded)
-    throw createError(...formatError(errors.stripeOnboardingIncomplete));
-  const loginLink = await constructStripeLink({
-    accountId,
-    serverDomain: domain.server,
-  });
-
-  return { url: loginLink.url };
-};
-
-export const onboardUser = async ({
-  session,
-  locals,
-  userBusinessAddress,
-  userEmail,
-}) => {
-  session.state = Math.random().toString(36).slice(2);
-  session.id = locals.user.id;
-  session.name = locals.user.name;
-
-  const parameters = {
-    client_id: stripeConfig.clientId,
-    state: session.state,
-    redirect_uri: `${domain.server}/stripe/token`,
-    "stripe_user[business_type]": "individual",
-    "stripe_user[business_name]": undefined,
-    "stripe_user[first_name]": undefined,
-    "stripe_user[last_name]": undefined,
-    "stripe_user[email]": userEmail || undefined,
-    "stripe_user[country]": userBusinessAddress || undefined,
-  };
-
-  return {
-    url: `${stripeConfig.authorizeUri}?${querystring.stringify(parameters)}`,
-  };
-};
-
-// $TODO cannot send headers (treba dobro testat)
-export const assignStripeId = async ({ session, state, code, connection }) => {
-  if (session.state != state)
-    throw createError(...formatError(errors.onboardingProcessInvalid));
-
-  const formData = new FormData();
-  formData.append("grant_type", "authorization_code");
-  formData.append("client_id", stripeConfig.clientId);
-  formData.append("client_secret", stripeConfig.secretKey);
-  formData.append("code", code);
-
-  const expressAuthorized = await axios.post(stripeConfig.tokenUri, formData, {
-    headers: formData.getHeaders(),
-  });
-
-  if (expressAuthorized.error)
-    throw createError(statusCodes.internalError, expressAuthorized.error, {
-      expose: true,
-    });
-
-  await editUserStripe({
-    userId: session.id,
-    stripeId: expressAuthorized.data.stripe_user_id,
+export const redirectToStripe = async ({ accountId, userId, connection }) => {
+  const foundUser = await fetchUserById({
+    userId,
+    selection: [
+      ...USER_SELECTION["STRIPPED_INFO"](),
+      ...USER_SELECTION["STRIPE_INFO"](),
+    ],
     connection,
   });
+  if (!isObjectEmpty(foundUser)) {
+    if (foundUser.onboarded && foundUser.stripeId) {
+      const loginLink = await constructLoginLink({
+        accountId,
+        serverDomain: domain.server,
+      });
+      return { redirect: loginLink.url };
+    }
+    throw createError(...formatError(errors.stripeOnboardingIncomplete));
+  }
+  throw createError(...formatError(errors.userNotFound));
+};
 
-  const username = session.name;
+export const authorizeUser = async ({
+  userBusinessAddress,
+  userEmail,
+  userId,
+  connection,
+}) => {
+  const foundUser = await fetchUserById({
+    userId,
+    selection: [
+      ...USER_SELECTION["STRIPPED_INFO"](),
+      ...USER_SELECTION["STRIPE_INFO"](),
+    ],
+    connection,
+  });
+  if (!isObjectEmpty(foundUser)) {
+    const linkParams = {
+      account: foundUser.stripeId,
+      refresh_url: `${domain.client}/onboarding`,
+      return_url: `${domain.client}/onboarded`,
+      type: "account_onboarding",
+    };
 
-  session.state = null;
-  session.id = null;
-  session.name = null;
+    if (!linkParams.account) {
+      const accountParams = {
+        type: "express",
+        country: userBusinessAddress || undefined,
+        email: userEmail || undefined,
+      };
 
-  // STRIPE ONBOARDING REDIRECT
-  return { redirect: `${domain.client}/onboarded` };
+      const createdAccount = await createStripeAccount({ accountParams });
+
+      linkParams.account = createdAccount.id;
+
+      await editUserStripe({
+        userId: foundUser.id,
+        stripeId: linkParams.account,
+        connection,
+      });
+    }
+
+    const redirectLink = await constructRedirectLink({ linkParams });
+
+    return { redirect: redirectLink.url };
+  }
+  throw createError(...formatError(errors.userNotFound));
+};
+
+export const onboardUser = async ({ userId, connection }) => {
+  const foundUser = await fetchUserById({
+    userId,
+    selection: [
+      ...USER_SELECTION["STRIPPED_INFO"](),
+      ...USER_SELECTION["STRIPE_INFO"](),
+    ],
+    connection,
+  });
+  if (!isObjectEmpty(foundUser) && foundUser.stripeId) {
+    if (!foundUser.onboarded) {
+      const foundAccount = await fetchStripeAccount({
+        accountId: foundUser.stripeId,
+      });
+      // add condition for
+      // "capabilities": {
+      //  "card_payments": "active",
+      //  "transfers": "active"
+      // }
+      if (foundAccount.details_submitted) {
+        await editUserOnboarded({ onboarded: true, userId, connection });
+        return { onboarded: true };
+      }
+    }
+    return { onboarded: foundUser.onboarded };
+  }
+  throw createError(...formatError(errors.userNotFound));
 };
 
 export const fetchIntentById = async ({ intentId }) => {

@@ -1,7 +1,7 @@
 import express from "express";
 import { featureFlags } from "../../../common/constants";
 import {
-  assignStripeId,
+  authorizeUser,
   fetchIntentById,
   getStripeUser,
   managePaymentIntent,
@@ -55,27 +55,21 @@ router.route("/dashboard/:accountId").get(
   isAuthenticated,
   handler(redirectToStripe, false, (req, res, next) => ({
     accountId: req.params.accountId,
-    userOnboarded: res.locals.user ? res.locals.user.onboarded : null,
   }))
 );
 
 // $TODO Bolje treba sredit
 router.route("/authorize").post(
   isAuthenticated,
-  handler(onboardUser, true, (req, res, next) => ({
-    session: req.session,
-    locals: res.locals,
+  handler(authorizeUser, true, (req, res, next) => ({
     userBusinessAddress: req.body.userBusinessAddress,
     userEmail: req.body.userEmail,
   }))
 );
 
-router.route("/token").get(
-  handler(assignStripeId, true, (req, res, next) => ({
-    session: req.session,
-    state: req.query.state,
-    code: req.query.code,
-  }))
+router.route("/onboard").get(
+  isAuthenticated,
+  handler(onboardUser, true, (req, res, next) => ({}))
 );
 
 // router.route("/payout").post(

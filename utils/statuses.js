@@ -27,6 +27,11 @@ export const errors = {
       "Please complete the Stripe onboarding process before making your artwork commercially available",
     expose: true,
   },
+  stripeOnboardingInvalid: {
+    status: statusCodes.internalError,
+    message: "There was an error in the onboarding process",
+    expose: true,
+  },
   stripeAccountIncomplete: {
     status: statusCodes.unprocessable,
     message:
@@ -193,12 +198,6 @@ export const errors = {
   paymentNotProcessed: {
     status: statusCodes.internalError,
     message: "Could not process the payment",
-    expose: true,
-  },
-
-  onboardingProcessInvalid: {
-    status: statusCodes.internalError,
-    message: "There was an error in the onboarding process",
     expose: true,
   },
   intentNotFound: {
@@ -443,6 +442,11 @@ export const responses = {
   userDeactivated: {
     status: statusCodes.ok,
     message: "User account deactivated",
+    expose: true,
+  },
+  stripeOnboardingSuccessful: {
+    status: statusCodes.ok,
+    message: "Onboarding successful",
     expose: true,
   },
 };

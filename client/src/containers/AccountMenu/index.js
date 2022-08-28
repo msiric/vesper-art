@@ -25,7 +25,7 @@ import HeaderStyles from "./styles";
 const AccountMenu = () => {
   const userUsername = useUserStore((state) => state.name);
   const userAnchor = useUserStore((state) => state.anchor);
-  const stripeId = useUserStore((state) => state.stripeId);
+  const onboarded = useUserStore((state) => state.onboarded);
   const toggleMenu = useUserStore((state) => state.toggleMenu);
   const unauthenticateUser = useUserStore((state) => state.unauthenticateUser);
   const redirectUser = useUserStore((state) => state.redirectUser);
@@ -49,7 +49,7 @@ const AccountMenu = () => {
       icon: <SellerIcon />,
       label: "Become a seller",
       // FEATURE FLAG - stripe
-      hidden: !!stripeId || !featureFlags.stripe,
+      hidden: !!onboarded || !featureFlags.stripe,
     },
     {
       handleClick: (e) =>

@@ -31,6 +31,11 @@ export const postAuthorize = {
   success: { message: "User successfully authorized", variant: "success" },
   error: { message: "Failed to authorize user", variant: "error" },
 };
+export const getOnboarded = {
+  request: async () => await ax.get("/stripe/onboard"),
+  success: { message: "User successfully onboarded", variant: "success" },
+  error: { message: "Failed to onboard user", variant: "error" },
+};
 export const getDashboard = {
   request: async ({ stripeId }) =>
     await ax.get(`/stripe/dashboard/${stripeId}`),

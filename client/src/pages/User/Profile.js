@@ -19,6 +19,8 @@ const Profile = ({ match, location }) => {
   const artworkFetched = useRef(false);
   const artworkRef = useRef(null);
 
+  const globalClasses = globalStyles();
+
   const reinitializeState = () => {
     resetProfile();
     resetArtwork();
@@ -29,8 +31,6 @@ const Profile = ({ match, location }) => {
       reinitializeState();
     };
   }, []);
-
-  const globalClasses = globalStyles();
 
   return !containsErrors(retry, redirect) ? (
     <Container key={location.key} className={globalClasses.gridContainer}>

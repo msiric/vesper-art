@@ -7,7 +7,6 @@ import {
   getUserProfile,
   getUserSettings,
   updateUserEmail,
-  updateUserOrigin,
   updateUserPassword,
   updateUserPreferences,
   updateUserProfile,

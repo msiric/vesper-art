@@ -13,10 +13,10 @@ const SyncButton = ({
   children,
   ...props
 }) => {
-  const classes = syncButtonStyles();
+  const classes = syncButtonStyles({ padding: padding ? 16 : "" });
 
   return (
-    <Box>
+    <Box className={classes.container}>
       <Button
         color={color}
         outline={variant}

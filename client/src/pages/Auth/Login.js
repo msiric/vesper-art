@@ -79,6 +79,7 @@ const Login = () => {
           email: data.user.email,
           avatar: data.user.avatar,
           stripeId: data.user.stripeId,
+          onboarded: data.user.onboarded,
           country: data.user.country,
           favorites: data.user.favorites.reduce((object, item) => {
             object[item.artworkId] = true;

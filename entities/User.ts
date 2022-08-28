@@ -65,6 +65,9 @@ export class User extends BaseEntity {
   @Column({ default: "" })
   stripeId: string;
 
+  @Column({ default: false })
+  onboarded: boolean;
+
   @Column({ default: "" })
   verificationToken: string;
 

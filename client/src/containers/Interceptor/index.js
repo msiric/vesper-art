@@ -72,6 +72,7 @@ const Interceptor = () => {
             email: data.user.email,
             avatar: data.user.avatar,
             stripeId: data.user.stripeId,
+            onboarded: data.user.onboarded,
             country: data.user.country,
             favorites: data.user.favorites.reduce(
               (object, item) => ({ ...object, [item.artworkId]: true }),
@@ -101,6 +102,9 @@ const Interceptor = () => {
 
     ax.interceptors.response.use(
       (response) => {
+        if (response?.data?.redirect) {
+          window.location.href = response.data.redirect;
+        }
         if (response?.data?.expose) {
           enqueueSnackbar(response.data.message, {
             variant: "success",
@@ -125,6 +129,7 @@ const Interceptor = () => {
             email: data.user.email,
             avatar: data.user.avatar,
             stripeId: data.user.stripeId,
+            onboarded: data.user.onboarded,
             country: data.user.country,
             favorites: data.user.favorites.reduce(
               (object, item) => ({ ...object, [item.artworkId]: true }),
@@ -170,6 +175,7 @@ const Interceptor = () => {
         email: data.user.email,
         avatar: data.user.avatar,
         stripeId: data.user.stripeId,
+        onboarded: data.user.onboarded,
         country: data.user.country,
         favorites: data.user.favorites.reduce(
           (object, item) => ({ ...object, [item.artworkId]: true }),

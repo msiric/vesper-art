@@ -21,6 +21,7 @@ export const initialState = {
   height: null,
   width: null,
   stripeId: null,
+  onboarded: null,
   country: null,
   anchor: null,
   favorites: {},
@@ -40,6 +41,7 @@ const initActions = (set, get) => ({
     email,
     avatar,
     stripeId,
+    onboarded,
     country,
     favorites,
   }) => {
@@ -53,17 +55,27 @@ const initActions = (set, get) => ({
       email,
       avatar,
       stripeId,
+      onboarded,
       country,
       favorites,
     }));
   },
-  updateUser: ({ token, email, avatar, stripeId, country, favorites }) => {
+  updateUser: ({
+    token,
+    email,
+    avatar,
+    stripeId,
+    onboarded,
+    country,
+    favorites,
+  }) => {
     set((state) => ({
       ...state,
       token,
       email,
       avatar,
       stripeId,
+      onboarded,
       country,
       favorites,
     }));
@@ -105,6 +117,7 @@ const initActions = (set, get) => ({
           email: response.user.email,
           avatar: response.user.avatar,
           stripeId: response.user.stripeId,
+          onboarded: response.user.onboarded,
           country: response.user.country,
           favorites: response.user.favorites.reduce((object, item) => {
             object[item.artworkId] = true;

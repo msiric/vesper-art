@@ -283,7 +283,7 @@ export const fetchIntentByParents = async ({
 };
 
 // $Needs testing (mongo -> postgres)
-export const editUserStripe = async ({ userId, stripeId, connection }) => {
+export const editUserStripe = async ({ stripeId, userId, connection }) => {
   /*   const foundUser = await User.findOne({ where: [{ id: userId }] });
   foundUser.stripeId = stripeId;
   return await User.save(foundUser); */
@@ -292,6 +292,23 @@ export const editUserStripe = async ({ userId, stripeId, connection }) => {
     .createQueryBuilder()
     .update(User)
     .set({ stripeId })
+    .where("id = :userId AND active = :active", {
+      userId,
+      active: USER_SELECTION["ACTIVE_STATUS"],
+    })
+    .execute();
+  return updatedUser;
+};
+
+export const editUserOnboarded = async ({ onboarded, userId, connection }) => {
+  /*   const foundUser = await User.findOne({ where: [{ id: userId }] });
+  foundUser.stripeId = stripeId;
+  return await User.save(foundUser); */
+
+  const updatedUser = await connection
+    .createQueryBuilder()
+    .update(User)
+    .set({ onboarded })
     .where("id = :userId AND active = :active", {
       userId,
       active: USER_SELECTION["ACTIVE_STATUS"],
@@ -552,6 +569,8 @@ export const deactivateExistingUser = async ({ userId, connection }) => {
       country: "",
       resetToken: "",
       resetExpiry: null,
+      stripeId: "",
+      onboarded: false,
       verificationToken: "",
       verificationExpiry: null,
       active: false,

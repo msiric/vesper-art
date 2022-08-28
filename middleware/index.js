@@ -18,12 +18,9 @@ export const requestHandler =
   (promise, transaction, params) => async (req, res, next) => {
     sanitizePayload(req, res, next);
     const boundParams = params ? params(req, res, next) : {};
-    const userId = res.locals.user ? res.locals.user.id : null;
+    const userId = res?.locals?.user?.id ?? null;
     const handleRequest = (result) => {
       if (result) {
-        if (result.redirect) {
-          return res.redirect(result.redirect);
-        }
         return res.json(result);
       }
       return res.json({ message: "OK" });

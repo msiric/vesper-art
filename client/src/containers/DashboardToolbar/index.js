@@ -11,6 +11,7 @@ import dashboardToolbarStyles from "./styles";
 
 const DashboardToolbar = () => {
   const stripeId = useUserStore((state) => state.stripeId);
+  const onboarded = useUserStore((state) => state.onboarded);
 
   const display = useUserStats((state) => state.display);
   const loading = useUserStats((state) => state.aggregateStats.loading);
@@ -29,7 +30,7 @@ const DashboardToolbar = () => {
     <Grid container>
       <Grid item className={classes.wrapper}>
         <MainHeading text="Dashboard" />
-        {stripeId && (
+        {onboarded && (
           <AsyncButton
             variant="outlined"
             onClick={() => redirectDashboard({ stripeId })}

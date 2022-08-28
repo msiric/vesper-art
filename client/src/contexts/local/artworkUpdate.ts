@@ -87,7 +87,7 @@ const initActions = (set, get) => ({
           ...state,
           capabilities: {
             ...state.capabilities,
-            data: data.capabilities,
+            data: data.account.capabilities.transfers,
             loading: false,
             error: { ...initialState.capabilities.error },
           },
