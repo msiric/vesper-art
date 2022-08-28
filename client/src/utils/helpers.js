@@ -162,11 +162,11 @@ export const displayOnboardingWarning = (
     !featureFlags.stripe ? (
       <HelpBox type="alert" label={stripeDisabled} />
     ) : !stripeId ? (
-      <HelpBox type="alert" label={incompleteInformation} />
+      <HelpBox type="alert" label={notOnboarded} />
     ) : requirements.length ? (
       <HelpBox type="alert" label={pendingVerification} />
     ) : !onboarded ? (
-      <HelpBox type="alert" label={notOnboarded} />
+      <HelpBox type="alert" label={incompleteInformation} />
     ) : null
   ) : null;
 };
