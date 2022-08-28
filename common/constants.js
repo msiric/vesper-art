@@ -58,7 +58,7 @@ export const upload = {
 export const pricing = featureFlags.stripe
   ? {
       minimumPrice: 10,
-      maximumPrice: 100000,
+      maximumPrice: 1000,
     }
   : {};
 
