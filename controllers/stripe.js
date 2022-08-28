@@ -271,10 +271,6 @@ export const managePaymentIntent = async ({
   throw createError(...formatError(errors.userNotFound));
 };
 
-export const redirectToDashboard = () => {
-  return { redirect: "/dashboard" };
-};
-
 export const redirectToStripe = async ({ accountId, userId, connection }) => {
   const foundUser = await fetchUserById({
     userId,
@@ -324,6 +320,9 @@ export const authorizeUser = async ({
         type: "express",
         country: userBusinessAddress || undefined,
         email: userEmail || undefined,
+        metadata: {
+          userId: foundUser.id,
+        },
       };
 
       const createdAccount = await createStripeAccount({ accountParams });

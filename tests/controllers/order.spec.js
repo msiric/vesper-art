@@ -242,7 +242,8 @@ describe("Order tests", () => {
       expect(res.body.reviews).toHaveLength(
         entities.Review.filter((item) => item.revieweeId === seller.id).length
       );
-      expect(res.body.amount).toBeTruthy();
+      // stripe balance changes in development so checking for existence is good enough
+      expect(res.body).toHaveProperty("amount");
       expect(res.statusCode).toEqual(statusCodes.ok);
     });
 

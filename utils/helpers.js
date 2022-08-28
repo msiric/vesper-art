@@ -256,6 +256,7 @@ export const formatTokenData = ({ user }) => {
     name: user.name,
     jwtVersion: user.jwtVersion,
     onboarded: user.onboarded,
+    stripeId: user.stripeId,
     active: user.active,
     verified: user.verified,
   };

@@ -6,11 +6,11 @@ import {
   getStripeUser,
   managePaymentIntent,
   onboardUser,
-  redirectToDashboard,
   redirectToStripe,
 } from "../../../controllers/stripe";
 import {
   isAuthenticated,
+  isAuthorized,
   requestHandler as handler,
 } from "../../../middleware/index";
 
@@ -19,8 +19,8 @@ const router = express.Router();
 
 // $TODO the four routes below need proper authorization
 
-router.route("/account/:accountId").get(
-  isAuthenticated,
+router.route("/accounts/:accountId").get(
+  [isAuthenticated, isAuthorized],
   handler(getStripeUser, false, (req, res, next) => ({
     accountId: req.params.accountId,
   }))
@@ -29,19 +29,15 @@ router.route("/account/:accountId").get(
 // ovo je test za novi checkout (trenutno delayed)
 // FEATURE FLAG - payment
 featureFlags.payment &&
-  router.route("/intent/:intentId").get(
-    isAuthenticated,
+  router.route("/accounts/:accountId/intents/:intentId").get(
+    [isAuthenticated, isAuthorized],
     handler(fetchIntentById, false, (req, res, next) => ({
       intentId: req.params.intentId,
     }))
   );
 
-router
-  .route("/dashboard/")
-  .get(handler(redirectToDashboard, false, (req, res, next) => ({})));
-
-router.route("/dashboard/:accountId").get(
-  isAuthenticated,
+router.route("/accounts/:accountId/dashboard").get(
+  [isAuthenticated, isAuthorized],
   handler(redirectToStripe, false, (req, res, next) => ({
     accountId: req.params.accountId,
   }))
@@ -49,8 +45,8 @@ router.route("/dashboard/:accountId").get(
 
 // FEATURE FLAG - payment
 featureFlags.payment &&
-  router.route("/intent/:versionId").post(
-    isAuthenticated,
+  router.route("/intents/:versionId").post(
+    [isAuthenticated],
     handler(managePaymentIntent, true, (req, res, next) => ({
       versionId: req.params.versionId,
       discountId: req.body.discountId,
@@ -62,7 +58,7 @@ featureFlags.payment &&
 
 // $TODO Bolje treba sredit
 router.route("/authorize").post(
-  isAuthenticated,
+  [isAuthenticated],
   handler(authorizeUser, true, (req, res, next) => ({
     userBusinessAddress: req.body.userBusinessAddress,
     userEmail: req.body.userEmail,
@@ -70,7 +66,7 @@ router.route("/authorize").post(
 );
 
 router.route("/onboard").get(
-  isAuthenticated,
+  [isAuthenticated],
   handler(onboardUser, true, (req, res, next) => ({}))
 );
 

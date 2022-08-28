@@ -6,7 +6,7 @@ import { deleteEmptyValues, resolveAsyncError } from "../../utils/helpers";
 
 export const initialState = {
   requirements: {
-    data: {},
+    data: [],
     loading: false,
     error: { retry: false, redirect: false, message: "" },
   },

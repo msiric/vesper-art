@@ -31,7 +31,7 @@ export const initialState = {
     error: { retry: false, redirect: false, message: "" },
   },
   requirements: {
-    data: {},
+    data: [],
     loading: false,
     error: { retry: false, redirect: false, message: "" },
   },

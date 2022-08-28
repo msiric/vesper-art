@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import { featureFlags } from "../common/constants";
 import { isObjectEmpty } from "../common/helpers";
 import { reviewValidation } from "../common/validation";
 import { getSignedS3Object } from "../lib/s3";
@@ -6,7 +7,8 @@ import socketApi from "../lib/socket";
 import { fetchUserFavorites } from "../services/artwork";
 import { addNewNotification } from "../services/notification";
 import {
-  addNewReview, addOrderReview,
+  addNewReview,
+  addOrderReview,
   fetchArtworkOrders,
   fetchOrderDetails,
   fetchOrderMedia,
@@ -15,7 +17,7 @@ import {
   fetchUserPurchase,
   fetchUserPurchases,
   fetchUserReviews,
-  fetchUserSales
+  fetchUserSales,
 } from "../services/order";
 import { fetchStripeBalance } from "../services/stripe";
 import { fetchUserById } from "../services/user";
@@ -110,11 +112,15 @@ export const getSellerStatistics = async ({ userId, connection }) => {
     fetchUserSales({ userId, connection }),
   ]);
   if (!isObjectEmpty(foundUser)) {
-    const balance = await fetchStripeBalance({
-      stripeId: foundUser.stripeId,
-      connection,
-    });
-    const { amount } = balance.available[0];
+    // FEATURE FLAG - stripe
+    let amount = 0;
+    if (featureFlags.stripe && foundUser.onboarded) {
+      const balance = await fetchStripeBalance({
+        stripeId: foundUser.stripeId,
+        connection,
+      });
+      ({ amount } = balance.available[0]);
+    }
     return { sales: foundSales, amount, reviews: foundReviews };
   }
   throw createError(...formatError(errors.userNotFound));

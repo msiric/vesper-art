@@ -19,42 +19,26 @@ export const requestHandler =
     sanitizePayload(req, res, next);
     const boundParams = params ? params(req, res, next) : {};
     const userId = res?.locals?.user?.id ?? null;
-    const handleRequest = (result) => {
+    const stripeId = res?.locals?.user?.stripeId ?? null;
+    const connection = transaction ? await startTransaction() : getConnection();
+    try {
+      const result = await promise({
+        userId,
+        stripeId,
+        ...boundParams,
+        connection: transaction ? connection.manager : connection,
+      });
+      if (transaction) await evaluateTransaction(connection);
       if (result) {
         return res.json(result);
       }
       return res.json({ message: "OK" });
-    };
-    if (transaction) {
-      const queryRunner = await startTransaction();
-      try {
-        const result = await promise({
-          userId,
-          ...boundParams,
-          connection: queryRunner.manager,
-        });
-        await evaluateTransaction(queryRunner);
-        return handleRequest(result);
-      } catch (error) {
-        console.log("err", error);
-        await rollbackTransaction(queryRunner);
-        next(error);
-      } finally {
-        await releaseTransaction(queryRunner);
-      }
-    } else {
-      try {
-        const connection = getConnection();
-        const result = await promise({
-          userId,
-          ...boundParams,
-          connection,
-        });
-        return handleRequest(result);
-      } catch (error) {
-        console.log("err", error);
-        next(error);
-      }
+    } catch (error) {
+      console.log("err", error);
+      if (transaction) await rollbackTransaction(connection);
+      next(error);
+    } finally {
+      if (transaction) await releaseTransaction(connection);
     }
   };
 
@@ -86,8 +70,15 @@ export const isNotAuthenticated = async (req, res, next) => {
 };
 
 export const isAuthorized = async (req, res, next) => {
-  if (req.params.userId === res.locals.user.id) {
-    return next();
+  if (req.params.userId) {
+    if (req.params.userId !== res.locals.user.id) {
+      return next(createError(...formatError(errors.notAuthorized)));
+    }
   }
-  return next(createError(...formatError(errors.notAuthorized)));
+  if (req.params.accountId) {
+    if (req.params.accountId !== res.locals.user.stripeId) {
+      return next(createError(...formatError(errors.notAuthorized)));
+    }
+  }
+  return next();
 };

@@ -1,9 +1,15 @@
 import { ax } from "../containers/Interceptor";
 
 export const getUser = {
-  request: async ({ stripeId }) => await ax.get(`/stripe/account/${stripeId}`),
+  request: async ({ stripeId }) => await ax.get(`/stripe/accounts/${stripeId}`),
   success: { message: "Account successfully fetched", variant: "success" },
   error: { message: "Failed to fetch account", variant: "error" },
+};
+export const getDashboard = {
+  request: async ({ stripeId }) =>
+    await ax.get(`/stripe/accounts/${stripeId}/dashboard`),
+  success: { message: "Dashboard successfully fetched", variant: "success" },
+  error: { message: "Failed to fetch dashboard", variant: "error" },
 };
 export const postIntent = {
   request: async ({
@@ -13,7 +19,7 @@ export const postIntent = {
     licenseType,
     discountId,
   }) =>
-    await ax.post(`/stripe/intent/${versionId}`, {
+    await ax.post(`/stripe/intents/${versionId}`, {
       discountId,
       licenseUsage,
       licenseCompany,
@@ -35,10 +41,4 @@ export const getOnboarded = {
   request: async () => await ax.get("/stripe/onboard"),
   success: { message: "User successfully onboarded", variant: "success" },
   error: { message: "Failed to onboard user", variant: "error" },
-};
-export const getDashboard = {
-  request: async ({ stripeId }) =>
-    await ax.get(`/stripe/dashboard/${stripeId}`),
-  success: { message: "Dashboard successfully fetched", variant: "success" },
-  error: { message: "Failed to fetch dashboard", variant: "error" },
 };
