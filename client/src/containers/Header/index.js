@@ -57,8 +57,9 @@ const Header = () => {
 
   return (
     <>
-      <AppBar position="static" className={classes.container}>
+      <AppBar position="static" className={classes.header}>
         <Toolbar
+          disableGutters
           className={`${classes.toolbar} ${globalClasses.largeContainer}`}
         >
           <Box className={classes.wrapper}>

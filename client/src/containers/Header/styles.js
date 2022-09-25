@@ -2,11 +2,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { artepunktTheme } from "../../styles/theme";
 
 const headerStyles = makeStyles((muiTheme) => ({
-  container: {
+  header: {
     backgroundColor: artepunktTheme.palette.background.paper,
-    [muiTheme.breakpoints.down("xs")]: {
-      padding: "12px 0",
-    },
   },
   toolbar: {
     display: "flex",
@@ -15,6 +12,13 @@ const headerStyles = makeStyles((muiTheme) => ({
     alignItems: "center",
     width: "100%",
     margin: "0 auto",
+    padding: "0 24px",
+    [muiTheme.breakpoints.down("sm")]: {
+      padding: "0 12px",
+    },
+    [muiTheme.breakpoints.down("xs")]: {
+      padding: "12px 12px",
+    },
   },
   wrapper: {
     display: "flex",

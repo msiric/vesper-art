@@ -20,9 +20,11 @@ import { appName } from "../../../../common/constants";
 import LogoItem from "../../components/LogoItem";
 import IconButton from "../../domain/IconButton";
 import { socialLinks } from "../../shared/constants";
+import globalStyles from "../../styles/global";
 import footerStyles from "./styles";
 
 const Footer = () => {
+  const globalClasses = globalStyles();
   const classes = footerStyles();
 
   const history = useHistory();
@@ -30,7 +32,9 @@ const Footer = () => {
   return (
     <footer className={classes.container}>
       <Toolbar disableGutters>
-        <Container>
+        <Container
+          className={`${classes.footer} ${globalClasses.largeContainer}`}
+        >
           <Grid container className={classes.navigation}>
             <Grid item className={classes.item}>
               <Typography variant="h6" className={classes.heading}>

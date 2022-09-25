@@ -6,6 +6,12 @@ const footerStyles = makeStyles((muiTheme) => ({
     backgroundColor: artepunktTheme.palette.background.paper,
     width: "100%",
   },
+  footer: {
+    padding: "0 24px",
+    [muiTheme.breakpoints.down("sm")]: {
+      padding: "0 12px",
+    },
+  },
   navigation: {
     display: "flex",
     width: "100%",
