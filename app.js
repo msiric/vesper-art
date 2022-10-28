@@ -9,7 +9,7 @@ import morgan from "morgan";
 import path from "path";
 import "reflect-metadata";
 import { featureFlags, statusCodes } from "./common/constants";
-import { domain, environment, ENV_OPTIONS, mongo } from "./config/secret";
+import { cookie, domain, environment, ENV_OPTIONS } from "./config/secret";
 import { authRateLimiter, commonRateLimiter } from "./lib/limiter";
 import api from "./routes/api/index";
 import auth from "./routes/auth/index";
@@ -45,8 +45,11 @@ const dirname = path.resolve();
     cookieSession({
       name: "session",
       maxAge: 24 * 60 * 60 * 1000,
-      secret: mongo.secret,
-      keys: ["key1", "key2"],
+      secret: cookie.secret,
+      keys: [
+        "aq`&DOC5'()%I=`hvk9cu^>A0VYg{B",
+        "Wx{IR%)Gqf%Skw5Od&?T6v!$l3lOTV",
+      ],
     })
   );
 
@@ -60,7 +63,7 @@ const dirname = path.resolve();
   // );
 
   // mongoose.set("useCreateIndex", true);
-  if (environment !== ENV_OPTIONS.TEST) {
+  if (environment !== ENV_OPTIONS.TESTING) {
     try {
       await connectToDatabase();
     } catch (err) {

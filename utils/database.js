@@ -268,14 +268,13 @@ export const connectToDatabase = async () => {
       synchronize: true,
       migrations: [path.join(dirname, "dist/migrations/*{.ts,.js}")],
       entities: [path.join(dirname, "dist/entities/*{.ts,.js}")],
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      ssl: false,
     });
     console.log("Connected to PostgreSQL");
     return connection;
   } catch (err) {
-    console.log("Could not connect to PostgreSQL", err);
+    console.log("Could not connect to PostgreSQL: ", err);
+    throw err;
   }
 };
 
@@ -301,7 +300,7 @@ export const rollbackTransaction = async (queryRunner) => {
 };
 
 export const evaluateTransaction = async (queryRunner) => {
-  if (environment === ENV_OPTIONS.TEST) {
+  if (environment === ENV_OPTIONS.TESTING) {
     return await rollbackTransaction(queryRunner);
   }
   return await commitTransaction(queryRunner);

@@ -296,7 +296,6 @@ export const deactivateUser = async ({ userId, response, connection }) => {
     ],
     connection,
   });
-  debugger;
   let shouldDeleteStripe = false;
   if (!isObjectEmpty(foundUser)) {
     // FEATURE FLAG - stripe

@@ -9,19 +9,22 @@
       "request": "launch",
       "name": "Launch Program",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}\\dist\\app.js"
+      "program": "${workspaceFolder}/dist/app.js"
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Launch Tests",
-      "program": "${workspaceFolder}\\node_modules\\jest\\bin\\jest",
+      "program": "${workspaceFolder}/node_modules/jest/bin/jest",
       "args": [
         "--runInBand",
-        "--config=${workspaceFolder}\\dist\\jest.config.js"
+        "--config=${workspaceFolder}/dist/jest.config.js"
       ],
       "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "NODE_ENV": "testing"
+      }
     }
   ]
 }

@@ -2,21 +2,19 @@ import fs from "fs/promises";
 import path from "path";
 import sharp from "sharp";
 import { upload } from "../../common/constants";
-import { User } from "../../entities/User";
 import { uploadS3Object } from "../../lib/s3";
 import {
   connectToDatabase,
   evaluateTransaction,
   releaseTransaction,
   rollbackTransaction,
-  USER_SELECTION,
 } from "../../utils/database";
-import { entities, validUsers } from "./entities";
+import { entities } from "./entities";
 
 const dirname = path.resolve();
 
 const MEDIA_LOCATION = path.resolve(path.join(dirname, "previews/media"));
-const AVATAR_LOCATION = path.resolve(path.join(dirname, "previews/avatar"));
+const AVATAR_LOCATION = path.resolve(path.join(dirname, "previews/avatars"));
 const SUPPORTED_MIMETYPES = {
   jpg: { type: "jpeg", mimeType: "image/jpeg" },
   jpeg: { type: "jpeg", mimeType: "image/jpeg" },
@@ -25,8 +23,10 @@ const SUPPORTED_MIMETYPES = {
 
 const seedS3 = async () => {
   try {
-    const files = await fs.readdir(MEDIA_LOCATION);
-    for (let file of files) {
+    console.log("Reading artwork directory...");
+    const artwork = await fs.readdir(MEDIA_LOCATION);
+    console.log("Uploading artwork to S3...");
+    for (let file of artwork) {
       const fileName = file;
       const filePath = `${MEDIA_LOCATION}/${file}`;
       const fileType = SUPPORTED_MIMETYPES[filePath.split(".").pop()].type;
@@ -52,8 +52,27 @@ const seedS3 = async () => {
         mimeType,
       });
     }
+    console.log("S3 artwork seeded successfully");
+    console.log("Reading avatar directory...");
+    const avatars = await fs.readdir(AVATAR_LOCATION);
+    console.log("Uploading avatars to S3...");
+    for (let file of avatars) {
+      const fileName = file;
+      const filePath = `${AVATAR_LOCATION}/${file}`;
+      const fileType = SUPPORTED_MIMETYPES[filePath.split(".").pop()].type;
+      const mimeType = SUPPORTED_MIMETYPES[filePath.split(".").pop()].mimeType;
+      const fileMedia = await sharp(filePath)[fileType]().toBuffer();
+      await uploadS3Object({
+        fileContent: fileMedia,
+        folderName: "userMedia",
+        fileName,
+        mimeType,
+      });
+    }
+    console.log("S3 avatars seeded successfully");
+    console.log("S3 media seeded successfully");
   } catch (err) {
-    console.log("err s3", err);
+    console.log("Failed to upload media to S3: ", err);
   }
 };
 
@@ -63,15 +82,6 @@ const seedS3 = async () => {
   await queryRunner.connect();
   await queryRunner.startTransaction();
   try {
-    const foundUser = await connection
-      .getRepository(User)
-      .createQueryBuilder("user")
-      .select([...USER_SELECTION["STRIPPED_INFO"]()])
-      .where("user.name = :name AND user.email = :email", {
-        name: validUsers.seller.name,
-        email: validUsers.seller.email,
-      })
-      .getOne();
     await connection.synchronize(true);
     for (let entity in entities) {
       for (let row of entities[entity]) {
@@ -87,7 +97,7 @@ const seedS3 = async () => {
     await evaluateTransaction(queryRunner);
     console.log("Test database seeded successfully");
   } catch (err) {
-    console.log("Failed seeding the test database", err);
+    console.log("Failed seeding the test database: ", err);
     await rollbackTransaction(queryRunner);
   } finally {
     await releaseTransaction(queryRunner);
