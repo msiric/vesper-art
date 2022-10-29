@@ -44,6 +44,22 @@
       "problemMatcher": []
     },
     {
+      "label": "Run test:fresh-entities",
+      "dependsOn": ["npm: proxy:test", "npm: test:fresh-entities"],
+      "options": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run test:fresh-s3",
+      "dependsOn": ["npm: proxy:test", "npm: test:fresh-s3"],
+      "options": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "Run test:coverage",
       "dependsOn": ["npm: proxy:test", "npm: test:coverage"],
       "options": {
@@ -62,6 +78,22 @@
     {
       "label": "Run seed:test",
       "dependsOn": ["npm: proxy:test", "npm: seed:test-db"],
+      "options": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run seed:test-entities",
+      "dependsOn": ["npm: proxy:test", "npm: seed:test-db-entities"],
+      "options": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run seed:test-s3",
+      "dependsOn": ["npm: proxy:test", "npm: seed:test-db-s3"],
       "options": {
         "reveal": "silent"
       },

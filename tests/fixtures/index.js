@@ -21,6 +21,13 @@ const SUPPORTED_MIMETYPES = {
   png: { type: "png", mimeType: "image/png" },
 };
 
+const NODE_PARAMETERS = {
+  skipEntities: "skipEntities",
+  skipS3: "skipS3",
+};
+
+const [NODE_ARGUMENT] = process.argv.slice(2);
+
 const seedS3 = async () => {
   try {
     console.log("Reading artwork directory...");
@@ -82,18 +89,22 @@ const seedS3 = async () => {
   await queryRunner.connect();
   await queryRunner.startTransaction();
   try {
-    await connection.synchronize(true);
-    for (let entity in entities) {
-      for (let row of entities[entity]) {
-        await connection
-          .createQueryBuilder()
-          .insert()
-          .into(entity)
-          .values(row)
-          .execute();
+    if (NODE_ARGUMENT !== NODE_PARAMETERS.skipEntities) {
+      await connection.synchronize(true);
+      for (let entity in entities) {
+        for (let row of entities[entity]) {
+          await connection
+            .createQueryBuilder()
+            .insert()
+            .into(entity)
+            .values(row)
+            .execute();
+        }
       }
     }
-    await seedS3();
+    if (NODE_ARGUMENT !== NODE_PARAMETERS.skipS3) {
+      await seedS3();
+    }
     await evaluateTransaction(queryRunner);
     console.log("Test database seeded successfully");
   } catch (err) {
