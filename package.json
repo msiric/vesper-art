@@ -30,8 +30,8 @@
     "postinstall": "yarn run transpile:copy-files",
     "lint": "eslint . --ext .js,.ts",
     "lint:fix": "eslint . --ext .js,.ts --fix",
-    "proxy:dev": "fly proxy 15432:5432 -a vesper-art-development",
-    "proxy:test": "fly proxy 25432:5432 -a vesper-art-testing"
+    "proxy:dev": "flyctl proxy 15432:5432 -a vesper-art-development",
+    "proxy:test": "flyctl proxy 25432:5432 -a vesper-art-testing"
   },
   "author": "",
   "license": "ISC",
