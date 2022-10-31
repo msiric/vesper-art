@@ -25,7 +25,24 @@ jobs:
       - name: Create env file
         run: |
           touch .env.testing
-          echo PG_DB_URL=${{ secrets.PG_TEST_DB }} >> .env.testing
+          echo 'ACCESS_TOKEN_EXPIRY=${{ secrets.ACCESS_TOKEN_EXPIRY }}' >> .env.testing
+          echo 'ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }}' >> .env.testing
+          echo 'ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}' >> .env.testing
+          echo 'ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }}' >> .env.testing
+          echo 'CLIENT_URI=${{ secrets.CLIENT_TEST_URI }}' >> .env.testing
+          echo 'COOKIE_SECRET=${{ secrets.COOKIE_SECRET }}' >> .env.testing
+          echo 'MAILER_HOST=${{ secrets.MAILER_TEST_HOST }}' >> .env.testing
+          echo 'MAILER_MAIL=${{ secrets.MAILER_TEST_MAIL }}' >> .env.testing
+          echo 'MAILER_PASS=${{ secrets.MAILER_TEST_PASS }}' >> .env.testing
+          echo 'MAILER_SENDER=${{ secrets.MAILER_TEST_SENDER }}' >> .env.testing
+          echo 'REFRESH_TOKEN_EXPIRY=${{ secrets.REFRESH_TOKEN_EXPIRY }}' >> .env.testing
+          echo 'REFRESH_TOKEN_SECRET=${{ secrets.REFRESH_TOKEN_SECRET }}' >> .env.testing
+          echo 'S3_ID=${{ secrets.S3_ID }}' >> .env.testing
+          echo 'S3_SECRET=${{ secrets.S3_SECRET }}' >> .env.testing
+          echo 'S3_BUCKET=${{ secrets.S3_TEST_BUCKET }}' >> .env.testing
+          echo 'S3_REGION=${{ secrets.S3_TEST_REGION }}' >> .env.testing
+          echo 'SERVER_URI=${{ secrets.SERVER_TEST_URI }}' >> .env.testing
+          echo 'PG_DB_URL=${{ secrets.PG_TEST_DB }}' >> .env.testing
 
       - name: Tests
         run: |
