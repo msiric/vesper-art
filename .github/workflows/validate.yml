@@ -21,7 +21,9 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Tests
-        run: yarn run test
+        run: |
+          yarn run proxy:test
+          yarn run test
 
   validate-client:
     name: Validate Client
