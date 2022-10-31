@@ -7,11 +7,12 @@ on:
   pull_request:
 env:
   FLY_API_TOKEN: ${{ secrets.FLY_ACCESS_TOKEN }}
-  PG_DB_URL: ${{ secrets.PG_TEST_DB }}
 jobs:
   validate-server:
     name: Validate Server
     runs-on: ubuntu-latest
+    env:
+      PG_DB_URL: ${{ secrets.PG_TEST_DB }}
     steps:
       - uses: actions/checkout@v3
       - uses: superfly/flyctl-actions/setup-flyctl@master
@@ -19,6 +20,8 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16.x'
+
+      - run: echo "$PG_DB_URL" 
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
