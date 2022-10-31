@@ -1,0 +1,20 @@
+changelog:
+  categories:
+    - title: Breaking Changes 🛠
+      labels:
+        - breaking
+    - title: New Features 🎉
+      labels:
+        - feature
+    - title: Bug Fixes 🐛
+      labels:
+        - bug
+    - title: Chores 🧹
+      labels:
+        - chore
+    - title: Styling changes 💅
+      labels:
+        - style
+    - title: Other Changes
+      labels:
+        - "*"
