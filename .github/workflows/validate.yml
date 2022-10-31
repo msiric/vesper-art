@@ -21,6 +21,7 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Tests
+        uses: superfly/flyctl-actions/setup-flyctl@master
         run: |
           yarn run proxy:test
           yarn run test
