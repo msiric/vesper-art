@@ -43,7 +43,6 @@ jobs:
           echo S3_REGION=${{ secrets.S3_TEST_REGION }} >> .env.testing
           echo SERVER_URI=${{ secrets.SERVER_TEST_URI }} >> .env.testing
           echo PG_DB_URL=${{ secrets.PG_TEST_DB }} >> .env.testing
-          cat .env.testing
 
       - name: Tests
         run: |
