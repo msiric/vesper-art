@@ -24,8 +24,7 @@ jobs:
 
       - name: Tests
         run: |
-          yarn run proxy:test
-          yarn run test
+          yarn run proxy:test & yarn run test
 
   validate-client:
     name: Validate Client
