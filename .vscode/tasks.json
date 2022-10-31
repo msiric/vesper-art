@@ -1,0 +1,103 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run dev",
+      "dependsOn": ["npm: proxy:dev", "npm: dev"],
+      "options": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run server",
+      "dependsOn": ["npm: proxy:dev", "npm: server"],
+      "options": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run server:dev",
+      "dependsOn": ["npm: proxy:dev", "npm: server:dev"],
+      "options": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run test",
+      "dependsOn": ["npm: proxy:test", "npm: test"],
+      "options": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run test:fresh",
+      "dependsOn": ["npm: proxy:test", "npm: test:fresh"],
+      "options": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run test:fresh-entities",
+      "dependsOn": ["npm: proxy:test", "npm: test:fresh-entities"],
+      "options": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run test:fresh-s3",
+      "dependsOn": ["npm: proxy:test", "npm: test:fresh-s3"],
+      "options": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run test:coverage",
+      "dependsOn": ["npm: proxy:test", "npm: test:coverage"],
+      "options": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run test:watch",
+      "dependsOn": ["npm: proxy:test", "npm: test:watch"],
+      "options": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run seed:test",
+      "dependsOn": ["npm: proxy:test", "npm: seed:test-db"],
+      "options": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run seed:test-entities",
+      "dependsOn": ["npm: proxy:test", "npm: seed:test-db-entities"],
+      "options": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run seed:test-s3",
+      "dependsOn": ["npm: proxy:test", "npm: seed:test-db-s3"],
+      "options": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

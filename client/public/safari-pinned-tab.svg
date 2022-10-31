@@ -1,0 +1,21 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+ "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+ width="103.000000pt" height="103.000000pt" viewBox="0 0 103.000000 103.000000"
+ preserveAspectRatio="xMidYMid meet">
+<metadata>
+Created by potrace 1.14, written by Peter Selinger 2001-2017
+</metadata>
+<g transform="translate(0.000000,103.000000) scale(0.100000,-0.100000)"
+fill="#000000" stroke="none">
+<path d="M100 956 c0 -8 226 -680 276 -821 24 -69 26 -71 60 -71 18 0 34 1 34
+2 0 1 -67 202 -150 445 -82 244 -150 445 -150 446 0 2 -16 3 -35 3 -19 0 -35
+-2 -35 -4z"/>
+<path d="M401 519 c82 -242 151 -444 154 -449 5 -8 62 -6 70 2 3 2 72 204 155
+447 l150 442 -37 -3 -37 -3 -34 -100 c-19 -55 -78 -230 -132 -390 -92 -272
+-99 -288 -109 -260 -6 17 -16 42 -22 56 -12 30 -10 35 130 453 45 131 81 240
+81 242 0 2 -15 4 -34 4 l-34 0 -94 -281 -93 -280 -95 280 -95 281 -36 0 -37 0
+149 -441z"/>
+</g>
+</svg>
