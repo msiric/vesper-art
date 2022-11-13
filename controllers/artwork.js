@@ -38,6 +38,7 @@ import {
   removeExistingComment,
   removeExistingFavorite,
   removeExistingLike,
+  removeExistingLikes,
   updateArtworkVersion,
 } from "../services/artwork";
 import { addNewNotification } from "../services/notification";
@@ -645,6 +646,11 @@ export const patchComment = async ({
 };
 
 export const deleteComment = async ({ userId, commentId, connection }) => {
+  await removeExistingLikes({
+    commentId,
+    userId,
+    connection,
+  });
   const deletedComment = await removeExistingComment({
     commentId,
     userId,

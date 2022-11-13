@@ -22,7 +22,7 @@ const FavoriteButton = ({
 
   const classes = favoriteButtonStyles();
 
-  const handleSaveArtwork = async (id) => {
+  const handleFavoriteArtwork = async (id) => {
     try {
       setState({ loading: true });
       await postFavorite.request({ artworkId: id });
@@ -39,7 +39,7 @@ const FavoriteButton = ({
     }
   };
 
-  const handleUnsaveArtwork = async (id) => {
+  const handleUnfavoriteArtwork = async (id) => {
     try {
       setState({ loading: true });
       await deleteFavorite.request({ artworkId: id });
@@ -69,8 +69,8 @@ const FavoriteButton = ({
       submitting={state.loading}
       onClick={() =>
         favorited
-          ? handleUnsaveArtwork(artwork.id)
-          : handleSaveArtwork(artwork.id)
+          ? handleUnfavoriteArtwork(artwork.id)
+          : handleFavoriteArtwork(artwork.id)
       }
       {...props}
     >
@@ -78,11 +78,11 @@ const FavoriteButton = ({
     </AsyncButton>
   ) : (
     <IconButton
-      aria-label={`${favorited ? "Unsave artwork" : "Save artwork"}`}
+      aria-label={`${favorited ? "Unfavorite artwork" : "Favorite artwork"}`}
       onClick={() =>
         favorited
-          ? handleUnsaveArtwork(artwork.id)
-          : handleSaveArtwork(artwork.id)
+          ? handleUnfavoriteArtwork(artwork.id)
+          : handleFavoriteArtwork(artwork.id)
       }
       disabled={state.loading}
       {...props}

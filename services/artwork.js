@@ -232,6 +232,7 @@ export const fetchArtworkComments = async ({
     .select([
       ...COMMENT_SELECTION["ESSENTIAL_INFO"](),
       ...LIKE_SELECTION["ESSENTIAL_INFO"](),
+      ...LIKE_SELECTION["OWNER_INFO"](),
       ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
       ...USER_SELECTION["STRIPPED_INFO"]("owner"),
       ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
@@ -797,6 +798,7 @@ export const fetchCommentById = async ({
     .select([
       ...COMMENT_SELECTION["ESSENTIAL_INFO"](),
       ...LIKE_SELECTION["ESSENTIAL_INFO"](),
+      ...LIKE_SELECTION["OWNER_INFO"](),
       ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
       ...USER_SELECTION["STRIPPED_INFO"]("owner"),
       ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
@@ -877,4 +879,21 @@ export const removeExistingComment = async ({
     })
     .execute();
   return deletedComment;
+};
+
+export const removeExistingLikes = async ({
+  commentId,
+  userId,
+  connection,
+}) => {
+  const deletedLikes = await connection
+    .createQueryBuilder()
+    .delete()
+    .from(Like)
+    .where('commentId = :commentId AND "ownerId" = :userId', {
+      commentId,
+      userId,
+    })
+    .execute();
+  return deletedLikes;
 };

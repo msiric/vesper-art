@@ -3,11 +3,11 @@ import React, { useEffect, useState } from "react";
 import Typography from "../../domain/Typography";
 import incrementCounterStyles from "./styles";
 
-const IncrementCounter = ({ newValue = 0 }) => {
+const IncrementCounter = ({ newValue = 0, fontSize = 34 }) => {
   const [value, setValue] = useState(newValue);
   const [animationValue, setAnimationValue] = useState("initial");
 
-  const classes = incrementCounterStyles();
+  const classes = incrementCounterStyles({ fontSize });
 
   const handleInitialization = () => {
     setAnimationValue("hide");

@@ -1,3 +1,5 @@
+import IncrementCounter from "@components/IncrementCounter";
+import LikeButton from "@components/LikeButton";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   CheckRounded as SaveIcon,
@@ -33,7 +35,7 @@ import commentCardStyles from "./styles";
 const CommentCard = ({
   artworkId,
   artworkOwnerId,
-  comment = { content: "", owner: { avatar: {} } },
+  comment = { content: "", owner: { avatar: {} }, likes: [] },
   edits = {},
   queryRef,
   highlightRef,
@@ -43,6 +45,10 @@ const CommentCard = ({
   loading,
 }) => {
   const userId = useUserStore((state) => state.id);
+  const likes = comment?.likes;
+
+  const isCommentLiked = likes?.some((like) => like.ownerId === userId);
+  const isCommentDisabled = comment?.owner?.id === userId;
 
   const setDefaultValues = () => ({
     commentContent: comment.content,
@@ -167,29 +173,43 @@ const CommentCard = ({
                     "Fetching artwork's comment content details"}
                 </Typography>
                 <Box className={classes.subtitle}>
-                  <Typography
-                    component="span"
-                    variant="subtitle2"
-                    loading={loading}
-                    className={classes.created}
-                  >
-                    {comment?.created
-                      ? `${formatDistance(
-                          new Date(comment?.created),
-                          new Date()
-                        )} ago`
-                      : "Fetching comment creation date"}
-                  </Typography>
-                  {comment?.modified && (
+                  <Box className={classes.info}>
                     <Typography
                       component="span"
                       variant="subtitle2"
                       loading={loading}
-                      className={classes.modified}
+                      className={classes.created}
                     >
-                      (edited)
+                      {comment?.created
+                        ? `${formatDistance(
+                            new Date(comment?.created),
+                            new Date()
+                          )} ago`
+                        : "Fetching comment creation date"}
                     </Typography>
-                  )}
+                    {comment?.modified && (
+                      <Typography
+                        component="span"
+                        variant="subtitle2"
+                        loading={loading}
+                        className={classes.modified}
+                      >
+                        *
+                      </Typography>
+                    )}
+                  </Box>
+                  <Box loading={loading} customRadius className={classes.likes}>
+                    <IncrementCounter
+                      newValue={likes?.length ?? 0}
+                      fontSize={14}
+                    />
+                    <LikeButton
+                      artworkId={artworkId}
+                      comment={comment}
+                      liked={isCommentLiked}
+                      disabled={isCommentDisabled}
+                    />
+                  </Box>
                 </Box>
               </Box>
             )

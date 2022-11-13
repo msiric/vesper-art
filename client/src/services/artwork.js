@@ -83,18 +83,30 @@ export const getGallery = {
 export const postFavorite = {
   request: async ({ artworkId }) =>
     await ax.post(`/api/artwork/${artworkId}/favorites`),
-  success: { message: "Artwork successfully saved", variant: "success" },
+  success: { message: "Artwork successfully favorited", variant: "success" },
   error: { message: "Failed to favorite artwork", variant: "error" },
 };
 export const deleteFavorite = {
   request: async ({ artworkId }) =>
     await ax.delete(`/api/artwork/${artworkId}/favorites`),
-  success: { message: "Artwork successfully unsaved", variant: "success" },
-  error: { message: "Failed to unsaved artwork", variant: "error" },
+  success: { message: "Artwork successfully unfavorited", variant: "success" },
+  error: { message: "Failed to unfavorited artwork", variant: "error" },
 };
 export const getFavorites = {
   request: async ({ artworkId }) =>
     await ax.get(`/api/artwork/${artworkId}/favorites`),
   success: { message: "Favorites successfully fetched", variant: "success" },
   error: { message: "Failed to fetch favorites", variant: "error" },
+};
+export const postLike = {
+  request: async ({ artworkId, commentId }) =>
+    await ax.post(`/api/artwork/${artworkId}/comments/${commentId}/likes`),
+  success: { message: "Comment successfully liked", variant: "success" },
+  error: { message: "Failed to like comment", variant: "error" },
+};
+export const deleteLike = {
+  request: async ({ artworkId, commentId }) =>
+    await ax.delete(`/api/artwork/${artworkId}/comments/${commentId}/likes`),
+  success: { message: "Comment successfully disliked", variant: "success" },
+  error: { message: "Failed to dislike comment", variant: "error" },
 };

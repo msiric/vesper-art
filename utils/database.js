@@ -223,6 +223,8 @@ export const LIKE_SELECTION = {
     `${selector}.id`,
     `${selector}.created`,
   ],
+  COMMENT_INFO: (selector = DEFAULT_VALUES.LIKE) => [`${selector}.commentId`],
+  OWNER_INFO: (selector = DEFAULT_VALUES.LIKE) => [`${selector}.ownerId`],
 };
 
 export const FAVORITE_SELECTION = {
