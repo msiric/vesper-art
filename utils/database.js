@@ -218,6 +218,7 @@ export const COMMENT_SELECTION = {
 };
 
 export const LIKE_SELECTION = {
+  STRIPPED_INFO: (selector = DEFAULT_VALUES.LIKE) => [`${selector}.id`],
   ESSENTIAL_INFO: (selector = DEFAULT_VALUES.LIKE) => [
     `${selector}.id`,
     `${selector}.created`,

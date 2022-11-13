@@ -1,3 +1,4 @@
+import { Like } from "@entities/Like";
 import { upload } from "../common/constants";
 import { Artwork, ArtworkVisibility } from "../entities/Artwork";
 import { Comment } from "../entities/Comment";
@@ -311,6 +312,19 @@ export const fetchFavoriteByParents = async ({
   return foundFavorite;
 };
 
+export const fetchLikeByParents = async ({ userId, commentId, connection }) => {
+  const foundLike = await connection
+    .getRepository(Like)
+    .createQueryBuilder("like")
+    .select([...LIKE_SELECTION["STRIPPED_INFO"]()])
+    .where("like.ownerId = :userId AND like.commentId = :commentId", {
+      userId,
+      commentId,
+    })
+    .getOne();
+  return foundLike;
+};
+
 export const addNewCover = async ({ coverId, artworkUpload, connection }) => {
   const savedCover = await connection
     .createQueryBuilder()
@@ -443,6 +457,32 @@ export const removeExistingFavorite = async ({ favoriteId, connection }) => {
     .where("id = :favoriteId", { favoriteId })
     .execute();
   return deletedFavorite;
+};
+
+export const addNewLike = async ({ likeId, userId, commentId, connection }) => {
+  const savedLike = await connection
+    .createQueryBuilder()
+    .insert()
+    .into(Like)
+    .values([
+      {
+        id: likeId,
+        ownerId: userId,
+        commentId,
+      },
+    ])
+    .execute();
+  return savedLike;
+};
+
+export const removeExistingLike = async ({ likeId, connection }) => {
+  const deletedLike = await connection
+    .createQueryBuilder()
+    .delete()
+    .from(Like)
+    .where("id = :likeId", { likeId })
+    .execute();
+  return deletedLike;
 };
 
 export const removeArtworkVersion = async ({ versionId, connection }) => {

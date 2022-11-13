@@ -90,6 +90,26 @@ export const errors = {
     message: "Cannot unfavorite your own artwork",
     expose: true,
   },
+  commentAlreadyLiked: {
+    status: statusCodes.badRequest,
+    message: "Comment has already been liked",
+    expose: true,
+  },
+  commentLikedByOwner: {
+    status: statusCodes.badRequest,
+    message: "Cannot like your own comment",
+    expose: true,
+  },
+  commentAlreadyDisliked: {
+    status: statusCodes.badRequest,
+    message: "Comment has already been disliked",
+    expose: true,
+  },
+  commentDislikedByOwner: {
+    status: statusCodes.badRequest,
+    message: "Cannot dislike your own comment",
+    expose: true,
+  },
   userAlreadyExists: {
     status: statusCodes.conflict,
     message: "Account with that email/username already exists",
@@ -317,6 +337,16 @@ export const responses = {
   artworkUnfavorited: {
     status: statusCodes.ok,
     message: "Artwork unfavorited successfully",
+    expose: false,
+  },
+  commentLiked: {
+    status: statusCodes.ok,
+    message: "Comment liked successfully",
+    expose: false,
+  },
+  commentDisliked: {
+    status: statusCodes.ok,
+    message: "Comment disliked successfully",
     expose: false,
   },
   userSignedUp: {

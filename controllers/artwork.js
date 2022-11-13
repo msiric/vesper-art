@@ -13,6 +13,7 @@ import {
   addNewComment,
   addNewCover,
   addNewFavorite,
+  addNewLike,
   addNewMedia,
   addNewVersion,
   deactivateArtworkVersion,
@@ -28,6 +29,7 @@ import {
   fetchCommentById,
   fetchFavoriteByParents,
   fetchFavoritesCount,
+  fetchLikeByParents,
   fetchUserArtwork,
   fetchUserFavorites,
   fetchUserPurchasesWithMedia,
@@ -35,6 +37,7 @@ import {
   removeArtworkVersion,
   removeExistingComment,
   removeExistingFavorite,
+  removeExistingLike,
   updateArtworkVersion,
 } from "../services/artwork";
 import { addNewNotification } from "../services/notification";
@@ -384,6 +387,71 @@ export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
       throw createError(...formatError(errors.artworkAlreadyUnfavorited));
     }
     throw createError(...formatError(errors.artworkUnfavoritedByOwner));
+  }
+  throw createError(...formatError(errors.artworkNotFound));
+};
+
+export const likeComment = async ({
+  userId,
+  artworkId,
+  commentId,
+  connection,
+}) => {
+  const [foundLike, foundComment] = await Promise.all([
+    fetchLikeByParents({
+      userId,
+      commentId,
+      connection,
+    }),
+    fetchCommentById({ artworkId, commentId, connection }),
+  ]);
+  if (!isObjectEmpty(foundComment)) {
+    if (foundComment.ownerId !== userId) {
+      if (isObjectEmpty(foundLike)) {
+        const { likeId } = generateUuids({
+          likeId: null,
+        });
+        await addNewLike({
+          likeId,
+          userId,
+          commentId,
+          connection,
+        });
+        return formatResponse(responses.commentLiked);
+      }
+      throw createError(...formatError(errors.commentAlreadyLiked));
+    }
+    throw createError(...formatError(errors.commentLikedByOwner));
+  }
+  throw createError(...formatError(errors.artworkNotFound));
+};
+
+export const dislikeComment = async ({
+  userId,
+  artworkId,
+  commentId,
+  connection,
+}) => {
+  const [foundLike, foundComment] = await Promise.all([
+    fetchLikeByParents({
+      userId,
+      commentId,
+      connection,
+    }),
+    fetchCommentById({ artworkId, commentId, connection }),
+  ]);
+  if (!isObjectEmpty(foundComment)) {
+    if (foundComment.ownerId !== userId) {
+      if (!isObjectEmpty(foundLike)) {
+        await removeExistingLike({
+          likeId: foundLike.id,
+          connection,
+        });
+        return formatResponse(responses.commentDisliked);
+      }
+      throw createError(...formatError(errors.commentAlreadyDisliked));
+    }
+    throw createError(...formatError(errors.commentDislikedByOwner));
   }
   throw createError(...formatError(errors.artworkNotFound));
 };
