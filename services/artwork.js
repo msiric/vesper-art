@@ -13,6 +13,7 @@ import {
   COMMENT_SELECTION,
   COVER_SELECTION,
   FAVORITE_SELECTION,
+  LIKE_SELECTION,
   MEDIA_SELECTION,
   ORDER_SELECTION,
   resolveSubQuery,
@@ -225,9 +226,11 @@ export const fetchArtworkComments = async ({
   const foundComments = await queryBuilder
     .leftJoinAndSelect("comment.artwork", "artwork")
     .leftJoinAndSelect("comment.owner", "owner")
+    .leftJoinAndSelect("comment.likes", "like")
     .leftJoinAndSelect("owner.avatar", "avatar")
     .select([
       ...COMMENT_SELECTION["ESSENTIAL_INFO"](),
+      ...LIKE_SELECTION["ESSENTIAL_INFO"](),
       ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
       ...USER_SELECTION["STRIPPED_INFO"]("owner"),
       ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
@@ -749,7 +752,15 @@ export const fetchCommentById = async ({
     .createQueryBuilder("comment")
     .leftJoinAndSelect("comment.artwork", "artwork")
     .leftJoinAndSelect("comment.owner", "owner")
+    .leftJoinAndSelect("comment.likes", "like")
     .leftJoinAndSelect("owner.avatar", "avatar")
+    .select([
+      ...COMMENT_SELECTION["ESSENTIAL_INFO"](),
+      ...LIKE_SELECTION["ESSENTIAL_INFO"](),
+      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["STRIPPED_INFO"]("owner"),
+      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
+    ])
     .where(
       // $TODO should artwork.active be checked as well?
       "comment.id = :commentId AND comment.artworkId = :artworkId AND artwork.visibility = :visibility",

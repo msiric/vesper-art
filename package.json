@@ -31,7 +31,11 @@
     "lint": "eslint . --ext .js,.ts",
     "lint:fix": "eslint . --ext .js,.ts --fix",
     "proxy:dev": "flyctl proxy 15432:5432 -a vesper-art-development",
-    "proxy:test": "flyctl proxy 25432:5432 -a vesper-art-testing"
+    "proxy:test": "flyctl proxy 25432:5432 -a vesper-art-testing",
+    "migrate:create": "cross-env NODE_ENV=development ts-node ./node_modules/typeorm/cli.js migration:create -d migrations -n",
+    "migrate:generate": "cross-env NODE_ENV=development ts-node ./node_modules/typeorm/cli.js migration:generate -d migrations -n",
+    "migrate:up": "cross-env NODE_ENV=development ts-node ./node_modules/typeorm/cli.js migration:run",
+    "migrate:down": "cross-env NODE_ENV=development ts-node ./node_modules/typeorm/cli.js migration:revert"
   },
   "author": "",
   "license": "ISC",
@@ -74,7 +78,7 @@
     "sharp": "^0.30.1",
     "socket.io": "^2.2.0",
     "stripe": "^7.4.0",
-    "ts-node": "^9.1.1",
+    "ts-node": "^10.9.1",
     "tsc-alias": "^1.6.11",
     "tsc-watch": "^4.5.0",
     "typeorm": "^0.2.29",

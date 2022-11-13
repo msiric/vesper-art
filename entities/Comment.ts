@@ -5,10 +5,12 @@ import {
   Entity,
   Generated,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { Artwork } from "./Artwork";
+import { Like } from "./Like";
 import { User } from "./User";
 
 @Entity()
@@ -40,6 +42,9 @@ export class Comment extends BaseEntity {
 
   @Column()
   generated: boolean;
+
+  @OneToMany(() => Like, (like) => like.comment)
+  likes: Like[];
 
   @CreateDateColumn({ type: "timestamptz" })
   created: Date;
