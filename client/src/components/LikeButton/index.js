@@ -15,9 +15,10 @@ const LikeButton = ({
   disabled,
   labeled,
   fontSize = "small",
+  handleCallback,
   ...props
 }) => {
-  const [state, setState] = useState({ liked, loading: false });
+  const [state, setState] = useState({ loading: false });
 
   const classes = likeButtonStyles();
 
@@ -28,7 +29,7 @@ const LikeButton = ({
         artworkId,
         commentId: comment.id,
       });
-      setState({ liked: true });
+      handleCallback(true);
     } catch (err) {
       console.log(err);
     } finally {
@@ -43,7 +44,7 @@ const LikeButton = ({
         artworkId,
         commentId: comment.id,
       });
-      setState({ liked: false });
+      handleCallback(false);
     } catch (err) {
       console.log(err);
     } finally {
@@ -55,32 +56,28 @@ const LikeButton = ({
     <AsyncButton
       color="secondary"
       startIcon={
-        state.liked ? (
+        liked ? (
           <LikedIcon fontSize={fontSize} />
         ) : (
           <LikeIcon fontSize={fontSize} />
         )
       }
       submitting={state.loading}
-      onClick={() =>
-        state.liked ? handleDislikeComment() : handleLikeComment()
-      }
+      onClick={() => (liked ? handleDislikeComment() : handleLikeComment())}
       disabled={disabled || state.loading}
       {...props}
     >
-      {state.liked ? "Dislike" : "Like"}
+      {liked ? "Dislike" : "Like"}
     </AsyncButton>
   ) : (
     <IconButton
-      aria-label={`${state.liked ? "Dislike comment" : "Like comment"}`}
-      onClick={() =>
-        state.liked ? handleDislikeComment() : handleLikeComment()
-      }
+      aria-label={`${liked ? "Dislike comment" : "Like comment"}`}
+      onClick={() => (liked ? handleDislikeComment() : handleLikeComment())}
       disabled={disabled || state.loading}
       className={classes.button}
       {...props}
     >
-      {state.liked ? (
+      {liked ? (
         <LikedIcon fontSize={fontSize} />
       ) : (
         <LikeIcon fontSize={fontSize} />

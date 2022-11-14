@@ -1,4 +1,3 @@
-import { FavoriteRounded as FavoritedIcon } from "@material-ui/icons";
 import React from "react";
 import FavoriteButton from "../../components/FavoriteButton/index";
 import IncrementCounter from "../../components/IncrementCounter";
@@ -21,6 +20,8 @@ const ArtworkActions = () => {
   const userId = useUserStore((state) => state.id);
   const userFavorites = useUserStore((state) => state.favorites);
 
+  const isDisabled = artwork?.owner?.id === userId;
+
   const classes = artworkActionsStyles();
 
   return (
@@ -29,22 +30,20 @@ const ArtworkActions = () => {
         <Box className={classes.counter}>
           <Box loading={loading} customRadius className={classes.incrementer}>
             <IncrementCounter newValue={favorites} />
-            <FavoritedIcon fontSize="large" className={classes.icon} />
+            <FavoriteButton
+              artwork={artwork}
+              favorited={userFavorites[artwork.id] ?? isDisabled}
+              handleCallback={toggleFavorite}
+              loading={loading}
+              disabled={isDisabled}
+              fontSize="large"
+            />
           </Box>
         </Box>
       </CardContent>
       <Divider />
       <CardActions className={classes.footer}>
         <Box className={classes.actions}>
-          {artwork.owner && artwork.owner.id !== userId && (
-            <FavoriteButton
-              artwork={artwork}
-              favorited={userFavorites[artwork.id]}
-              labeled
-              handleCallback={toggleFavorite}
-              loading={loading}
-            />
-          )}
           <ShareButton
             link={`/artwork/${artwork.id}`}
             type="artwork"

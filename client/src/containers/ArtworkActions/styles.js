@@ -20,9 +20,10 @@ const artworkActionsStyles = makeStyles((muiTheme) => ({
     minWidth: 58,
     height: 55,
     width: "100%",
-  },
-  icon: {
-    marginLeft: "3px",
+    "& > button": {
+      padding: 4,
+      marginLeft: 3,
+    },
   },
   footer: {
     width: "100%",

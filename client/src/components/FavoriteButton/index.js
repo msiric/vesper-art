@@ -13,6 +13,7 @@ const FavoriteButton = ({
   artwork,
   favorited,
   labeled,
+  disabled,
   handleCallback,
   fontSize = "medium",
   ...props
@@ -72,6 +73,7 @@ const FavoriteButton = ({
           ? handleUnfavoriteArtwork(artwork.id)
           : handleFavoriteArtwork(artwork.id)
       }
+      disabled={disabled || state.loading}
       {...props}
     >
       {favorited ? "Unfavorite" : "Favorite"}
@@ -84,7 +86,7 @@ const FavoriteButton = ({
           ? handleUnfavoriteArtwork(artwork.id)
           : handleFavoriteArtwork(artwork.id)
       }
-      disabled={state.loading}
+      disabled={disabled || state.loading}
       {...props}
     >
       {favorited ? (

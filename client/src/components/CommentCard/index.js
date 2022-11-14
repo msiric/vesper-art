@@ -7,7 +7,7 @@ import {
   MoreVertRounded as MoreIcon,
 } from "@material-ui/icons";
 import { formatDistance } from "date-fns";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { commentValidation } from "../../../../common/validation";
@@ -44,8 +44,9 @@ const CommentCard = ({
   handlePopoverOpen,
   loading,
 }) => {
+  const [likes, setLikes] = useState([]);
+
   const userId = useUserStore((state) => state.id);
-  const likes = comment?.likes;
 
   const isCommentLiked = likes?.some((like) => like.ownerId === userId);
   const isCommentDisabled = comment?.owner?.id === userId;
@@ -70,9 +71,23 @@ const CommentCard = ({
   const history = useHistory();
   const classes = commentCardStyles();
 
+  const handleLikeToggle = (liked) => {
+    if (liked) {
+      setLikes((prevState) => [...prevState, { ownerId: userId }]);
+    } else {
+      setLikes((prevState) =>
+        prevState.filter((like) => like.ownerId !== userId)
+      );
+    }
+  };
+
   useEffect(() => {
     reset(setDefaultValues());
   }, [comment.content]);
+
+  useEffect(() => {
+    setLikes(comment.likes);
+  }, [comment.likes]);
 
   return (
     <Box ref={isHighlight ? highlightRef : null} key={comment.id}>
@@ -206,8 +221,9 @@ const CommentCard = ({
                     <LikeButton
                       artworkId={artworkId}
                       comment={comment}
-                      liked={isCommentLiked}
+                      liked={isCommentLiked ?? isCommentDisabled}
                       disabled={isCommentDisabled}
+                      handleCallback={handleLikeToggle}
                     />
                   </Box>
                 </Box>
