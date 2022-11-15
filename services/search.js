@@ -22,6 +22,8 @@ export const fetchArtworkResults = async ({
     .getRepository(Artwork)
     .createQueryBuilder("artwork")
     .leftJoinAndSelect("artwork.current", "version")
+    .loadRelationCountAndMap("artwork.favorites", "artwork.favorites")
+    .loadRelationCountAndMap("artwork.comments", "artwork.comments")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("artwork.owner", "owner")
     .select([

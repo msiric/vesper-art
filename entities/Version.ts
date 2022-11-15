@@ -8,6 +8,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -15,7 +16,9 @@ import {
 import { formatAmount } from "../common/helpers";
 import { Artwork } from "./Artwork";
 import { Cover } from "./Cover";
+import { Intent } from "./Intent";
 import { Media } from "./Media";
+import { Order } from "./Order";
 import { Tag } from "./Tag";
 
 export enum VersionAvailability {
@@ -112,6 +115,12 @@ export class Version extends BaseEntity {
 
   @Column()
   mediaId: string;
+
+  @OneToMany(() => Intent, (intent) => intent.owner)
+  intents: Intent[];
+
+  @OneToMany(() => Order, (order) => order.version)
+  orders: Order[];
 
   @CreateDateColumn({ type: "timestamptz" })
   created: Date;

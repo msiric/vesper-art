@@ -3,11 +3,26 @@ import React, { useEffect, useState } from "react";
 import Typography from "../../domain/Typography";
 import incrementCounterStyles from "./styles";
 
-const IncrementCounter = ({ newValue = 0, fontSize = 34 }) => {
+const SIZE_OPTIONS = {
+  small: 14,
+  medium: 24,
+  large: 34,
+};
+
+const WIDTH_OPTIONS = {
+  small: 11,
+  medium: 18,
+  large: 25,
+};
+
+const IncrementCounter = ({ newValue = 0, size = "medium" }) => {
   const [value, setValue] = useState(newValue);
   const [animationValue, setAnimationValue] = useState("initial");
 
-  const classes = incrementCounterStyles({ fontSize });
+  const classes = incrementCounterStyles({
+    fontSize: SIZE_OPTIONS[size],
+    minWidth: WIDTH_OPTIONS[size],
+  });
 
   const handleInitialization = () => {
     setAnimationValue("hide");

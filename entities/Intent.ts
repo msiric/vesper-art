@@ -21,13 +21,15 @@ export class Intent extends BaseEntity {
   @Generated("increment")
   serial: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, (user) => user.intents)
   owner: User;
 
   @Column()
   ownerId: string;
 
-  @ManyToOne(() => Version, { onDelete: "CASCADE" })
+  @ManyToOne(() => Version, (version) => version.intents, {
+    onDelete: "CASCADE",
+  })
   @JoinColumn()
   version: Version;
 

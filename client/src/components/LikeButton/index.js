@@ -14,7 +14,7 @@ const LikeButton = ({
   liked,
   disabled,
   labeled,
-  fontSize = "small",
+  size = "small",
   handleCallback,
   ...props
 }) => {
@@ -56,11 +56,7 @@ const LikeButton = ({
     <AsyncButton
       color="secondary"
       startIcon={
-        liked ? (
-          <LikedIcon fontSize={fontSize} />
-        ) : (
-          <LikeIcon fontSize={fontSize} />
-        )
+        liked ? <LikedIcon fontSize={size} /> : <LikeIcon fontSize={size} />
       }
       submitting={state.loading}
       onClick={() => (liked ? handleDislikeComment() : handleLikeComment())}
@@ -75,13 +71,10 @@ const LikeButton = ({
       onClick={() => (liked ? handleDislikeComment() : handleLikeComment())}
       disabled={disabled || state.loading}
       className={classes.button}
+      size={size}
       {...props}
     >
-      {liked ? (
-        <LikedIcon fontSize={fontSize} />
-      ) : (
-        <LikeIcon fontSize={fontSize} />
-      )}
+      {liked ? <LikedIcon fontSize={size} /> : <LikeIcon fontSize={size} />}
     </IconButton>
   );
 };

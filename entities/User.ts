@@ -5,11 +5,21 @@ import {
   Entity,
   Generated,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { Artwork } from "./Artwork";
 import { Avatar } from "./Avatar";
+import { Comment } from "./Comment";
+import { Favorite } from "./Favorite";
+import { Intent } from "./Intent";
+import { License } from "./License";
+import { Like } from "./Like";
+import { Notification } from "./Notification";
+import { Order } from "./Order";
+import { Review } from "./Review";
 
 @Entity()
 export class User extends BaseEntity {
@@ -79,6 +89,42 @@ export class User extends BaseEntity {
 
   @Column({ default: true })
   active: boolean;
+
+  @OneToMany(() => Artwork, (artwork) => artwork.owner)
+  artwork: Artwork[];
+
+  @OneToMany(() => Comment, (comment) => comment.owner)
+  comments: Comment[];
+
+  @OneToMany(() => Favorite, (favorite) => favorite.owner)
+  favorites: Favorite[];
+
+  @OneToMany(() => Intent, (intent) => intent.owner)
+  intents: Intent[];
+
+  @OneToMany(() => License, (license) => license.owner)
+  buyerLicenses: License[];
+
+  @OneToMany(() => License, (license) => license.seller)
+  sellerLicenses: License[];
+
+  @OneToMany(() => Like, (like) => like.owner)
+  likes: Like[];
+
+  @OneToMany(() => Notification, (notification) => notification.receiver)
+  notifications: Notification[];
+
+  @OneToMany(() => Order, (order) => order.buyer)
+  purchases: Order[];
+
+  @OneToMany(() => Order, (order) => order.seller)
+  sales: Order[];
+
+  @OneToMany(() => Review, (review) => review.reviewer)
+  reviewsGiven: Review[];
+
+  @OneToMany(() => Review, (review) => review.reviewee)
+  reviewsReceived: Review[];
 
   @Column({ default: false })
   generated: boolean;

@@ -82,6 +82,8 @@ export const fetchActiveArtworks = async ({ cursor, limit, connection }) => {
     .createQueryBuilder("artwork");
   const foundArtwork = await queryBuilder
     .leftJoinAndSelect("artwork.current", "version")
+    .loadRelationCountAndMap("artwork.favorites", "artwork.favorites")
+    .loadRelationCountAndMap("artwork.comments", "artwork.comments")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("artwork.owner", "owner")
     .select([
@@ -600,6 +602,8 @@ export const fetchUserArtwork = async ({
     .createQueryBuilder("artwork");
   const foundArtwork = await queryBuilder
     .leftJoinAndSelect("artwork.current", "version")
+    .loadRelationCountAndMap("artwork.favorites", "artwork.favorites")
+    .loadRelationCountAndMap("artwork.comments", "artwork.comments")
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("version.cover", "cover")
     .select([
@@ -723,6 +727,8 @@ export const fetchUserFavorites = async ({
     .createQueryBuilder("favorite");
   const foundFavorites = await queryBuilder
     .leftJoinAndSelect("favorite.artwork", "artwork")
+    .loadRelationCountAndMap("artwork.favorites", "artwork.favorites")
+    .loadRelationCountAndMap("artwork.comments", "artwork.comments")
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")

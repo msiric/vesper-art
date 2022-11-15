@@ -27,19 +27,19 @@ export class Review extends BaseEntity {
   @Column()
   orderId: string;
 
-  @ManyToOne(() => Artwork)
+  @ManyToOne(() => Artwork, (artwork) => artwork.reviews)
   artwork: Artwork;
 
   @Column()
   artworkId: string;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, (user) => user.reviewsGiven)
   reviewer: User;
 
   @Column()
   reviewerId: string;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, (user) => user.reviewsReceived)
   reviewee: User;
 
   @Column()

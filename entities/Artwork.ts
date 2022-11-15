@@ -6,10 +6,16 @@ import {
   Generated,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { Comment } from "./Comment";
+import { Favorite } from "./Favorite";
+import { License } from "./License";
+import { Order } from "./Order";
+import { Review } from "./Review";
 import { User } from "./User";
 import { Version } from "./Version";
 
@@ -27,7 +33,7 @@ export class Artwork extends BaseEntity {
   @Generated("increment")
   serial: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, (user) => user.artwork)
   owner: User;
 
   @Column()
@@ -48,6 +54,21 @@ export class Artwork extends BaseEntity {
     enum: ArtworkVisibility,
   })
   visibility: ArtworkVisibility;
+
+  @OneToMany(() => Favorite, (favorite) => favorite.artwork)
+  favorites: Favorite[];
+
+  @OneToMany(() => Comment, (comment) => comment.artwork)
+  comments: Comment[];
+
+  @OneToMany(() => Review, (review) => review.artwork)
+  reviews: Review[];
+
+  @OneToMany(() => License, (license) => license.artwork)
+  licenses: License[];
+
+  @OneToMany(() => Order, (order) => order.artwork)
+  orders: Order[];
 
   @Column()
   generated: boolean;

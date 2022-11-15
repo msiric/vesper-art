@@ -24,6 +24,8 @@ const incrementCounter = makeStyles((muiTheme) => ({
   },
   value: {
     fontSize: ({ fontSize }) => fontSize,
+    minWidth: ({ minWidth }) => minWidth,
+    textAlign: "center",
   },
 }));
 

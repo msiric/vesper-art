@@ -216,7 +216,7 @@ const CommentCard = ({
                   <Box loading={loading} customRadius className={classes.likes}>
                     <IncrementCounter
                       newValue={likes?.length ?? 0}
-                      fontSize={14}
+                      size="small"
                     />
                     <LikeButton
                       artworkId={artworkId}

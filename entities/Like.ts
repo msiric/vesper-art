@@ -19,7 +19,7 @@ export class Like extends BaseEntity {
   @Generated("increment")
   serial: number;
 
-  @ManyToOne(() => User, (user) => user)
+  @ManyToOne(() => User, (user) => user.likes)
   owner: User;
 
   @Column()

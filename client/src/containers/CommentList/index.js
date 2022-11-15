@@ -1,3 +1,4 @@
+import { useSectionScroll } from "@hooks/useSectionScroll";
 import { useSnackbar } from "notistack";
 import queryString from "query-string";
 import React, { useEffect } from "react";
@@ -42,6 +43,7 @@ const CommentList = ({
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
   const isVisible = useVisibleElement(commentsRef, commentsFetched.current);
+  useSectionScroll();
   const query = queryString.parse(location.search);
   const classes = commentListStyles();
 
@@ -97,7 +99,12 @@ const CommentList = ({
       loaderMargin="32px 0"
       emptyHeight={200}
     >
-      <List ref={commentsRef} className={classes.list} disablePadding>
+      <List
+        id="comments"
+        ref={commentsRef}
+        className={classes.list}
+        disablePadding
+      >
         <Box>
           {determineLoadingState(loading, limit, comments).map((comment) =>
             renderComment(comment, loading)

@@ -15,7 +15,7 @@ const FavoriteButton = ({
   labeled,
   disabled,
   handleCallback,
-  fontSize = "medium",
+  size = "medium",
   ...props
 }) => {
   const [state, setState] = useState({ loading: false });
@@ -62,9 +62,9 @@ const FavoriteButton = ({
       color="secondary"
       startIcon={
         favorited ? (
-          <FavoritedIcon fontSize={fontSize} />
+          <FavoritedIcon fontSize={size} />
         ) : (
-          <FavoriteIcon fontSize={fontSize} />
+          <FavoriteIcon fontSize={size} />
         )
       }
       submitting={state.loading}
@@ -87,12 +87,13 @@ const FavoriteButton = ({
           : handleFavoriteArtwork(artwork.id)
       }
       disabled={disabled || state.loading}
+      size={size}
       {...props}
     >
       {favorited ? (
-        <FavoritedIcon fontSize={fontSize} />
+        <FavoritedIcon fontSize={size} />
       ) : (
-        <FavoriteIcon fontSize={fontSize} />
+        <FavoriteIcon fontSize={size} />
       )}
     </IconButton>
   );

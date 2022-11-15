@@ -29,14 +29,14 @@ const ArtworkActions = () => {
       <CardContent className={classes.content}>
         <Box className={classes.counter}>
           <Box loading={loading} customRadius className={classes.incrementer}>
-            <IncrementCounter newValue={favorites} />
+            <IncrementCounter newValue={favorites} size="large" />
             <FavoriteButton
               artwork={artwork}
               favorited={userFavorites[artwork.id] ?? isDisabled}
               handleCallback={toggleFavorite}
               loading={loading}
               disabled={isDisabled}
-              fontSize="large"
+              size="large"
             />
           </Box>
         </Box>

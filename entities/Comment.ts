@@ -22,13 +22,13 @@ export class Comment extends BaseEntity {
   @Generated("increment")
   serial: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, (user) => user.comments)
   owner: User;
 
   @Column()
   ownerId: string;
 
-  @ManyToOne(() => Artwork)
+  @ManyToOne(() => Artwork, (artwork) => artwork.comments)
   artwork: Artwork;
 
   @Column()
