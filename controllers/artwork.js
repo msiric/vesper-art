@@ -26,7 +26,8 @@ import {
   fetchArtworkDetails,
   fetchArtworkEdit,
   fetchArtworkMedia,
-  fetchCommentById,
+  fetchCommentByOwner,
+  fetchCommentByParent,
   fetchFavoriteByParents,
   fetchFavoritesCount,
   fetchLikeByParents,
@@ -404,10 +405,10 @@ export const likeComment = async ({
       commentId,
       connection,
     }),
-    fetchCommentById({ artworkId, commentId, connection }),
+    fetchCommentByParent({ artworkId, commentId, connection }),
   ]);
   if (!isObjectEmpty(foundComment)) {
-    if (foundComment.ownerId !== userId) {
+    if (foundComment.owner.id !== userId) {
       if (isObjectEmpty(foundLike)) {
         const { likeId } = generateUuids({
           likeId: null,
@@ -424,7 +425,7 @@ export const likeComment = async ({
     }
     throw createError(...formatError(errors.commentLikedByOwner));
   }
-  throw createError(...formatError(errors.artworkNotFound));
+  throw createError(...formatError(errors.commentNotFound));
 };
 
 export const dislikeComment = async ({
@@ -439,10 +440,10 @@ export const dislikeComment = async ({
       commentId,
       connection,
     }),
-    fetchCommentById({ artworkId, commentId, connection }),
+    fetchCommentByParent({ artworkId, commentId, connection }),
   ]);
   if (!isObjectEmpty(foundComment)) {
-    if (foundComment.ownerId !== userId) {
+    if (foundComment.owner.id !== userId) {
       if (!isObjectEmpty(foundLike)) {
         await removeExistingLike({
           likeId: foundLike.id,
@@ -454,7 +455,7 @@ export const dislikeComment = async ({
     }
     throw createError(...formatError(errors.commentDislikedByOwner));
   }
-  throw createError(...formatError(errors.artworkNotFound));
+  throw createError(...formatError(errors.commentNotFound));
 };
 
 export const getUserArtworkByUsername = async ({
@@ -575,7 +576,7 @@ export const getUserFavorites = async ({
 };
 
 export const getComment = async ({ artworkId, commentId, connection }) => {
-  const foundComment = await fetchCommentById({
+  const foundComment = await fetchCommentByParent({
     artworkId,
     commentId,
     connection,
@@ -646,17 +647,21 @@ export const patchComment = async ({
 };
 
 export const deleteComment = async ({ userId, commentId, connection }) => {
-  await removeExistingLikes({
+  const foundComment = await fetchCommentByOwner({
     commentId,
     userId,
     connection,
   });
-  const deletedComment = await removeExistingComment({
-    commentId,
-    userId,
-    connection,
-  });
-  if (deletedComment.affected !== 0) {
+  if (!isObjectEmpty(foundComment)) {
+    await removeExistingLikes({
+      commentId,
+      connection,
+    });
+    await removeExistingComment({
+      commentId,
+      userId,
+      connection,
+    });
     return formatResponse(responses.commentDeleted);
   }
   throw createError(...formatError(errors.commentNotFound));

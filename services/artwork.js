@@ -1,6 +1,6 @@
 import { Like } from "@entities/Like";
 import { upload } from "../common/constants";
-import { Artwork, ArtworkVisibility } from "../entities/Artwork";
+import { Artwork } from "../entities/Artwork";
 import { Comment } from "../entities/Comment";
 import { Cover } from "../entities/Cover";
 import { Favorite } from "../entities/Favorite";
@@ -23,8 +23,6 @@ import {
   VERSION_SELECTION,
 } from "../utils/database";
 import { calculateRating } from "../utils/helpers";
-
-const VISIBILITY_STATUS = ArtworkVisibility.visible;
 
 export const fetchArtworkById = async ({ artworkId, connection }) => {
   const foundArtwork = await connection
@@ -789,7 +787,7 @@ export const fetchUserMedia = async ({ userId, cursor, limit, connection }) => {
   return foundArtwork;
 };
 
-export const fetchCommentById = async ({
+export const fetchCommentByParent = async ({
   artworkId,
   commentId,
   connection,
@@ -810,12 +808,45 @@ export const fetchCommentById = async ({
       ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
     ])
     .where(
-      // $TODO should artwork.active be checked as well?
-      "comment.id = :commentId AND comment.artworkId = :artworkId AND artwork.visibility = :visibility",
+      "comment.id = :commentId AND comment.artworkId = :artworkId AND artwork.visibility = :visibility AND artwork.active = :active",
       {
         commentId,
         artworkId,
-        visibility: VISIBILITY_STATUS,
+        visibility: ARTWORK_SELECTION["VISIBILITY_STATUS"],
+        active: ARTWORK_SELECTION["ACTIVE_STATUS"],
+      }
+    )
+    .getOne();
+  return foundComment;
+};
+
+export const fetchCommentByOwner = async ({
+  userId,
+  commentId,
+  connection,
+}) => {
+  const foundComment = await connection
+    .getRepository(Comment)
+    .createQueryBuilder("comment")
+    .leftJoinAndSelect("comment.artwork", "artwork")
+    .leftJoinAndSelect("comment.owner", "owner")
+    .leftJoinAndSelect("comment.likes", "like")
+    .leftJoinAndSelect("owner.avatar", "avatar")
+    .select([
+      ...COMMENT_SELECTION["ESSENTIAL_INFO"](),
+      ...LIKE_SELECTION["ESSENTIAL_INFO"](),
+      ...LIKE_SELECTION["OWNER_INFO"](),
+      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["STRIPPED_INFO"]("owner"),
+      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
+    ])
+    .where(
+      "comment.id = :commentId AND comment.ownerId = :userId AND artwork.visibility = :visibility AND artwork.active = :active",
+      {
+        commentId,
+        userId,
+        visibility: ARTWORK_SELECTION["VISIBILITY_STATUS"],
+        active: ARTWORK_SELECTION["ACTIVE_STATUS"],
       }
     )
     .getOne();
@@ -887,18 +918,13 @@ export const removeExistingComment = async ({
   return deletedComment;
 };
 
-export const removeExistingLikes = async ({
-  commentId,
-  userId,
-  connection,
-}) => {
+export const removeExistingLikes = async ({ commentId, connection }) => {
   const deletedLikes = await connection
     .createQueryBuilder()
     .delete()
     .from(Like)
-    .where('commentId = :commentId AND "ownerId" = :userId', {
+    .where("commentId = :commentId", {
       commentId,
-      userId,
     })
     .execute();
   return deletedLikes;
