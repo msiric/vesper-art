@@ -75,6 +75,23 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
   buttonWrapper: {
     display: "flex",
   },
+  favoritesWrapper: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  commentsWrapper: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  commentButton: {
+    fontSize: 18,
+    "& svg": {
+      width: 20,
+      height: 20,
+    },
+  },
   title: {
     color: "white",
     textDecoration: "none",

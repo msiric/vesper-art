@@ -1,5 +1,6 @@
+import { Like } from "@entities/Like";
 import { upload } from "../common/constants";
-import { Artwork, ArtworkVisibility } from "../entities/Artwork";
+import { Artwork } from "../entities/Artwork";
 import { Comment } from "../entities/Comment";
 import { Cover } from "../entities/Cover";
 import { Favorite } from "../entities/Favorite";
@@ -13,6 +14,7 @@ import {
   COMMENT_SELECTION,
   COVER_SELECTION,
   FAVORITE_SELECTION,
+  LIKE_SELECTION,
   MEDIA_SELECTION,
   ORDER_SELECTION,
   resolveSubQuery,
@@ -21,8 +23,6 @@ import {
   VERSION_SELECTION,
 } from "../utils/database";
 import { calculateRating } from "../utils/helpers";
-
-const VISIBILITY_STATUS = ArtworkVisibility.visible;
 
 export const fetchArtworkById = async ({ artworkId, connection }) => {
   const foundArtwork = await connection
@@ -80,6 +80,8 @@ export const fetchActiveArtworks = async ({ cursor, limit, connection }) => {
     .createQueryBuilder("artwork");
   const foundArtwork = await queryBuilder
     .leftJoinAndSelect("artwork.current", "version")
+    .loadRelationCountAndMap("artwork.favorites", "artwork.favorites")
+    .loadRelationCountAndMap("artwork.comments", "artwork.comments")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("artwork.owner", "owner")
     .select([
@@ -225,9 +227,12 @@ export const fetchArtworkComments = async ({
   const foundComments = await queryBuilder
     .leftJoinAndSelect("comment.artwork", "artwork")
     .leftJoinAndSelect("comment.owner", "owner")
+    .leftJoinAndSelect("comment.likes", "like")
     .leftJoinAndSelect("owner.avatar", "avatar")
     .select([
       ...COMMENT_SELECTION["ESSENTIAL_INFO"](),
+      ...LIKE_SELECTION["ESSENTIAL_INFO"](),
+      ...LIKE_SELECTION["OWNER_INFO"](),
       ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
       ...USER_SELECTION["STRIPPED_INFO"]("owner"),
       ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
@@ -306,6 +311,19 @@ export const fetchFavoriteByParents = async ({
     })
     .getOne();
   return foundFavorite;
+};
+
+export const fetchLikeByParents = async ({ userId, commentId, connection }) => {
+  const foundLike = await connection
+    .getRepository(Like)
+    .createQueryBuilder("like")
+    .select([...LIKE_SELECTION["STRIPPED_INFO"]()])
+    .where("like.ownerId = :userId AND like.commentId = :commentId", {
+      userId,
+      commentId,
+    })
+    .getOne();
+  return foundLike;
 };
 
 export const addNewCover = async ({ coverId, artworkUpload, connection }) => {
@@ -442,6 +460,32 @@ export const removeExistingFavorite = async ({ favoriteId, connection }) => {
   return deletedFavorite;
 };
 
+export const addNewLike = async ({ likeId, userId, commentId, connection }) => {
+  const savedLike = await connection
+    .createQueryBuilder()
+    .insert()
+    .into(Like)
+    .values([
+      {
+        id: likeId,
+        ownerId: userId,
+        commentId,
+      },
+    ])
+    .execute();
+  return savedLike;
+};
+
+export const removeExistingLike = async ({ likeId, connection }) => {
+  const deletedLike = await connection
+    .createQueryBuilder()
+    .delete()
+    .from(Like)
+    .where("id = :likeId", { likeId })
+    .execute();
+  return deletedLike;
+};
+
 export const removeArtworkVersion = async ({ versionId, connection }) => {
   const deletedVersion = await connection
     .createQueryBuilder()
@@ -556,6 +600,8 @@ export const fetchUserArtwork = async ({
     .createQueryBuilder("artwork");
   const foundArtwork = await queryBuilder
     .leftJoinAndSelect("artwork.current", "version")
+    .loadRelationCountAndMap("artwork.favorites", "artwork.favorites")
+    .loadRelationCountAndMap("artwork.comments", "artwork.comments")
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("version.cover", "cover")
     .select([
@@ -679,6 +725,8 @@ export const fetchUserFavorites = async ({
     .createQueryBuilder("favorite");
   const foundFavorites = await queryBuilder
     .leftJoinAndSelect("favorite.artwork", "artwork")
+    .loadRelationCountAndMap("artwork.favorites", "artwork.favorites")
+    .loadRelationCountAndMap("artwork.comments", "artwork.comments")
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
@@ -739,7 +787,7 @@ export const fetchUserMedia = async ({ userId, cursor, limit, connection }) => {
   return foundArtwork;
 };
 
-export const fetchCommentById = async ({
+export const fetchCommentByParent = async ({
   artworkId,
   commentId,
   connection,
@@ -749,14 +797,56 @@ export const fetchCommentById = async ({
     .createQueryBuilder("comment")
     .leftJoinAndSelect("comment.artwork", "artwork")
     .leftJoinAndSelect("comment.owner", "owner")
+    .leftJoinAndSelect("comment.likes", "like")
     .leftJoinAndSelect("owner.avatar", "avatar")
+    .select([
+      ...COMMENT_SELECTION["ESSENTIAL_INFO"](),
+      ...LIKE_SELECTION["ESSENTIAL_INFO"](),
+      ...LIKE_SELECTION["OWNER_INFO"](),
+      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["STRIPPED_INFO"]("owner"),
+      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
+    ])
     .where(
-      // $TODO should artwork.active be checked as well?
-      "comment.id = :commentId AND comment.artworkId = :artworkId AND artwork.visibility = :visibility",
+      "comment.id = :commentId AND comment.artworkId = :artworkId AND artwork.visibility = :visibility AND artwork.active = :active",
       {
         commentId,
         artworkId,
-        visibility: VISIBILITY_STATUS,
+        visibility: ARTWORK_SELECTION["VISIBILITY_STATUS"],
+        active: ARTWORK_SELECTION["ACTIVE_STATUS"],
+      }
+    )
+    .getOne();
+  return foundComment;
+};
+
+export const fetchCommentByOwner = async ({
+  userId,
+  commentId,
+  connection,
+}) => {
+  const foundComment = await connection
+    .getRepository(Comment)
+    .createQueryBuilder("comment")
+    .leftJoinAndSelect("comment.artwork", "artwork")
+    .leftJoinAndSelect("comment.owner", "owner")
+    .leftJoinAndSelect("comment.likes", "like")
+    .leftJoinAndSelect("owner.avatar", "avatar")
+    .select([
+      ...COMMENT_SELECTION["ESSENTIAL_INFO"](),
+      ...LIKE_SELECTION["ESSENTIAL_INFO"](),
+      ...LIKE_SELECTION["OWNER_INFO"](),
+      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["STRIPPED_INFO"]("owner"),
+      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
+    ])
+    .where(
+      "comment.id = :commentId AND comment.ownerId = :userId AND artwork.visibility = :visibility AND artwork.active = :active",
+      {
+        commentId,
+        userId,
+        visibility: ARTWORK_SELECTION["VISIBILITY_STATUS"],
+        active: ARTWORK_SELECTION["ACTIVE_STATUS"],
       }
     )
     .getOne();
@@ -826,4 +916,16 @@ export const removeExistingComment = async ({
     })
     .execute();
   return deletedComment;
+};
+
+export const removeExistingLikes = async ({ commentId, connection }) => {
+  const deletedLikes = await connection
+    .createQueryBuilder()
+    .delete()
+    .from(Like)
+    .where("commentId = :commentId", {
+      commentId,
+    })
+    .execute();
+  return deletedLikes;
 };

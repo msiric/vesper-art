@@ -1,12 +1,10 @@
 import fs from "fs";
 import yaml from "js-yaml";
-import path from "path";
+import config from "ormconfig";
 import { createConnection, getConnection } from "typeorm";
-import { environment, ENV_OPTIONS, postgres } from "../config/secret";
+import { environment, ENV_OPTIONS } from "../config/secret";
 import { ArtworkVisibility } from "../entities/Artwork";
 import { OrderStatus } from "../entities/Order";
-
-const dirname = path.resolve();
 
 const DEFAULT_VALUES = {
   ARTWORK: "artwork",
@@ -20,6 +18,7 @@ const DEFAULT_VALUES = {
   DISCOUNT: "discount",
   REVIEW: "review",
   COMMENT: "comment",
+  LIKE: "like",
   FAVORITE: "favorite",
   NOTIFICATION: "notification",
   INTENT: "intent",
@@ -218,6 +217,16 @@ export const COMMENT_SELECTION = {
   ],
 };
 
+export const LIKE_SELECTION = {
+  STRIPPED_INFO: (selector = DEFAULT_VALUES.LIKE) => [`${selector}.id`],
+  ESSENTIAL_INFO: (selector = DEFAULT_VALUES.LIKE) => [
+    `${selector}.id`,
+    `${selector}.created`,
+  ],
+  COMMENT_INFO: (selector = DEFAULT_VALUES.LIKE) => [`${selector}.commentId`],
+  OWNER_INFO: (selector = DEFAULT_VALUES.LIKE) => [`${selector}.ownerId`],
+};
+
 export const FAVORITE_SELECTION = {
   STRIPPED_INFO: (selector = DEFAULT_VALUES.FAVORITE) => [`${selector}.id`],
   ESSENTIAL_INFO: (selector = DEFAULT_VALUES.FAVORITE) => [
@@ -262,13 +271,7 @@ export const FIXTURE_OPTIONS = {
 export const connectToDatabase = async () => {
   try {
     const connection = await createConnection({
-      type: "postgres",
-      url: postgres.database,
-      logging: true,
-      synchronize: true,
-      migrations: [path.join(dirname, "dist/migrations/*{.ts,.js}")],
-      entities: [path.join(dirname, "dist/entities/*{.ts,.js}")],
-      ssl: false,
+      ...config,
     });
     console.log("Connected to PostgreSQL");
     return connection;

@@ -33,19 +33,19 @@ export class License extends BaseEntity {
   @Generated("increment")
   serial: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, (user) => user.buyerLicenses)
   owner: User;
 
   @Column()
   ownerId: string;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, (user) => user.sellerLicenses)
   seller: User;
 
   @Column()
   sellerId: string;
 
-  @ManyToOne(() => Artwork)
+  @ManyToOne(() => Artwork, (artwork) => artwork.licenses)
   @JoinColumn()
   artwork: Artwork;
 

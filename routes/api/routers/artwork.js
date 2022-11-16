@@ -2,6 +2,7 @@ import express from "express";
 import {
   deleteArtwork,
   deleteComment,
+  dislikeComment,
   favoriteArtwork,
   fetchArtworkFavorites,
   getArtwork,
@@ -14,6 +15,7 @@ import {
   getUserFavorites,
   getUserOwnership,
   getUserUploads,
+  likeComment,
   patchComment,
   postComment,
   postNewArtwork,
@@ -95,6 +97,23 @@ router
     [isAuthenticated],
     handler(unfavoriteArtwork, true, (req, res, next) => ({
       artworkId: req.params.artworkId,
+    }))
+  );
+
+router
+  .route("/artwork/:artworkId/comments/:commentId/likes")
+  .post(
+    [isAuthenticated],
+    handler(likeComment, true, (req, res, next) => ({
+      artworkId: req.params.artworkId,
+      commentId: req.params.commentId,
+    }))
+  )
+  .delete(
+    [isAuthenticated],
+    handler(dislikeComment, true, (req, res, next) => ({
+      artworkId: req.params.artworkId,
+      commentId: req.params.commentId,
     }))
   );
 

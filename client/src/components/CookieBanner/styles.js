@@ -9,7 +9,7 @@ const cookieBannerStyles = makeStyles((muiTheme) => ({
     position: "fixed",
     bottom: 0,
     width: "100%",
-    zIndex: 999,
+    zIndex: 1200,
     boxShadow: `0 0px 10px 3px ${artepunktTheme.palette.background.default}`,
     background: artepunktTheme.palette.background.light,
     color: "#fff",

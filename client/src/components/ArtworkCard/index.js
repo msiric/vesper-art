@@ -1,5 +1,6 @@
-import { EditOutlined as EditIcon } from "@material-ui/icons";
-import React from "react";
+import CommentButton from "@components/CommentButton";
+import IncrementCounter from "@components/IncrementCounter";
+import React, { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { formatArtworkPrice } from "../../../../common/helpers";
 import { useUserStore } from "../../contexts/global/user";
@@ -7,7 +8,6 @@ import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardHeader from "../../domain/CardHeader";
-import IconButton from "../../domain/IconButton";
 import Typography from "../../domain/Typography";
 import FavoriteButton from "../FavoriteButton/index";
 import ImageWrapper from "../ImageWrapper/index";
@@ -27,9 +27,9 @@ const initialProps = {
 const ArtworkCard = ({
   artwork = initialProps.artwork,
   type = initialProps.type,
-  handleArtworkSave,
   loading,
 }) => {
+  const [favorites, setFavorites] = useState(0);
   const userId = useUserStore((state) => state.id);
   const userFavorites = useUserStore((state) => state.favorites);
 
@@ -50,7 +50,8 @@ const ArtworkCard = ({
         id: artwork.id ? artwork.artwork.id : "",
         data: artwork.id ? artwork : {},
         owner: artwork.id ? artwork.artwork.owner : {},
-        favorites: artwork.id ? artwork.artwork.favorites : [],
+        favorites: artwork.id ? artwork.artwork.favorites : 0,
+        comments: artwork.id ? artwork.artwork.comments : 0,
         src: artwork.id ? artwork.cover.source : "",
         height: artwork.id ? artwork.cover.height : "",
         width: artwork.id ? artwork.cover.width : "",
@@ -60,7 +61,8 @@ const ArtworkCard = ({
         id: artwork.id ? artwork.artwork.id : "",
         data: artwork.id ? artwork.artwork.current : {},
         owner: artwork.id ? artwork.artwork.owner : {},
-        favorites: artwork.id ? artwork.artwork.favorites : [],
+        favorites: artwork.id ? artwork.artwork.favorites : 0,
+        comments: artwork.id ? artwork.artwork.comments : 0,
         src: artwork.id ? artwork.artwork.current.cover.source : "",
         height: artwork.id ? artwork.artwork.current.cover.height : "",
         width: artwork.id ? artwork.artwork.current.cover.width : "",
@@ -69,11 +71,19 @@ const ArtworkCard = ({
         id: artwork.id ? artwork.id : "",
         data: artwork.id ? artwork.current : {},
         owner: artwork.id ? artwork.owner : {},
-        favorites: artwork.id ? artwork.favorites : [],
+        favorites: artwork.id ? artwork.favorites : 0,
+        comments: artwork.id ? artwork.comments : 0,
         src: artwork.id ? artwork.current.cover.source : "",
         height: artwork.id ? artwork.current.cover.height : "",
         width: artwork.id ? artwork.current.cover.width : "",
       };
+
+  const handleArtworkSave = ({ incrementBy }) =>
+    setFavorites((prevState) => prevState + incrementBy);
+
+  useEffect(() => {
+    setFavorites(item.favorites);
+  }, [item.id]);
 
   return (
     <Card
@@ -126,25 +136,21 @@ const ArtworkCard = ({
       </Box>
       <CardActions disableSpacing className={classes.footer}>
         <Box className={classes.buttonWrapper} loading={loading}>
-          {item.owner.id === userId ? (
-            <IconButton
-              aria-label="Edit artwork"
-              component={RouterLink}
-              to={`/artwork/${artwork.id}/edit`}
-              className={classes.button}
-              size="small"
-            >
-              <EditIcon fontSize="small" />
-            </IconButton>
-          ) : (
+          <Box className={classes.favoritesWrapper} loading={loading}>
+            <IncrementCounter newValue={favorites} size="small" />
             <FavoriteButton
               artwork={item}
-              favorited={userFavorites[item.id]}
-              handleCallback={handleArtworkSave}
+              favorited={userFavorites[item.id] || item.owner.id === userId}
+              disabled={item.owner.id === userId}
               size="small"
-              fontSize="small"
+              handleCallback={handleArtworkSave}
+              className={classes.favoriteButton}
             />
-          )}
+          </Box>
+          <Box className={classes.commentsWrapper} loading={loading}>
+            <IncrementCounter newValue={item.comments} size="small" />
+            <CommentButton artworkId={artwork.id} size="small" />
+          </Box>
           <ShareButton
             link={`/artwork/${artwork.id}`}
             type="artwork"

@@ -66,6 +66,9 @@ let connection,
   visibleArtworkWithComments,
   invisibleArtworkWithComments,
   filteredComments,
+  buyerComments,
+  sellerComments,
+  commentsLikedBySeller,
   artworkFavoritedByBuyer,
   artworkFavoritedBySeller,
   visibleArtworkWithFavorites,
@@ -156,6 +159,15 @@ describe("Artwork tests", () => {
     );
     filteredComments = entities.Comment.filter(
       (comment) => comment.artworkId === visibleArtworkWithComments[0].id
+    );
+    buyerComments = filteredComments.filter(
+      (comment) => comment.ownerId === buyer.id
+    );
+    sellerComments = filteredComments.filter(
+      (comment) => comment.ownerId === seller.id
+    );
+    commentsLikedBySeller = entities.Like.filter(
+      (item) => item.ownerId === seller.id
     );
     artworkFavoritedByBuyer = artwork.filter(
       (item) => item.current.title === "Has favorites (buyer)"
@@ -1922,7 +1934,9 @@ describe("Artwork tests", () => {
         const res = await request(app).get(
           `/api/artwork/${visibleArtworkWithComments[0].id}/comments?cursor=${cursor}&limit=${limit}`
         );
-        expect(res.body.comments[0].id).toEqual(filteredComments[0].id);
+        expect(res.body.comments[0].id).toEqual(
+          filteredComments[filteredComments.length - 2].id
+        );
         expect(res.statusCode).toEqual(statusCodes.ok);
       });
     });
@@ -2021,14 +2035,14 @@ describe("Artwork tests", () => {
     describe("patchComment", () => {
       it("should patch comment", async () => {
         const res = await request(app, buyerToken)
-          .patch(`/api/users/${buyer.id}/comments/${filteredComments[0].id}`)
+          .patch(`/api/users/${buyer.id}/comments/${buyerComments[0].id}`)
           .send({ commentContent: "test" });
         expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
       it("should throw a validation error if the comment content is too large", async () => {
         const res = await request(app, buyerToken)
-          .patch(`/api//users/${buyer.id}/comments/${filteredComments[0].id}`)
+          .patch(`/api//users/${buyer.id}/comments/${buyerComments[0].id}`)
           .send({
             commentContent: new Array(ranges.comment.max + 2).join("a"),
           });
@@ -2042,7 +2056,7 @@ describe("Artwork tests", () => {
 
       it("should throw a 403 error if comment is patched by non owner", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/users/${buyer.id}/comments/${filteredComments[0].id}`)
+          .patch(`/api/users/${buyer.id}/comments/${buyerComments[0].id}`)
           .send({ commentContent: "test" });
         expect(res.body.message).toEqual(errors.notAuthorized.message);
         expect(res.statusCode).toEqual(errors.notAuthorized.status);
@@ -2068,14 +2082,14 @@ describe("Artwork tests", () => {
     describe("deleteComment", () => {
       it("should delete comment", async () => {
         const res = await request(app, buyerToken).delete(
-          `/api/users/${buyer.id}/comments/${filteredComments[0].id}`
+          `/api/users/${buyer.id}/comments/${buyerComments[0].id}`
         );
         expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
       it("should throw a 403 error if comment is deleted by non owner", async () => {
         const res = await request(app, sellerToken).delete(
-          `/api/users/${buyer.id}/comments/${filteredComments[0].id}`
+          `/api/users/${buyer.id}/comments/${buyerComments[0].id}`
         );
         expect(res.body.message).toEqual(errors.notAuthorized.message);
         expect(res.statusCode).toEqual(errors.notAuthorized.status);
@@ -2126,7 +2140,7 @@ describe("Artwork tests", () => {
         expect(res.statusCode).toEqual(responses.artworkFavorited.status);
       });
 
-      it("should throw a 400 error if artwork favorited by non-owner", async () => {
+      it("should throw a 400 error if artwork favorited by owner", async () => {
         const res = await request(app, sellerToken).post(
           `/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`
         );
@@ -2171,7 +2185,7 @@ describe("Artwork tests", () => {
         expect(res.statusCode).toEqual(responses.artworkUnfavorited.status);
       });
 
-      it("should throw a 400 error if artwork unfavorited by non-owner", async () => {
+      it("should throw a 400 error if artwork unfavorited by owner", async () => {
         const res = await request(app, sellerToken).delete(
           `/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`
         );
@@ -2437,6 +2451,107 @@ describe("Artwork tests", () => {
         );
         expect(res.body.message).toEqual(errors.notAuthorized.message);
         expect(res.statusCode).toEqual(errors.notAuthorized.status);
+      });
+    });
+  });
+
+  describe("/api/artwork/:artworkId/comments/:commentId/likes", () => {
+    describe("likeComment", () => {
+      it("should like comment", async () => {
+        const res = await request(app, impartialToken).post(
+          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${sellerComments[0].id}/likes`
+        );
+        expect(res.body.message).toEqual(responses.commentLiked.message);
+        expect(res.statusCode).toEqual(responses.commentLiked.status);
+      });
+
+      it("should throw a 400 error if comment liked by owner", async () => {
+        const res = await request(app, sellerToken).post(
+          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${sellerComments[0].id}/likes`
+        );
+        expect(res.body.message).toEqual(errors.commentLikedByOwner.message);
+        expect(res.statusCode).toEqual(errors.commentLikedByOwner.status);
+      });
+
+      it("should throw a 400 error if already liked comment is liked", async () => {
+        const res = await request(app, sellerToken).post(
+          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${commentsLikedBySeller[0].commentId}/likes`
+        );
+        expect(res.body.message).toEqual(errors.commentAlreadyLiked.message);
+        expect(res.statusCode).toEqual(errors.commentAlreadyLiked.status);
+      });
+
+      it("should throw a 404 error if artwork doesn't exist", async () => {
+        const res = await request(app, buyerToken).post(
+          `/api/artwork/${unusedUuid}/comments/${commentsLikedBySeller[0].commentId}/likes`
+        );
+        expect(res.body.message).toEqual(errors.commentNotFound.message);
+        expect(res.statusCode).toEqual(errors.commentNotFound.status);
+      });
+
+      it("should throw a 404 error if comment doesn't exist", async () => {
+        const res = await request(app, buyerToken).post(
+          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${unusedUuid}/likes`
+        );
+        expect(res.body.message).toEqual(errors.commentNotFound.message);
+        expect(res.statusCode).toEqual(errors.commentNotFound.status);
+      });
+
+      it("should throw an error if user is not authenticated", async () => {
+        const res = await request(app).post(
+          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${commentsLikedBySeller[0].commentId}/likes`
+        );
+        expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
+      });
+    });
+    describe("dislikeComment", () => {
+      it("should dislike comment", async () => {
+        const res = await request(app, sellerToken).delete(
+          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${commentsLikedBySeller[0].commentId}/likes`
+        );
+        expect(res.body.message).toEqual(responses.commentDisliked.message);
+        expect(res.statusCode).toEqual(responses.commentDisliked.status);
+      });
+
+      it("should throw a 400 error if comment disliked by owner", async () => {
+        const res = await request(app, sellerToken).delete(
+          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${sellerComments[0].id}/likes`
+        );
+        expect(res.body.message).toEqual(errors.commentDislikedByOwner.message);
+        expect(res.statusCode).toEqual(errors.commentDislikedByOwner.status);
+      });
+
+      it("should throw a 400 error if already disliked comment is disliked", async () => {
+        const res = await request(app, impartialToken).delete(
+          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${sellerComments[0].id}/likes`
+        );
+        expect(res.body.message).toEqual(errors.commentAlreadyDisliked.message);
+        expect(res.statusCode).toEqual(errors.commentAlreadyDisliked.status);
+      });
+
+      it("should throw a 404 error if artwork doesn't exist", async () => {
+        const res = await request(app, sellerToken).delete(
+          `/api/artwork/${unusedUuid}/comments/${commentsLikedBySeller[0].commentId}/likes`
+        );
+        expect(res.body.message).toEqual(errors.commentNotFound.message);
+        expect(res.statusCode).toEqual(errors.commentNotFound.status);
+      });
+
+      it("should throw a 404 error if comment doesn't exist", async () => {
+        const res = await request(app, sellerToken).delete(
+          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${unusedUuid}/likes`
+        );
+        expect(res.body.message).toEqual(errors.commentNotFound.message);
+        expect(res.statusCode).toEqual(errors.commentNotFound.status);
+      });
+
+      it("should throw an error if user is not authenticated", async () => {
+        const res = await request(app).delete(
+          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${commentsLikedBySeller[0].commentId}/likes`
+        );
+        expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       });
     });
   });

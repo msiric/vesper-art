@@ -5,9 +5,11 @@ import {
   CreateDateColumn,
   Entity,
   Generated,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { formatAmount } from "../common/helpers";
+import { Order } from "./Order";
 
 @Entity()
 export class Discount extends BaseEntity {
@@ -26,6 +28,9 @@ export class Discount extends BaseEntity {
 
   @Column()
   active: boolean;
+
+  @OneToMany(() => Order, (order) => order.discount)
+  orders: Order[];
 
   @CreateDateColumn({ type: "timestamptz" })
   created: Date;

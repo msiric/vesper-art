@@ -1,3 +1,5 @@
+import IncrementCounter from "@components/IncrementCounter";
+import LikeButton from "@components/LikeButton";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   CheckRounded as SaveIcon,
@@ -5,7 +7,7 @@ import {
   MoreVertRounded as MoreIcon,
 } from "@material-ui/icons";
 import { formatDistance } from "date-fns";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { commentValidation } from "../../../../common/validation";
@@ -33,7 +35,7 @@ import commentCardStyles from "./styles";
 const CommentCard = ({
   artworkId,
   artworkOwnerId,
-  comment = { content: "", owner: { avatar: {} } },
+  comment = { content: "", owner: { avatar: {} }, likes: [] },
   edits = {},
   queryRef,
   highlightRef,
@@ -42,7 +44,12 @@ const CommentCard = ({
   handlePopoverOpen,
   loading,
 }) => {
+  const [likes, setLikes] = useState([]);
+
   const userId = useUserStore((state) => state.id);
+
+  const isCommentLiked = likes?.some((like) => like.ownerId === userId);
+  const isCommentDisabled = comment?.owner?.id === userId;
 
   const setDefaultValues = () => ({
     commentContent: comment.content,
@@ -64,9 +71,23 @@ const CommentCard = ({
   const history = useHistory();
   const classes = commentCardStyles();
 
+  const handleLikeToggle = (liked) => {
+    if (liked) {
+      setLikes((prevState) => [...prevState, { ownerId: userId }]);
+    } else {
+      setLikes((prevState) =>
+        prevState.filter((like) => like.ownerId !== userId)
+      );
+    }
+  };
+
   useEffect(() => {
     reset(setDefaultValues());
   }, [comment.content]);
+
+  useEffect(() => {
+    setLikes(comment.likes);
+  }, [comment.likes]);
 
   return (
     <Box ref={isHighlight ? highlightRef : null} key={comment.id}>
@@ -167,29 +188,44 @@ const CommentCard = ({
                     "Fetching artwork's comment content details"}
                 </Typography>
                 <Box className={classes.subtitle}>
-                  <Typography
-                    component="span"
-                    variant="subtitle2"
-                    loading={loading}
-                    className={classes.created}
-                  >
-                    {comment?.created
-                      ? `${formatDistance(
-                          new Date(comment?.created),
-                          new Date()
-                        )} ago`
-                      : "Fetching comment creation date"}
-                  </Typography>
-                  {comment?.modified && (
+                  <Box className={classes.info}>
                     <Typography
                       component="span"
                       variant="subtitle2"
                       loading={loading}
-                      className={classes.modified}
+                      className={classes.created}
                     >
-                      (edited)
+                      {comment?.created
+                        ? `${formatDistance(
+                            new Date(comment?.created),
+                            new Date()
+                          )} ago`
+                        : "Fetching comment creation date"}
                     </Typography>
-                  )}
+                    {comment?.modified && (
+                      <Typography
+                        component="span"
+                        variant="subtitle2"
+                        loading={loading}
+                        className={classes.modified}
+                      >
+                        *
+                      </Typography>
+                    )}
+                  </Box>
+                  <Box loading={loading} customRadius className={classes.likes}>
+                    <IncrementCounter
+                      newValue={likes?.length ?? 0}
+                      size="small"
+                    />
+                    <LikeButton
+                      artworkId={artworkId}
+                      comment={comment}
+                      liked={isCommentLiked ?? isCommentDisabled}
+                      disabled={isCommentDisabled}
+                      handleCallback={handleLikeToggle}
+                    />
+                  </Box>
                 </Box>
               </Box>
             )

@@ -35,8 +35,8 @@ const commentCardStyles = makeStyles((muiTheme) => ({
     },
   },
   modified: {
-    marginLeft: 6,
     fontSize: 11,
+    fontWeight: "bold",
     color: "white",
   },
   created: {
@@ -52,8 +52,8 @@ const commentCardStyles = makeStyles((muiTheme) => ({
     margin: "4px 0",
   },
   menu: {
-    top: 6,
     transform: "none",
+    top: 6,
   },
   button: {
     padding: 0,
@@ -69,11 +69,25 @@ const commentCardStyles = makeStyles((muiTheme) => ({
   },
   subtitle: {
     display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+  },
+  info: {
+    display: "flex",
   },
   author: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+  },
+  likes: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    "& > button": {
+      marginLeft: "3px",
+    },
   },
 }));
 

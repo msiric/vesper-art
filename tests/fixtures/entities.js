@@ -1407,9 +1407,9 @@ export const entities = {
   Comment: [
     {
       id: "07b28cd0-0aa5-4b3a-ae71-21220963e290",
-      ownerId: validUsers.buyer.id,
+      ownerId: validUsers.seller.id,
       artworkId: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
-      content: "Test comment 1",
+      content: "Test comment 1 (with likes)",
       modified: false,
       generated: false,
     },
@@ -1417,7 +1417,23 @@ export const entities = {
       id: "c791d948-9bc3-4b6b-b988-6b95576dac57",
       ownerId: validUsers.buyer.id,
       artworkId: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
-      content: "Test comment 2",
+      content: "Test comment 2 (modified with likes)",
+      modified: true,
+      generated: false,
+    },
+    {
+      id: "8b22d197-7c41-4d5e-8e02-9bbd7bd843bd",
+      ownerId: validUsers.seller.id,
+      artworkId: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
+      content: "Test comment 3 (no likes)",
+      modified: false,
+      generated: false,
+    },
+    {
+      id: "64cb2630-a6c6-4244-a97f-698894eb51d2",
+      ownerId: validUsers.buyer.id,
+      artworkId: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
+      content: "Test comment 4 (modified with no likes)",
       modified: true,
       generated: false,
     },
@@ -1428,6 +1444,18 @@ export const entities = {
       content: "Comment for invisible artwork",
       modified: false,
       generated: false,
+    },
+  ],
+  Like: [
+    {
+      id: "21892c62-6aeb-4716-a605-c18b89333e15",
+      ownerId: validUsers.buyer.id,
+      commentId: "07b28cd0-0aa5-4b3a-ae71-21220963e290",
+    },
+    {
+      id: "f2816e95-abed-46dd-8559-000027e882cf",
+      ownerId: validUsers.seller.id,
+      commentId: "c791d948-9bc3-4b6b-b988-6b95576dac57",
     },
   ],
   Favorite: [

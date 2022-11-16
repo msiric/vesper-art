@@ -40,26 +40,26 @@ export class Order extends BaseEntity {
   @Generated("increment")
   serial: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, (user) => user.purchases)
   buyer: User;
 
   @Column()
   buyerId: string;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, (user) => user.sales)
   seller: User;
 
   @Column()
   sellerId: string;
 
-  @ManyToOne(() => Artwork)
+  @ManyToOne(() => Artwork, (artwork) => artwork.orders)
   @JoinColumn()
   artwork: Artwork;
 
   @Column()
   artworkId: string;
 
-  @ManyToOne(() => Version)
+  @ManyToOne(() => Version, (version) => version.orders)
   @JoinColumn()
   version: Version;
 
@@ -73,7 +73,7 @@ export class Order extends BaseEntity {
   @Column()
   licenseId: string;
 
-  @ManyToOne(() => Discount)
+  @ManyToOne(() => Discount, (discount) => discount.orders)
   @JoinColumn()
   discount: Discount;
 

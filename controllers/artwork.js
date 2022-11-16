@@ -3,31 +3,44 @@ import {
   formatArtworkValues,
   isArrayEmpty,
   isFormAltered,
-  isObjectEmpty
+  isObjectEmpty,
 } from "../common/helpers";
 import { artworkValidation, commentValidation } from "../common/validation";
 import { deleteS3Object, getSignedS3Object } from "../lib/s3";
 import socketApi from "../lib/socket";
 import {
-  addNewArtwork, addNewComment, addNewCover,
+  addNewArtwork,
+  addNewComment,
+  addNewCover,
   addNewFavorite,
+  addNewLike,
   addNewMedia,
   addNewVersion,
   deactivateArtworkVersion,
-  deactivateExistingArtwork, editExistingComment, fetchActiveArtworks,
+  deactivateExistingArtwork,
+  editExistingComment,
+  fetchActiveArtworks,
   fetchAllUserArtwork,
   fetchArtworkById,
   fetchArtworkComments,
   fetchArtworkDetails,
   fetchArtworkEdit,
-  fetchArtworkMedia, fetchCommentById, fetchFavoriteByParents,
+  fetchArtworkMedia,
+  fetchCommentByOwner,
+  fetchCommentByParent,
+  fetchFavoriteByParents,
   fetchFavoritesCount,
+  fetchLikeByParents,
   fetchUserArtwork,
   fetchUserFavorites,
   fetchUserPurchasesWithMedia,
   fetchUserUploadsWithMedia,
-  removeArtworkVersion, removeExistingComment, removeExistingFavorite,
-  updateArtworkVersion
+  removeArtworkVersion,
+  removeExistingComment,
+  removeExistingFavorite,
+  removeExistingLike,
+  removeExistingLikes,
+  updateArtworkVersion,
 } from "../services/artwork";
 import { addNewNotification } from "../services/notification";
 import { fetchOrderByVersion, fetchOrdersByArtwork } from "../services/order";
@@ -35,7 +48,7 @@ import { fetchStripeAccount } from "../services/stripe";
 import {
   fetchUserById,
   fetchUserByUsername,
-  fetchUserIdByUsername
+  fetchUserIdByUsername,
 } from "../services/user";
 import { USER_SELECTION } from "../utils/database";
 import {
@@ -43,7 +56,7 @@ import {
   formatError,
   formatResponse,
   generateUuids,
-  verifyVersionValidity
+  verifyVersionValidity,
 } from "../utils/helpers";
 import { formatArtworkPrices } from "../utils/payment";
 import { errors, responses } from "../utils/statuses";
@@ -126,8 +139,8 @@ export const postNewArtwork = async ({
     if (!isObjectEmpty(foundUser)) {
       const foundAccount = foundUser.stripeId
         ? await fetchStripeAccount({
-          accountId: foundUser.stripeId,
-        })
+            accountId: foundUser.stripeId,
+          })
         : null;
       verifyVersionValidity({ data: formattedData, foundUser, foundAccount });
       const { coverId, mediaId, versionId, artworkId } = generateUuids({
@@ -208,8 +221,8 @@ export const updateArtwork = async ({
       if (!isObjectEmpty(foundUser)) {
         const foundAccount = foundUser.stripeId
           ? await fetchStripeAccount({
-            accountId: foundUser.stripeId,
-          })
+              accountId: foundUser.stripeId,
+            })
           : null;
         verifyVersionValidity({ data: formattedData, foundUser, foundAccount });
         if (shouldUpdate) {
@@ -380,6 +393,71 @@ export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
   throw createError(...formatError(errors.artworkNotFound));
 };
 
+export const likeComment = async ({
+  userId,
+  artworkId,
+  commentId,
+  connection,
+}) => {
+  const [foundLike, foundComment] = await Promise.all([
+    fetchLikeByParents({
+      userId,
+      commentId,
+      connection,
+    }),
+    fetchCommentByParent({ artworkId, commentId, connection }),
+  ]);
+  if (!isObjectEmpty(foundComment)) {
+    if (foundComment.owner.id !== userId) {
+      if (isObjectEmpty(foundLike)) {
+        const { likeId } = generateUuids({
+          likeId: null,
+        });
+        await addNewLike({
+          likeId,
+          userId,
+          commentId,
+          connection,
+        });
+        return formatResponse(responses.commentLiked);
+      }
+      throw createError(...formatError(errors.commentAlreadyLiked));
+    }
+    throw createError(...formatError(errors.commentLikedByOwner));
+  }
+  throw createError(...formatError(errors.commentNotFound));
+};
+
+export const dislikeComment = async ({
+  userId,
+  artworkId,
+  commentId,
+  connection,
+}) => {
+  const [foundLike, foundComment] = await Promise.all([
+    fetchLikeByParents({
+      userId,
+      commentId,
+      connection,
+    }),
+    fetchCommentByParent({ artworkId, commentId, connection }),
+  ]);
+  if (!isObjectEmpty(foundComment)) {
+    if (foundComment.owner.id !== userId) {
+      if (!isObjectEmpty(foundLike)) {
+        await removeExistingLike({
+          likeId: foundLike.id,
+          connection,
+        });
+        return formatResponse(responses.commentDisliked);
+      }
+      throw createError(...formatError(errors.commentAlreadyDisliked));
+    }
+    throw createError(...formatError(errors.commentDislikedByOwner));
+  }
+  throw createError(...formatError(errors.commentNotFound));
+};
+
 export const getUserArtworkByUsername = async ({
   userUsername,
   cursor,
@@ -498,7 +576,7 @@ export const getUserFavorites = async ({
 };
 
 export const getComment = async ({ artworkId, commentId, connection }) => {
-  const foundComment = await fetchCommentById({
+  const foundComment = await fetchCommentByParent({
     artworkId,
     commentId,
     connection,
@@ -569,12 +647,21 @@ export const patchComment = async ({
 };
 
 export const deleteComment = async ({ userId, commentId, connection }) => {
-  const deletedComment = await removeExistingComment({
+  const foundComment = await fetchCommentByOwner({
     commentId,
     userId,
     connection,
   });
-  if (deletedComment.affected !== 0) {
+  if (!isObjectEmpty(foundComment)) {
+    await removeExistingLikes({
+      commentId,
+      connection,
+    });
+    await removeExistingComment({
+      commentId,
+      userId,
+      connection,
+    });
     return formatResponse(responses.commentDeleted);
   }
   throw createError(...formatError(errors.commentNotFound));

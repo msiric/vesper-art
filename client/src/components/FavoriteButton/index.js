@@ -13,8 +13,9 @@ const FavoriteButton = ({
   artwork,
   favorited,
   labeled,
+  disabled,
   handleCallback,
-  fontSize = "medium",
+  size = "medium",
   ...props
 }) => {
   const [state, setState] = useState({ loading: false });
@@ -22,7 +23,7 @@ const FavoriteButton = ({
 
   const classes = favoriteButtonStyles();
 
-  const handleSaveArtwork = async (id) => {
+  const handleFavoriteArtwork = async (id) => {
     try {
       setState({ loading: true });
       await postFavorite.request({ artworkId: id });
@@ -39,7 +40,7 @@ const FavoriteButton = ({
     }
   };
 
-  const handleUnsaveArtwork = async (id) => {
+  const handleUnfavoriteArtwork = async (id) => {
     try {
       setState({ loading: true });
       await deleteFavorite.request({ artworkId: id });
@@ -61,36 +62,38 @@ const FavoriteButton = ({
       color="secondary"
       startIcon={
         favorited ? (
-          <FavoritedIcon fontSize={fontSize} />
+          <FavoritedIcon fontSize={size} />
         ) : (
-          <FavoriteIcon fontSize={fontSize} />
+          <FavoriteIcon fontSize={size} />
         )
       }
       submitting={state.loading}
       onClick={() =>
         favorited
-          ? handleUnsaveArtwork(artwork.id)
-          : handleSaveArtwork(artwork.id)
+          ? handleUnfavoriteArtwork(artwork.id)
+          : handleFavoriteArtwork(artwork.id)
       }
+      disabled={disabled || state.loading}
       {...props}
     >
       {favorited ? "Unfavorite" : "Favorite"}
     </AsyncButton>
   ) : (
     <IconButton
-      aria-label={`${favorited ? "Unsave artwork" : "Save artwork"}`}
+      aria-label={`${favorited ? "Unfavorite artwork" : "Favorite artwork"}`}
       onClick={() =>
         favorited
-          ? handleUnsaveArtwork(artwork.id)
-          : handleSaveArtwork(artwork.id)
+          ? handleUnfavoriteArtwork(artwork.id)
+          : handleFavoriteArtwork(artwork.id)
       }
-      disabled={state.loading}
+      disabled={disabled || state.loading}
+      size={size}
       {...props}
     >
       {favorited ? (
-        <FavoritedIcon fontSize={fontSize} />
+        <FavoritedIcon fontSize={size} />
       ) : (
-        <FavoriteIcon fontSize={fontSize} />
+        <FavoriteIcon fontSize={size} />
       )}
     </IconButton>
   );
