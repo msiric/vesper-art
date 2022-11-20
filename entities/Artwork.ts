@@ -70,7 +70,7 @@ export class Artwork extends BaseEntity {
   @OneToMany(() => Order, (order) => order.artwork)
   orders: Order[];
 
-  @Column()
+  @Column({ default: false })
   generated: boolean;
 
   @CreateDateColumn({ type: "timestamptz" })

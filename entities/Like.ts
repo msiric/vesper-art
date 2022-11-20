@@ -31,6 +31,9 @@ export class Like extends BaseEntity {
   @Column()
   commentId: string;
 
+  @Column({ default: false })
+  generated: boolean;
+
   @CreateDateColumn({ type: "timestamptz" })
   created: Date;
 }

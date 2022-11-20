@@ -32,6 +32,8 @@
     "lint:fix": "eslint . --ext .js,.ts --fix",
     "proxy:dev": "flyctl proxy 15432:5432 -a vesper-art-development",
     "proxy:test": "flyctl proxy 25432:5432 -a vesper-art-testing",
+    "proxy:staging": "flyctl proxy 35432:5432 -a vesper-art-staging",
+    "proxy:prod": "flyctl proxy 45432:5432 -a vesper-art-production",
     "migrate:create": "cross-env NODE_ENV=development ts-node ./node_modules/typeorm/cli.js migration:create -d migrations -n",
     "migrate:generate": "cross-env NODE_ENV=development ts-node ./node_modules/typeorm/cli.js migration:generate -d migrations -n",
     "migrate:up": "cross-env NODE_ENV=development ts-node ./node_modules/typeorm/cli.js migration:run",
