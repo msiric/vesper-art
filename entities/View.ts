@@ -7,11 +7,11 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { Comment } from "./Comment";
+import { Artwork } from "./Artwork";
 import { User } from "./User";
 
 @Entity()
-export class Like extends BaseEntity {
+export class View extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
@@ -19,17 +19,20 @@ export class Like extends BaseEntity {
   @Generated("increment")
   serial: number;
 
-  @ManyToOne(() => User, (user) => user.likes)
+  @Column()
+  ip: string;
+
+  @ManyToOne(() => User, (user) => user.views)
   owner: User;
 
-  @Column()
+  @Column({ nullable: true })
   ownerId: string;
 
-  @ManyToOne(() => Comment, (comment) => comment.likes)
-  comment: Comment;
+  @ManyToOne(() => Artwork, (artwork) => artwork.views)
+  artwork: Artwork;
 
   @Column()
-  commentId: string;
+  artworkId: string;
 
   @Column({ default: false })
   generated: boolean;

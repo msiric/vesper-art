@@ -14,6 +14,19 @@ import {
 } from "../utils/helpers";
 import { errors } from "../utils/statuses";
 
+const verifyUserToken = (accessToken, locals) => {
+  if (!accessToken) throw createError(...formatError(errors.forbiddenAccess));
+  const token = accessToken.split(" ")[1];
+  const { data } = verifyTokenValidity(token, tokens.accessToken);
+  if (!data.active) throw createError(...formatError(errors.forbiddenAccess));
+  if (!data.verified) throw createError(...formatError(errors.forbiddenAccess));
+  if (Date.now() >= data.exp * 1000) {
+    throw createError(...formatError(errors.notAuthenticated));
+  }
+  locals.user = data;
+  return;
+};
+
 export const requestHandler =
   (promise, transaction, params) => async (req, res, next) => {
     sanitizePayload(req, res, next);
@@ -29,9 +42,7 @@ export const requestHandler =
         connection: transaction ? connection.manager : connection,
       });
       if (transaction) await evaluateTransaction(connection);
-      if (result) {
-        return res.json(result);
-      }
+      if (result) return res.json(result);
       return res.json({ message: "OK" });
     } catch (error) {
       console.log("err", error);
@@ -42,19 +53,20 @@ export const requestHandler =
     }
   };
 
-export const isAuthenticated = async (req, res, next) => {
+// doesn't throw error on fail
+export const isAuthenticatedNoFail = (req, res, next) => {
   try {
-    const accessToken = req.headers["authorization"];
-    if (!accessToken) throw createError(...formatError(errors.forbiddenAccess));
-    const token = accessToken.split(" ")[1];
-    const { data } = verifyTokenValidity(token, tokens.accessToken);
-    if (!data.active) throw createError(...formatError(errors.forbiddenAccess));
-    if (!data.verified)
-      throw createError(...formatError(errors.forbiddenAccess));
-    if (Date.now() >= data.exp * 1000) {
-      throw createError(...formatError(errors.notAuthenticated));
-    }
-    res.locals.user = data;
+    verifyUserToken(req.headers["authorization"], res.locals);
+    return next();
+  } catch (err) {
+    return next();
+  }
+};
+
+// throws error on fail
+export const isAuthenticated = (req, res, next) => {
+  try {
+    verifyUserToken(req.headers["authorization"], res.locals);
     return next();
   } catch (err) {
     return next(err);

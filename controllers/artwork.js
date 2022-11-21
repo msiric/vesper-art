@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import requestIp from "request-ip";
 import {
   formatArtworkValues,
   isArrayEmpty,
@@ -16,6 +17,7 @@ import {
   addNewLike,
   addNewMedia,
   addNewVersion,
+  addNewView,
   deactivateArtworkVersion,
   deactivateExistingArtwork,
   editExistingComment,
@@ -25,6 +27,7 @@ import {
   fetchArtworkComments,
   fetchArtworkDetails,
   fetchArtworkEdit,
+  fetchArtworkId,
   fetchArtworkMedia,
   fetchCommentByOwner,
   fetchCommentByParent,
@@ -35,6 +38,7 @@ import {
   fetchUserFavorites,
   fetchUserPurchasesWithMedia,
   fetchUserUploadsWithMedia,
+  fetchUserView,
   removeArtworkVersion,
   removeExistingComment,
   removeExistingFavorite,
@@ -88,6 +92,30 @@ export const getArtworkEdit = async ({ userId, artworkId, connection }) => {
   });
   if (!isObjectEmpty(foundArtwork)) return { artwork: foundArtwork };
   throw createError(...formatError(errors.artworkNotFound));
+};
+
+export const countArtworkView = async ({
+  userId,
+  artworkId,
+  request,
+  connection,
+}) => {
+  const ipAddress = requestIp.getClientIp(request);
+  const [foundArtworkId, foundView] = await Promise.all([
+    fetchArtworkId({ artworkId, connection }),
+    fetchUserView({ userId, ipAddress, artworkId, connection }),
+  ]);
+  if (foundArtworkId) {
+    if (isObjectEmpty(foundView)) {
+      await addNewView({
+        userId,
+        artworkId: foundArtworkId,
+        ipAddress,
+        connection,
+      });
+    }
+    return formatResponse(responses.viewTracked);
+  }
 };
 
 export const getArtworkComments = async ({

@@ -16,9 +16,9 @@ const config = {
   type: "postgres",
   url: process.env.PG_DB_URL,
   synchronize: environment === ENV_OPTIONS.PRODUCTION ? false : true,
+  migrationsRun: environment === ENV_OPTIONS.PRODUCTION ? false : true,
   logging: environment === ENV_OPTIONS.DEVELOPMENT ? true : false,
-  dropSchema: false,
-  logger: "file",
+  logger: environment === ENV_OPTIONS.PRODUCTION ? "file" : "advanced-console",
   migrations: [path.join(dirname, "dist/migrations/*{.ts,.js}")],
   entities: [path.join(dirname, "dist/entities/*{.ts,.js}")],
   cli: {

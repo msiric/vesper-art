@@ -12,6 +12,7 @@ const ArtworkPreview = ({ paramId }) => {
   const version = useArtworkDetails((state) => state.artwork.data.current);
   const loading = useArtworkDetails((state) => state.artwork.loading);
   const fetchArtwork = useArtworkDetails((state) => state.fetchArtwork);
+  const trackView = useArtworkDetails((state) => state.trackView);
 
   const history = useHistory();
 
@@ -19,6 +20,7 @@ const ArtworkPreview = ({ paramId }) => {
 
   useEffect(() => {
     fetchArtwork({ artworkId: paramId });
+    trackView({ artworkId: paramId });
   }, []);
 
   return (

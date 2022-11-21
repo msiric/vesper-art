@@ -48,6 +48,9 @@ export class Review extends BaseEntity {
   @Column()
   rating: number;
 
+  @Column({ default: false })
+  generated: boolean;
+
   @CreateDateColumn({ type: "timestamptz" })
   created: Date;
 }

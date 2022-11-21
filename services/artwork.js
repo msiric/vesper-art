@@ -1,4 +1,5 @@
 import { Like } from "@entities/Like";
+import { View } from "@entities/View";
 import { upload } from "../common/constants";
 import { Artwork } from "../entities/Artwork";
 import { Comment } from "../entities/Comment";
@@ -21,6 +22,7 @@ import {
   REVIEW_SELECTION,
   USER_SELECTION,
   VERSION_SELECTION,
+  VIEW_SELECTION,
 } from "../utils/database";
 import { calculateRating } from "../utils/helpers";
 
@@ -141,6 +143,24 @@ export const fetchVersionDetails = async ({
   return foundVersion;
 };
 
+export const fetchArtworkId = async ({ artworkId, connection }) => {
+  const foundArtwork = await connection
+    .getRepository(Artwork)
+    .createQueryBuilder("artwork")
+
+    .select([...ARTWORK_SELECTION["STRIPPED_INFO"]()])
+    .where(
+      "artwork.id = :artworkId AND artwork.active = :active AND artwork.visibility = :visibility",
+      {
+        artworkId,
+        active: ARTWORK_SELECTION["ACTIVE_STATUS"],
+        visibility: ARTWORK_SELECTION["VISIBILITY_STATUS"],
+      }
+    )
+    .getOne();
+  return foundArtwork?.id ?? null;
+};
+
 export const fetchArtworkDetails = async ({ artworkId, connection }) => {
   const foundArtwork = await connection
     .getRepository(Artwork)
@@ -213,6 +233,48 @@ export const fetchArtworkEdit = async ({ userId, artworkId, connection }) => {
     )
     .getOne();
   return foundArtwork;
+};
+
+export const fetchUserView = async ({
+  userId,
+  ipAddress,
+  artworkId,
+  connection,
+}) => {
+  const foundView = await connection
+    .getRepository(View)
+    .createQueryBuilder("view")
+    .select([
+      ...VIEW_SELECTION["ESSENTIAL_INFO"](),
+      ...VIEW_SELECTION["OWNER_INFO"](),
+    ])
+    .where(
+      userId
+        ? "view.ownerId = :userId AND view.artworkId = :artworkId"
+        : "view.ownerId IS NULL AND view.ip = :ipAddress AND view.artworkId = :artworkId",
+      {
+        userId,
+        ipAddress,
+        artworkId,
+      }
+    )
+    .getOne();
+  return foundView;
+};
+
+export const addNewView = async ({
+  userId,
+  artworkId,
+  ipAddress,
+  connection,
+}) => {
+  const createdView = await connection
+    .createQueryBuilder()
+    .insert()
+    .into(View)
+    .values({ ownerId: userId ?? null, ip: ipAddress, artworkId })
+    .execute();
+  return createdView;
 };
 
 export const fetchArtworkComments = async ({

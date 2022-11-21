@@ -20,6 +20,7 @@ import { Like } from "./Like";
 import { Notification } from "./Notification";
 import { Order } from "./Order";
 import { Review } from "./Review";
+import { View } from "./View";
 
 @Entity()
 export class User extends BaseEntity {
@@ -125,6 +126,9 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Review, (review) => review.reviewee)
   reviewsReceived: Review[];
+
+  @OneToMany(() => View, (view) => view.owner)
+  views: View[];
 
   @Column({ default: false })
   generated: boolean;

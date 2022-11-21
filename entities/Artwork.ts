@@ -18,6 +18,7 @@ import { Order } from "./Order";
 import { Review } from "./Review";
 import { User } from "./User";
 import { Version } from "./Version";
+import { View } from "./View";
 
 export enum ArtworkVisibility {
   visible = "visible",
@@ -70,7 +71,10 @@ export class Artwork extends BaseEntity {
   @OneToMany(() => Order, (order) => order.artwork)
   orders: Order[];
 
-  @Column()
+  @OneToMany(() => View, (view) => view.artwork)
+  views: View[];
+
+  @Column({ default: false })
   generated: boolean;
 
   @CreateDateColumn({ type: "timestamptz" })

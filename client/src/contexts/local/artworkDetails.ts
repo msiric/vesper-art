@@ -1,6 +1,6 @@
 import create from "zustand";
 import { renderFreeLicenses } from "../../../../common/helpers";
-import { getDetails } from "../../services/artwork";
+import { getDetails, postView } from "../../services/artwork";
 import { postDownload } from "../../services/checkout";
 import { getPurchases } from "../../services/orders";
 import { resolveAsyncError } from "../../utils/helpers";
@@ -110,6 +110,15 @@ const initActions = (set) => ({
       history.push("/orders");
     } catch (err) {
       console.log(err);
+    }
+  },
+  trackView: async ({ artworkId }) => {
+    try {
+      await postView.request({
+        artworkId,
+      });
+    } catch (err) {
+      // do nothing
     }
   },
   toggleFavorite: async ({ incrementBy }) => {

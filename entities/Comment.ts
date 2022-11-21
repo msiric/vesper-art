@@ -40,7 +40,7 @@ export class Comment extends BaseEntity {
   @Column()
   modified: boolean;
 
-  @Column()
+  @Column({ default: false })
   generated: boolean;
 
   @OneToMany(() => Like, (like) => like.comment)

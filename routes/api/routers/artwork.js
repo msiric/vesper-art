@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  countArtworkView,
   deleteArtwork,
   deleteComment,
   dislikeComment,
@@ -25,6 +26,7 @@ import {
 import multerApi from "../../../lib/multer";
 import {
   isAuthenticated,
+  isAuthenticatedNoFail,
   isAuthorized,
   requestHandler as handler,
 } from "../../../middleware/index";
@@ -42,6 +44,14 @@ router.route("/artwork").get(
 router.route("/artwork/:artworkId").get(
   handler(getArtworkDetails, false, (req, res, next) => ({
     artworkId: req.params.artworkId,
+  }))
+);
+
+router.route("/artwork/:artworkId/analytics").post(
+  [isAuthenticatedNoFail],
+  handler(countArtworkView, false, (req, res, next) => ({
+    artworkId: req.params.artworkId,
+    request: req,
   }))
 );
 

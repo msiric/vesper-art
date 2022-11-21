@@ -22,6 +22,7 @@ const DEFAULT_VALUES = {
   FAVORITE: "favorite",
   NOTIFICATION: "notification",
   INTENT: "intent",
+  VIEW: "view",
 };
 
 export const ARTWORK_SELECTION = {
@@ -255,6 +256,15 @@ export const INTENT_SELECTION = {
     `${selector}.id`,
     `${selector}.created`,
   ],
+};
+
+export const VIEW_SELECTION = {
+  ESSENTIAL_INFO: (selector = DEFAULT_VALUES.VIEW) => [
+    `${selector}.id`,
+    `${selector}.created`,
+    `${selector}.ip`,
+  ],
+  OWNER_INFO: (selector = DEFAULT_VALUES.VIEW) => [`${selector}.ownerId`],
 };
 
 export const FIXTURE_OPTIONS = {

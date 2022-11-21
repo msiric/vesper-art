@@ -128,6 +128,9 @@ export class Version extends BaseEntity {
   @UpdateDateColumn({ type: "timestamptz" })
   updated: Date;
 
+  @Column({ default: false })
+  generated: boolean;
+
   @AfterLoad()
   correctAmount() {
     this.personal = formatAmount(this.personal).value;
