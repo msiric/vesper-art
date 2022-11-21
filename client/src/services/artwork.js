@@ -22,6 +22,12 @@ export const getDetails = {
   success: { message: "Artwork successfully fetched", variant: "success" },
   error: { message: "Failed to fetch artwork", variant: "error" },
 };
+export const postView = {
+  request: async ({ artworkId }) =>
+    await ax.post(`/api/artwork/${artworkId}/analytics`),
+  success: { message: "View successfully tracked", variant: "success" },
+  error: { message: "Failed to track view", variant: "error" },
+};
 export const getComment = {
   request: async ({ artworkId, commentId }) =>
     await ax.get(`/api/artwork/${artworkId}/comments/${commentId}`),

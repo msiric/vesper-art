@@ -479,4 +479,9 @@ export const responses = {
     message: "Onboarding successful",
     expose: true,
   },
+  viewTracked: {
+    status: statusCodes.ok,
+    message: "View tracked",
+    expose: false,
+  },
 };
