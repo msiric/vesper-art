@@ -71,7 +71,7 @@ const ResetPassword = ({ match }) => {
         state: { message: "Password successfully changed" },
       });
     } catch (err) {
-      console.log(err);
+      // do nothing
     }
   };
 

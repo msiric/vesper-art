@@ -68,7 +68,7 @@ const ResendToken = () => {
         state: { message: "Verification link sent to your email" },
       });
     } catch (err) {
-      console.log(err);
+      // do nothing
     }
   };
 

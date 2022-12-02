@@ -51,20 +51,24 @@ const initActions = (set, get) => ({
     }
   },
   removeArtwork: async ({ userId, artworkId }) => {
-    set((state) => ({ ...state, isDeleting: true }));
-    await deleteArtwork.request({
-      userId,
-      artworkId,
-    });
-    set((state) => ({
-      ...state,
-      uploads: {
-        ...state.uploads,
-        data: state.uploads.data.filter((item) => item.id !== artworkId),
-      },
-      modal: { ...state.modal, id: null, open: false },
-      isDeleting: false,
-    }));
+    try {
+      set((state) => ({ ...state, isDeleting: true }));
+      await deleteArtwork.request({
+        userId,
+        artworkId,
+      });
+      set((state) => ({
+        ...state,
+        uploads: {
+          ...state.uploads,
+          data: state.uploads.data.filter((item) => item.id !== artworkId),
+        },
+        modal: { ...state.modal, id: null, open: false },
+        isDeleting: false,
+      }));
+    } catch (err) {
+      // do nothing
+    }
   },
   openModal: ({ artworkId }) => {
     set((state) => ({

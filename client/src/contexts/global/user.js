@@ -106,7 +106,7 @@ const initActions = (set, get) => ({
         state: { message: "Reset link sent to your email" },
       });
     } catch (err) {
-      console.log(err);
+      // do nothing
     }
   },
   authenticateUser: async ({ data, setUser, setEvents, history }) => {
@@ -142,7 +142,7 @@ const initActions = (set, get) => ({
       }
       history.push("/");
     } catch (err) {
-      console.log(err);
+      // do nothing
     }
   },
   resendToken: async ({ data, history }) => {
@@ -153,7 +153,7 @@ const initActions = (set, get) => ({
         state: { message: "Verification link sent to your email" },
       });
     } catch (err) {
-      console.log(err);
+      // do nothing
     }
   },
   resetPassword: async ({ resetToken, data, history }) => {
@@ -164,21 +164,21 @@ const initActions = (set, get) => ({
         state: { message: "Password successfully changed" },
       });
     } catch (err) {
-      console.log(err);
+      // do nothing
     }
   },
   registerUser: async ({ data }) => {
     try {
       await postSignup.request({ data });
     } catch (err) {
-      console.log(err);
+      // do nothing
     }
   },
   updateEmail: async ({ data }) => {
     try {
       await postEmail.request({ data });
     } catch (err) {
-      console.log(err);
+      // do nothing
     }
   },
   toggleMenu: ({ event }) => {
@@ -206,7 +206,7 @@ const initActions = (set, get) => ({
       resetEvents();
       history.push(window.location.pathname);
     } catch (err) {
-      console.log(err);
+      // do nothing
     }
   },
   resetUser: () => {

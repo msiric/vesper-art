@@ -105,20 +105,28 @@ const initActions = (set, get) => ({
     }
   },
   updateArtwork: async ({ userId, artworkId, values }) => {
-    const data = deleteEmptyValues(formatArtworkValues(values));
-    await patchArtwork.request({
-      userId,
-      artworkId,
-      data,
-    });
+    try {
+      const data = deleteEmptyValues(formatArtworkValues(values));
+      await patchArtwork.request({
+        userId,
+        artworkId,
+        data,
+      });
+    } catch (err) {
+      // do nothing
+    }
   },
   removeArtwork: async ({ userId, artworkId }) => {
-    set((state) => ({ ...state, isDeleting: true }));
-    await deleteArtwork.request({
-      userId,
-      artworkId,
-    });
-    set((state) => ({ ...state, isDeleting: false }));
+    try {
+      set((state) => ({ ...state, isDeleting: true }));
+      await deleteArtwork.request({
+        userId,
+        artworkId,
+      });
+      set((state) => ({ ...state, isDeleting: false }));
+    } catch (err) {
+      // do nothing
+    }
   },
   toggleModal: () => {
     set((state) => ({

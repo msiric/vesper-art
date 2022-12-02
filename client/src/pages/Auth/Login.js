@@ -97,7 +97,7 @@ const Login = () => {
         updateCount({ enabled: true });
       }
     } catch (err) {
-      console.log(err);
+      // do nothing
     }
   };
 

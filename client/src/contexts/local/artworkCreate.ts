@@ -48,16 +48,20 @@ const initActions = (set, get) => ({
     }
   },
   createArtwork: async ({ values }) => {
-    const data = deleteEmptyValues(formatArtworkValues(values));
-    const formData = new FormData();
-    for (const value of Object.keys(data)) {
-      if (Array.isArray(data[value])) {
-        formData.append(value, JSON.stringify(data[value]));
-      } else {
-        formData.append(value, data[value]);
+    try {
+      const data = deleteEmptyValues(formatArtworkValues(values));
+      const formData = new FormData();
+      for (const value of Object.keys(data)) {
+        if (Array.isArray(data[value])) {
+          formData.append(value, JSON.stringify(data[value]));
+        } else {
+          formData.append(value, data[value]);
+        }
       }
+      await postArtwork.request({ data: formData });
+    } catch (err) {
+      // do nothing
     }
-    await postArtwork.request({ data: formData });
   },
   resetRequirements: () => {
     set({ ...initialState });

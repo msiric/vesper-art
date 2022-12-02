@@ -58,16 +58,8 @@ const UpdateEmail = () => {
   const onSubmit = async (values) => {
     try {
       await postEmail.request({ data: values });
-      /*         enqueueSnackbar('Verification email sent', {
-          variant: 'success',
-          autoHideDuration: 1000,
-          anchorOrigin: {
-            vertical: 'top',
-            horizontal: 'center',
-          },
-        }); */
     } catch (err) {
-      console.log(err);
+      // do nothing
     }
   };
 

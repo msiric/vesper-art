@@ -27,7 +27,7 @@ const SettingsWrapper = ({ location }) => {
       resetEvents();
       history.push("/login");
     } catch (err) {
-      console.log("ERROR", err);
+      // do nothing
     }
   };
 

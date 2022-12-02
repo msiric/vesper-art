@@ -44,7 +44,9 @@ const SettingsAccount = ({ handleLogout }) => {
       resetUser();
       resetEvents();
       history.push("/login");
-    } catch (err) {}
+    } catch (err) {
+      // do nothing
+    }
   };
 
   const watchedValues = watch();

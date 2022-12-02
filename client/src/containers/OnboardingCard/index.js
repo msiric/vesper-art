@@ -80,7 +80,7 @@ const OnboardingCard = () => {
         userEmail,
       });
     } catch (err) {
-      console.log(err);
+      // do nothing
     }
   };
 

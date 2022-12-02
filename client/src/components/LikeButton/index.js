@@ -31,7 +31,7 @@ const LikeButton = ({
       });
       handleCallback(true);
     } catch (err) {
-      console.log(err);
+      // do nothing
     } finally {
       setState((prevState) => ({ ...prevState, loading: false }));
     }
@@ -46,7 +46,7 @@ const LikeButton = ({
       });
       handleCallback(false);
     } catch (err) {
-      console.log(err);
+      // do nothing
     } finally {
       setState((prevState) => ({ ...prevState, loading: false }));
     }
