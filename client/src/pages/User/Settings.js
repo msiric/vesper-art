@@ -45,7 +45,7 @@ const Settings = ({ location }) => {
   const handleLogout = async () => {
     try {
       await postLogout.request();
-      socket?.instance?.emit("disconnectUser");
+      if (socket?.instance) socket.instance.emit("disconnectUser");
       resetUser();
       resetEvents();
       history.push("/login");

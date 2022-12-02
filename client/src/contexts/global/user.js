@@ -199,7 +199,7 @@ const initActions = (set, get) => ({
     history,
   }) => {
     try {
-      socket.instance.emit("disconnectUser");
+      if (socket?.instance) socket.instance.emit("disconnectUser");
       await postLogout.request();
       toggleMenu({ event: window.event });
       resetUser();
