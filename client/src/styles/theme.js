@@ -281,3 +281,11 @@ artepunktTheme.overrides.MuiInputBase = {
     },
   },
 };
+
+artepunktTheme.overrides.MuiButton = {
+  outlined: {
+    "@media (max-width: 599.95px)": {
+      padding: "4px 12px !important",
+    },
+  },
+};

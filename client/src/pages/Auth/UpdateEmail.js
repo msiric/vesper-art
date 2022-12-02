@@ -37,6 +37,9 @@ const useStyles = makeStyles((muiTheme) => ({
       flexDirection: "column",
     },
   },
+  heading: {
+    textAlign: "center",
+  },
 }));
 
 const UpdateEmail = () => {
@@ -81,7 +84,7 @@ const UpdateEmail = () => {
         <Avatar className={classes.avatar}>
           <EmailAvatar />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" className={classes.heading}>
           Update email
         </Typography>
         <FormProvider control={control}>

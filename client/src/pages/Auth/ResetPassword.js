@@ -30,6 +30,9 @@ const useStyles = makeStyles((theme) => ({
   form: {
     width: "100%",
   },
+  heading: {
+    textAlign: "center",
+  },
 }));
 
 const ResetPassword = ({ match }) => {
@@ -82,7 +85,7 @@ const ResetPassword = ({ match }) => {
         <Avatar className={classes.avatar}>
           <ResetAvatar />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" className={classes.heading}>
           Reset your password
         </Typography>
         <FormProvider control={control}>

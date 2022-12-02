@@ -38,6 +38,9 @@ const useStyles = makeStyles((muiTheme) => ({
       flexDirection: "column",
     },
   },
+  heading: {
+    textAlign: "center",
+  },
 }));
 
 const ForgotPassword = () => {
@@ -72,7 +75,7 @@ const ForgotPassword = () => {
         <Avatar className={classes.avatar}>
           <RecoveryAvatar />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" className={classes.heading}>
           Recover your password
         </Typography>
         <FormProvider control={control}>
