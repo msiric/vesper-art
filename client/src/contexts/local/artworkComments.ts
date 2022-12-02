@@ -130,31 +130,34 @@ const initActions = (set, get) => ({
         cursor: comments.cursor,
         limit: comments.limit,
       });
-      const { highlightData, foundHighlight, fetchedHighlight } =
-        await resolveHighlight(
-          artworkId,
-          comments,
-          data.comments,
-          query,
-          highlight,
-          enqueueSnackbar
-        );
-      set((state) => ({
-        ...state,
-        comments: {
-          ...state.comments,
-          data: [...state.comments.data, ...data.comments],
-          loading: false,
-          fetching: false,
-          initialized: true,
-          error: { ...initialState.comments.error },
-          hasMore: data.comments.length < state.comments.limit ? false : true,
-          cursor: resolvePaginationId(data.comments),
-        },
-        highlight: { ...highlightData },
-      }));
-      if (foundHighlight || fetchedHighlight) {
-        scrollToHighlight(highlightRef);
+      const resolvedHighlight = await resolveHighlight(
+        artworkId,
+        comments,
+        data.comments,
+        query,
+        highlight,
+        enqueueSnackbar
+      );
+      if (resolvedHighlight) {
+        const { highlightData, foundHighlight, fetchedHighlight } =
+          resolvedHighlight;
+        set((state) => ({
+          ...state,
+          comments: {
+            ...state.comments,
+            data: [...state.comments.data, ...data.comments],
+            loading: false,
+            fetching: false,
+            initialized: true,
+            error: { ...initialState.comments.error },
+            hasMore: data.comments.length < state.comments.limit ? false : true,
+            cursor: resolvePaginationId(data.comments),
+          },
+          highlight: { ...highlightData },
+        }));
+        if (foundHighlight || fetchedHighlight) {
+          scrollToHighlight(highlightRef);
+        }
       }
     } catch (err) {
       set((state) => ({
