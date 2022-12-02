@@ -95,7 +95,6 @@ const initActions = (set) => ({
   },
   downloadArtwork: async ({ versionId, values, history }) => {
     try {
-      // $TODO either push to the /orders page or add the newly created order to the orders.data array
       await postDownload.request({
         versionId,
         data: values,
@@ -109,7 +108,7 @@ const initActions = (set) => ({
       }));
       history.push("/orders");
     } catch (err) {
-      console.log(err);
+      // do nothing
     }
   },
   trackView: async ({ artworkId }) => {

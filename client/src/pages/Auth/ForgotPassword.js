@@ -38,6 +38,9 @@ const useStyles = makeStyles((muiTheme) => ({
       flexDirection: "column",
     },
   },
+  heading: {
+    textAlign: "center",
+  },
 }));
 
 const ForgotPassword = () => {
@@ -59,11 +62,15 @@ const ForgotPassword = () => {
   const classes = useStyles();
 
   const onSubmit = async (values) => {
-    await postRecover.request({ data: values });
-    history.push({
-      pathname: "/login",
-      state: { message: "Reset link sent to your email" },
-    });
+    try {
+      await postRecover.request({ data: values });
+      history.push({
+        pathname: "/login",
+        state: { message: "Reset link sent to your email" },
+      });
+    } catch (err) {
+      // do nothing
+    }
   };
 
   return (
@@ -72,7 +79,7 @@ const ForgotPassword = () => {
         <Avatar className={classes.avatar}>
           <RecoveryAvatar />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" className={classes.heading}>
           Recover your password
         </Typography>
         <FormProvider control={control}>

@@ -39,6 +39,9 @@ const useStyles = makeStyles((muiTheme) => ({
       flexDirection: "column",
     },
   },
+  heading: {
+    textAlign: "center",
+  },
 }));
 
 const Login = () => {
@@ -94,7 +97,7 @@ const Login = () => {
         updateCount({ enabled: true });
       }
     } catch (err) {
-      console.log(err);
+      // do nothing
     }
   };
 
@@ -104,7 +107,7 @@ const Login = () => {
         <Avatar className={classes.avatar}>
           <LoginAvatar />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" className={classes.heading}>
           Sign in
         </Typography>
         <FormProvider control={control}>

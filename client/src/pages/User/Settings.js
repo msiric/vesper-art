@@ -43,12 +43,15 @@ const Settings = ({ location }) => {
   const classes = useSettingsStyles();
 
   const handleLogout = async () => {
-    await postLogout.request();
-    // $TODO verify that socket is defined
-    socket.instance.emit("disconnectUser");
-    resetUser();
-    resetEvents();
-    history.push("/login");
+    try {
+      await postLogout.request();
+      if (socket?.instance) socket.instance.emit("disconnectUser");
+      resetUser();
+      resetEvents();
+      history.push("/login");
+    } catch (err) {
+      // do nothing
+    }
   };
 
   const reinitializeState = () => {

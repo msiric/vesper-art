@@ -167,7 +167,7 @@ const CommentCard = ({
                       loading={loading}
                       startIcon={<SaveIcon />}
                     >
-                      Publish
+                      Save
                     </AsyncButton>
                     <SyncButton
                       type="button"

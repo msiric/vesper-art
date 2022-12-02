@@ -34,7 +34,7 @@ const FavoriteButton = ({
       });
       if (handleCallback) handleCallback({ incrementBy: 1 });
     } catch (err) {
-      console.log(err);
+      // do nothing
     } finally {
       setState({ loading: false });
     }
@@ -51,7 +51,7 @@ const FavoriteButton = ({
       });
       if (handleCallback) handleCallback({ incrementBy: -1 });
     } catch (err) {
-      console.log(err);
+      // do nothing
     } finally {
       setState({ loading: false });
     }

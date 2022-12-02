@@ -37,6 +37,9 @@ const useStyles = makeStyles((muiTheme) => ({
       flexDirection: "column",
     },
   },
+  heading: {
+    textAlign: "center",
+  },
 }));
 
 const ResendToken = () => {
@@ -65,7 +68,7 @@ const ResendToken = () => {
         state: { message: "Verification link sent to your email" },
       });
     } catch (err) {
-      console.log(err);
+      // do nothing
     }
   };
 
@@ -75,7 +78,7 @@ const ResendToken = () => {
         <Avatar className={classes.avatar}>
           <TokenAvatar />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" className={classes.heading}>
           Resend verification token
         </Typography>
         <FormProvider control={control}>
