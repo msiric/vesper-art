@@ -37,7 +37,9 @@
     "migrate:create": "cross-env NODE_ENV=development ts-node ./node_modules/typeorm/cli.js migration:create -d migrations -n",
     "migrate:generate": "cross-env NODE_ENV=development ts-node ./node_modules/typeorm/cli.js migration:generate -d migrations -n",
     "migrate:up": "cross-env NODE_ENV=development ts-node ./node_modules/typeorm/cli.js migration:run",
-    "migrate:down": "cross-env NODE_ENV=development ts-node ./node_modules/typeorm/cli.js migration:revert"
+    "migrate:down": "cross-env NODE_ENV=development ts-node ./node_modules/typeorm/cli.js migration:revert",
+    "deploy:staging": "flyctl deploy --app vesperart-staging --config ./fly.staging.toml",
+    "deploy:production": "flyctl deploy --app vesperart-production --config ./fly.production.toml"
   },
   "author": "",
   "license": "ISC",
