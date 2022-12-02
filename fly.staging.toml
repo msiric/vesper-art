@@ -18,6 +18,7 @@ processes = []
 
 [[services]]
   http_checks = []
+  tcp_checks = []
   internal_port = 5000
   processes = ["app"]
   protocol = "tcp"
@@ -35,9 +36,3 @@ processes = []
   [[services.ports]]
     handlers = ["tls", "http"]
     port = 443
-
-  [[services.tcp_checks]]
-    grace_period = "600s"
-    interval = "15s"
-    restart_limit = 0
-    timeout = "2s"
