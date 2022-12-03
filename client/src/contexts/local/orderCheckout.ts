@@ -279,7 +279,6 @@ const initActions = (set, get) => ({
       }));
       changeStep({ value: 1 });
     } catch (err) {
-      console.log(err);
       set((state) => ({ ...set, intent: { ...state.intent, loading: false } }));
     }
   },
@@ -345,7 +344,6 @@ const initActions = (set, get) => ({
         }
       } */
     } catch (err) {
-      console.log(err);
       set((state) => ({
         ...set,
         discount: { ...state.discount, loading: false },

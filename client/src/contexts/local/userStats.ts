@@ -186,17 +186,22 @@ const initActions = (set) => ({
     }));
   },
   redirectDashboard: async ({ stripeId }) => {
-    set((state) => ({
-      ...state,
-      redirecting: true,
-    }));
-    await getDashboard.request({
-      stripeId,
-    });
-    set((state) => ({
-      ...state,
-      redirecting: false,
-    }));
+    try {
+      set((state) => ({
+        ...state,
+        redirecting: true,
+      }));
+      await getDashboard.request({
+        stripeId,
+      });
+    } catch (err) {
+      // do nothing
+    } finally {
+      set((state) => ({
+        ...state,
+        redirecting: false,
+      }));
+    }
   },
   resetStats: () => {
     set({ ...initialState });

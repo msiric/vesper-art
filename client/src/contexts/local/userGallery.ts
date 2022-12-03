@@ -117,8 +117,6 @@ const initActions = (set, get) => ({
         elements: [...state.elements, ...formattedArtwork.elements],
       }));
     } catch (err) {
-      console.log(err);
-      set((state) => ({ ...state, loading: false }));
       set((state) => ({
         ...state,
         [state[state.display]]: {

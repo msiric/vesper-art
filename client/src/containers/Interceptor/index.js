@@ -168,7 +168,7 @@ const Interceptor = () => {
 
   const handleSocketRefresh = async () => {
     try {
-      socket.instance.emit("disconnectUser");
+      if (socket?.instance) socket.instance.emit("disconnectUser");
       const { data } = await postRefresh.request();
       updateUser({
         token: data.accessToken,
@@ -205,7 +205,7 @@ const Interceptor = () => {
       socket.instance.on("sendNotification", handleSocketNotification);
       socket.instance.on("expiredToken", handleSocketRefresh);
       socket.instance.on("connect", handleNotificationRefresh);
-    } else if (socket && socket.instance) {
+    } else if (socket?.instance) {
       socket.instance.emit("disconnectUser");
     }
   };
@@ -213,9 +213,11 @@ const Interceptor = () => {
   useEffect(() => {
     getRefreshToken();
     return () => {
-      socket.instance.off("sendNotification", handleSocketNotification);
-      socket.instance.off("expiredToken", handleSocketRefresh);
-      socket.instance.off("connect", handleNotificationRefresh);
+      if (socket?.instance) {
+        socket.instance.off("sendNotification", handleSocketNotification);
+        socket.instance.off("expiredToken", handleSocketRefresh);
+        socket.instance.off("connect", handleNotificationRefresh);
+      }
     };
   }, []);
 

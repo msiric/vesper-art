@@ -52,50 +52,58 @@ const initActions = (set, get) => ({
     }
   },
   downloadArtwork: async ({ userId, orderId }) => {
-    const { data } = await getDownload.request({ userId, orderId });
-    const link = document.createElement("a");
-    link.href = data.url;
-    link.setAttribute("download", data.file);
-    document.body.appendChild(link);
-    link.click();
+    try {
+      const { data } = await getDownload.request({ userId, orderId });
+      const link = document.createElement("a");
+      link.href = data.url;
+      link.setAttribute("download", data.file);
+      document.body.appendChild(link);
+      link.click();
+    } catch (err) {
+      // do nothing
+    }
   },
   submitRating: async ({ userId, orderId, values }) => {
-    await postReview.request({
-      userId,
-      orderId,
-      reviewRating: values.reviewRating,
-    });
-    const order = get().order.data;
-    const newRating = order.seller.rating
-      ? (
-          (order.seller.rating * order.seller.reviews.length +
-            values.reviewRating) /
-          (order.seller.reviews.length + 1)
-        ).toFixed(2)
-      : values.reviewRating.toFixed(2);
-    set((state) => ({
-      ...state,
-      order: {
-        ...state.order,
-        data: {
-          ...state.order.data,
-          seller: {
-            ...state.order.data.seller,
-            rating: newRating,
-          },
-          review: {
-            order: order.id,
-            artwork: order.artwork.id,
-            owner: userId,
-            rating: values.reviewRating,
+    try {
+      await postReview.request({
+        userId,
+        orderId,
+        reviewRating: values.reviewRating,
+      });
+      const order = get().order.data;
+      const newRating = order.seller.rating
+        ? (
+            (order.seller.rating * order.seller.reviews.length +
+              values.reviewRating) /
+            (order.seller.reviews.length + 1)
+          ).toFixed(2)
+        : values.reviewRating.toFixed(2);
+      set((state) => ({
+        ...state,
+        order: {
+          ...state.order,
+          data: {
+            ...state.order.data,
+            seller: {
+              ...state.order.data.seller,
+              rating: newRating,
+            },
+            review: {
+              order: order.id,
+              artwork: order.artwork.id,
+              owner: userId,
+              rating: values.reviewRating,
+            },
           },
         },
-      },
-      modal: {
-        ...state.modal,
-        open: false,
-      },
-    }));
+        modal: {
+          ...state.modal,
+          open: false,
+        },
+      }));
+    } catch (err) {
+      // do nothing
+    }
   },
   toggleModal: () => {
     set((state) => ({

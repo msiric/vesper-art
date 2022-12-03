@@ -37,6 +37,9 @@ const useStyles = makeStyles((muiTheme) => ({
       flexDirection: "column",
     },
   },
+  heading: {
+    textAlign: "center",
+  },
 }));
 
 const Signup = () => {
@@ -77,7 +80,7 @@ const Signup = () => {
         <Avatar className={classes.avatar}>
           <SignupAvatar />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" className={classes.heading}>
           Sign up
         </Typography>
         <FormProvider control={control}>

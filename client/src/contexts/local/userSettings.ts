@@ -49,67 +49,84 @@ const initActions = (set) => ({
     }
   },
   updateProfile: async ({ userId, values }) => {
-    const formData = new FormData();
-    for (const value of Object.keys(values)) {
-      formData.append(value, values[value]);
-    }
-    await patchUser.request({
-      userId,
-      data: formData,
-    });
-    set((state) => ({
-      ...state,
-      user: {
-        ...state.user,
-        data: {
-          ...state.user.data,
-          avatar: values.userMedia,
-          description: values.userDescription,
-          country: values.userCountry,
+    try {
+      const formData = new FormData();
+      for (const value of Object.keys(values)) {
+        formData.append(value, values[value]);
+      }
+      await patchUser.request({
+        userId,
+        data: formData,
+      });
+      set((state) => ({
+        ...state,
+        user: {
+          ...state.user,
+          data: {
+            ...state.user.data,
+            avatar: values.userMedia,
+            description: values.userDescription,
+            country: values.userCountry,
+          },
+          loading: false,
+          error: false,
         },
-        loading: false,
-        error: false,
-      },
-    }));
+      }));
+    } catch (err) {
+      // do nothing
+    }
   },
   updateEmail: async ({ userId, values, handleLogout }) => {
-    // $TODO log user out server side
-    await patchEmail.request({
-      userId,
-      data: values,
-    });
-    await handleLogout();
+    try {
+      // $TODO log user out server side
+      await patchEmail.request({
+        userId,
+        data: values,
+      });
+      await handleLogout();
+    } catch (err) {
+      // do nothing
+    }
   },
   updatePreferences: async ({ userId, values }) => {
-    await patchPreferences.request({
-      userId,
-      data: values,
-    });
-    set((state) => ({
-      ...state,
-      user: {
-        ...state.user,
-        data: {
-          ...state.user.data,
-          displayFavorites: values.userFavorites,
+    try {
+      await patchPreferences.request({
+        userId,
+        data: values,
+      });
+      set((state) => ({
+        ...state,
+        user: {
+          ...state.user,
+          data: {
+            ...state.user.data,
+            displayFavorites: values.userFavorites,
+          },
+          loading: false,
+          error: false,
         },
-        loading: false,
-        error: false,
-      },
-    }));
+      }));
+    } catch (err) {
+      // do nothing
+    }
   },
   updatePassword: async ({ userId, values, handleLogout }) => {
-    await patchPassword.request({
-      userId,
-      data: values,
-    });
-    await handleLogout();
+    try {
+      await patchPassword.request({
+        userId,
+        data: values,
+      });
+      await handleLogout();
+    } catch (err) {
+      // do nothing
+    }
   },
   deactivateUser: async ({ userId }) => {
     try {
       set((state) => ({ ...state, isDeactivating: true }));
       await deleteUser.request({ userId });
     } catch (err) {
+      // do nothing
     } finally {
       set((state) => ({ ...state, isDeactivating: false }));
     }

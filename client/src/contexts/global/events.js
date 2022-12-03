@@ -190,7 +190,6 @@ const initActions = (set, get) => ({
           },
         }));
       } catch (err) {
-        console.log("error", err);
         const { resetEvents } = get();
         notifications.initialized
           ? set((state) => ({
@@ -230,7 +229,6 @@ const initActions = (set, get) => ({
         },
       }));
     } catch (err) {
-      console.log("error", err);
       const { disconnectMenu } = get();
       disconnectMenu();
     }
@@ -280,7 +278,7 @@ const initActions = (set, get) => ({
         },
       }));
     } catch (err) {
-      console.log(err);
+      // do nothing
     }
   },
   unreadNotification: async ({ userId, event = window.event, id }) => {
@@ -308,7 +306,7 @@ const initActions = (set, get) => ({
         },
       }));
     } catch (err) {
-      console.log(err);
+      // do nothing
     }
   },
   addNotification: ({ notification, cursor, count = 1 }) => {

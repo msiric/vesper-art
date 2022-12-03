@@ -37,6 +37,9 @@ const useStyles = makeStyles((muiTheme) => ({
       flexDirection: "column",
     },
   },
+  heading: {
+    textAlign: "center",
+  },
 }));
 
 const UpdateEmail = () => {
@@ -55,16 +58,8 @@ const UpdateEmail = () => {
   const onSubmit = async (values) => {
     try {
       await postEmail.request({ data: values });
-      /*         enqueueSnackbar('Verification email sent', {
-          variant: 'success',
-          autoHideDuration: 1000,
-          anchorOrigin: {
-            vertical: 'top',
-            horizontal: 'center',
-          },
-        }); */
     } catch (err) {
-      console.log(err);
+      // do nothing
     }
   };
 
@@ -81,7 +76,7 @@ const UpdateEmail = () => {
         <Avatar className={classes.avatar}>
           <EmailAvatar />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" className={classes.heading}>
           Update email
         </Typography>
         <FormProvider control={control}>
