@@ -1,3 +1,5 @@
+import { environment, ENV_OPTIONS } from "../config/secret";
+
 export const appName = "Vesper";
 
 export const domainName = "vesperart.co";
@@ -8,11 +10,11 @@ export const cookieKeys = {
 };
 
 export const featureFlags = {
-  stripe: true,
-  payment: true,
-  discount: true,
-  dashboard: true,
-  gif: true,
+  stripe: environment !== ENV_OPTIONS.PRODUCTION,
+  payment: environment !== ENV_OPTIONS.PRODUCTION,
+  discount: environment !== ENV_OPTIONS.PRODUCTION,
+  dashboard: environment !== ENV_OPTIONS.PRODUCTION,
+  gif: environment !== ENV_OPTIONS.PRODUCTION,
 };
 
 export const unavailableMessage =

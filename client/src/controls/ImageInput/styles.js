@@ -17,18 +17,13 @@ const imageInputStyles = makeStyles((muiTheme) => ({
   },
   avatar: {
     cursor: ({ editable }) => (editable ? "pointer" : "auto"),
+    border: `1px solid ${artepunktTheme.palette.primary.main}`,
     height: 150,
     width: 150,
     maxWidth: 600,
     position: "relative",
     backgroundColor: "transparent",
     margin: "auto",
-    borderColor: artepunktTheme.palette.primary.main,
-    "&:hover": {
-      "& $overlayRemove": {
-        opacity: 1,
-      },
-    },
   },
   artwork: {
     height: "100%",
