@@ -57,11 +57,17 @@ const Signup = () => {
       resolver: yupResolver(signupValidation),
     });
 
+  const history = useHistory();
+
   const onSubmit = async (values) => {
-    await postSignup.request({ data: values });
+    try {
+      await postSignup.request({ data: values });
+      history.push("/login");
+    } catch (err) {
+      // do nothing
+    }
   };
 
-  const history = useHistory();
   const classes = useStyles();
 
   const watchedValues = watch();
