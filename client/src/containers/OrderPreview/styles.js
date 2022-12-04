@@ -24,6 +24,8 @@ const orderPreviewStyles = makeStyles((muiTheme) => ({
     wordBreak: "break-word",
     fontWeight: "bold",
     fontSize: 24,
+    color: "#fff",
+    textDecoration: "none",
   },
 }));
 

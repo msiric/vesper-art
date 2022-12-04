@@ -195,6 +195,7 @@ router.route("/users/:userUsername/artwork").get(
 );
 
 router.route("/users/:userUsername/favorites").get(
+  [isAuthenticatedNoFail],
   handler(getUserFavorites, false, (req, res, next) => ({
     userUsername: req.params.userUsername,
     cursor: req.query.cursor,

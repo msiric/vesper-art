@@ -579,6 +579,7 @@ export const getUserOwnership = async ({
 };
 
 export const getUserFavorites = async ({
+  userId,
   userUsername,
   cursor,
   limit,
@@ -589,7 +590,7 @@ export const getUserFavorites = async ({
     connection,
   });
   if (!isObjectEmpty(foundUser)) {
-    if (foundUser.displayFavorites) {
+    if (foundUser.displayFavorites || userId === foundUser.id) {
       const foundFavorites = await fetchUserFavorites({
         userId: foundUser.id,
         cursor,

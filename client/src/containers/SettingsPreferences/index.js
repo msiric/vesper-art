@@ -51,7 +51,7 @@ const SettingsPreferences = () => {
   return (
     <Card className={classes.container}>
       <FormProvider control={control}>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
           <CardContent>
             <EditPreferencesForm
               setValue={setValue}

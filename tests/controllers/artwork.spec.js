@@ -2264,17 +2264,29 @@ describe("Artwork tests", () => {
     });
 
     describe("/api/users/:userUsername/favorites", () => {
-      let userFavorites;
+      let sellerFavorites;
+      let buyerFavorites;
       beforeAll(() => {
-        userFavorites = entities.Favorite.filter(
+        sellerFavorites = entities.Favorite.filter(
           (item) => item.ownerId === seller.id
+        );
+        buyerFavorites = entities.Favorite.filter(
+          (item) => item.ownerId === buyer.id
         );
       });
       it("should fetch user favorites", async () => {
         const res = await request(app).get(
           `/api/users/${seller.name}/favorites`
         );
-        expect(res.body.favorites).toHaveLength(userFavorites.length);
+        expect(res.body.favorites).toHaveLength(sellerFavorites.length);
+        expect(res.statusCode).toEqual(statusCodes.ok);
+      });
+
+      it("should fetch user favorites if user not has disabled displaying favorites and visiting own profile", async () => {
+        const res = await request(app, buyerToken).get(
+          `/api/users/${buyer.name}/favorites`
+        );
+        expect(res.body.favorites).toHaveLength(buyerFavorites.length);
         expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
@@ -2288,12 +2300,12 @@ describe("Artwork tests", () => {
       });
 
       it("should limit user favorites to 1 and skip the first one", async () => {
-        const cursor = userFavorites[0].id;
+        const cursor = sellerFavorites[0].id;
         const limit = 1;
         const res = await request(app).get(
           `/api/users/${seller.name}/favorites?cursor=${cursor}&limit=${limit}`
         );
-        expect(res.body.favorites[0].id).toEqual(userFavorites[1].id);
+        expect(res.body.favorites[0].id).toEqual(sellerFavorites[1].id);
         expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
@@ -2305,7 +2317,7 @@ describe("Artwork tests", () => {
         expect(res.statusCode).toEqual(errors.userNotFound.status);
       });
 
-      it("should throw an error if user has disabled displaying favorites", async () => {
+      it("should throw an error if user not has disabled displaying favorites and not visiting own profile", async () => {
         const res = await request(app).get(
           `/api/users/${buyer.name}/favorites`
         );

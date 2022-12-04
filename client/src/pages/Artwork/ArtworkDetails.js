@@ -14,6 +14,9 @@ import globalStyles from "../../styles/global";
 import { containsErrors, renderError } from "../../utils/helpers";
 
 const useArtworkStyles = makeStyles((muiTheme) => ({
+  container: {
+    position: "relative",
+  },
   stickyWrapper: {
     position: "absolute",
     top: 0,
@@ -37,9 +40,6 @@ const useArtworkStyles = makeStyles((muiTheme) => ({
     [muiTheme.breakpoints.down("xs")]: {
       flexDirection: "column",
     },
-  },
-  container: {
-    position: "relative",
   },
   item: {
     width: "100%",

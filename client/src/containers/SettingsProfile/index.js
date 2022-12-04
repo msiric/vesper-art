@@ -76,6 +76,7 @@ const SettingsProfile = () => {
               editable
               loading={loading}
               userName={user.fullName}
+              userUsername={user.name}
             />
           </CardContent>
           <CardActions className={classes.actions}>
