@@ -57,8 +57,7 @@ const ArtworkModifier = ({ paramId }) => {
         : "",
     artworkDescription: artwork.current.description,
     artworkVisibility: artwork.visibility,
-    // artworkCategory: artwork.current.category,
-    // artworkTags: artwork.current.tags || [],
+    artworkTags: artwork.current.tags || [],
   });
 
   const {
@@ -106,6 +105,8 @@ const ArtworkModifier = ({ paramId }) => {
   useEffect(() => {
     reset(setDefaultValues());
   }, [artwork]);
+
+  console.log("watched values", watchedValues);
 
   return (
     <Card>

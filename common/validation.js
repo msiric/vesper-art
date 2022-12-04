@@ -776,12 +776,11 @@ export const artworkValidation = Yup.object().shape({
         .min(ranges.freePricing.exact)
         .max(ranges.freePricing.exact),
     }),
-  // artworkCategory: "",
-  // artworkTags: Yup.array()
-  //   .of(Yup.string().typeError(errors.invalidString.message))
-  //   .min(1, "At least one tag is required")
-  //   .max(5, "At most five tags are permitted")
-  //   .required("Artwork tags are required"),
+  artworkTags: Yup.array()
+    .of(Yup.string().typeError(errors.invalidString.message))
+    .min(1, "At least one tag is required")
+    .max(5, "At most five tags are permitted")
+    .required("Artwork tags are required"),
   artworkVisibility: Yup.string()
     .typeError(errors.invalidString.message)
     .required(errors.artworkVisibilityRequired.message)

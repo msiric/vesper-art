@@ -1,4 +1,5 @@
 import { Like } from "@entities/Like";
+import { Tag } from "@entities/Tag";
 import { View } from "@entities/View";
 import { upload } from "../common/constants";
 import { Artwork } from "../entities/Artwork";
@@ -110,6 +111,20 @@ export const fetchActiveArtworks = async ({ cursor, limit, connection }) => {
     .limit(limit)
     .getMany();
   return foundArtwork;
+};
+
+export const fetchArtworkTags = async ({ tag, cursor, limit, connection }) => {
+  const queryBuilder = await connection
+    .getRepository(Tag)
+    .createQueryBuilder("tag");
+  const foundTags = await queryBuilder
+    .where(`tag.title ILIKE :title`, {
+      title: `${tag}%`,
+    })
+    .orderBy("tag.serial", "DESC")
+    .limit(limit)
+    .getMany();
+  return foundTags;
 };
 
 export const fetchVersionDetails = async ({
@@ -452,11 +467,8 @@ export const addNewVersion = async ({
         use: artworkData.artworkUse,
         personal: artworkData.artworkPersonal,
         commercial: artworkData.artworkCommercial,
-        // $TODO restore after category implementation
-        // category: artworkData.artworkCategory,
         description: artworkData.artworkDescription,
-        // $TODO restore after tags implementation
-        /* tags: artworkUpload.fileDominant, */
+        tags: artworkUpload.artworkTags,
         coverId,
         mediaId,
         artworkId,

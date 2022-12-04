@@ -29,6 +29,7 @@ import {
   fetchArtworkEdit,
   fetchArtworkId,
   fetchArtworkMedia,
+  fetchArtworkTags,
   fetchCommentByOwner,
   fetchCommentByParent,
   fetchFavoriteByParents,
@@ -73,6 +74,16 @@ export const getArtwork = async ({ cursor, limit, connection }) => {
     connection,
   });
   return { artwork: foundArtwork };
+};
+
+export const getArtworkTags = async ({ tag, cursor, limit, connection }) => {
+  const foundTags = await fetchArtworkTags({
+    tag,
+    cursor,
+    limit,
+    connection,
+  });
+  return { tags: foundTags };
 };
 
 export const getArtworkDetails = async ({ artworkId, connection }) => {

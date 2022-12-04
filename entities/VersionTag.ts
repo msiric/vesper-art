@@ -4,13 +4,15 @@ import {
   CreateDateColumn,
   Entity,
   Generated,
-  ManyToMany,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Version } from "./Version";
 
 @Entity()
-export class Tag extends BaseEntity {
+export class VersionTag extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
@@ -18,11 +20,17 @@ export class Tag extends BaseEntity {
   @Generated("increment")
   serial: number;
 
-  @ManyToMany(() => Version, (version) => version.tags)
-  versions: Version[];
+  @PrimaryColumn()
+  versionId: string;
 
-  @Column()
-  title: string;
+  @PrimaryColumn()
+  tagId: string;
+
+  @ManyToOne(() => Version, (version) => version.tagConnection, {
+    primary: true,
+  })
+  @JoinColumn({ name: "versionId" })
+  version: Promise<Version>;
 
   @CreateDateColumn({ type: "timestamptz" })
   created: Date;

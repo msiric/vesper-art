@@ -10,6 +10,7 @@ import {
   getArtworkComments,
   getArtworkDetails,
   getArtworkEdit,
+  getArtworkTags,
   getComment,
   getUserArtworkById,
   getUserArtworkByUsername,
@@ -36,6 +37,14 @@ const router = express.Router();
 // Public routes
 router.route("/artwork").get(
   handler(getArtwork, false, (req, res, next) => ({
+    cursor: req.query.cursor,
+    limit: req.query.limit,
+  }))
+);
+
+router.route("/artwork/tags").get(
+  handler(getArtworkTags, false, (req, res, next) => ({
+    tag: req.body.tagTitle,
     cursor: req.query.cursor,
     limit: req.query.limit,
   }))

@@ -62,12 +62,7 @@ export class Version extends BaseEntity {
   @Column()
   title: string;
 
-  // $TODO not implemented
-  @Column({ nullable: true })
-  category: string;
-
-  // $TODO not implemented
-  @ManyToMany(() => Tag, (tag) => tag.id, { cascade: ["insert"] })
+  @ManyToMany(() => Tag, (tag) => tag.versions)
   @JoinTable()
   tags: Tag[];
 
