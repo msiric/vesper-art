@@ -1,3 +1,4 @@
+import { useUserStore } from "@contexts/global/user";
 import React, { useEffect } from "react";
 import EmptySection from "../../components/EmptySection/index";
 import SwipeCard from "../../components/SwipeCard/index";
@@ -12,6 +13,8 @@ import UserFavorites from "../UserFavorites/index";
 import profileArtworkStyles from "./styles";
 
 const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
+  const userUsername = useUserStore((state) => state.name);
+
   const profile = useUserProfile((state) => state.profile.data);
   const editable = useUserProfile((state) => state.editable);
   const loading = useUserProfile((state) => state.profile.loading);
@@ -23,16 +26,19 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   const fetchFavorites = useUserArtwork((state) => state.fetchFavorites);
   const changeTab = useUserArtwork((state) => state.changeTab);
 
-  const userUsername = paramId;
+  const profileUsername = paramId;
 
   const isVisible = useVisibleElement(artworkRef, artworkFetched.current);
+  const isOwner = !profile.displayFavorites && profileUsername === userUsername;
+  const shouldDisplayFavorites =
+    profile.displayFavorites || profileUsername === userUsername;
 
   const classes = profileArtworkStyles();
 
   useEffect(() => {
     if (!artworkFetched.current && isVisible && !artworkLoading) {
       fetchArtwork({
-        userUsername,
+        userUsername: profileUsername,
       });
       artworkFetched.current = true;
     }
@@ -41,7 +47,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   useEffect(() => {
     if (!tabs.revealed && tabs.value === 1) {
       fetchFavorites({
-        userUsername,
+        userUsername: profileUsername,
       });
     }
   }, [tabs.value]);
@@ -57,8 +63,8 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
             headings: [
               { display: true, label: "Artwork", props: {} },
               {
-                display: profile.displayFavorites,
-                label: "Favorites",
+                display: shouldDisplayFavorites,
+                label: isOwner ? "Favorites*" : "Favorites",
                 props: {},
               },
             ],
@@ -68,7 +74,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                 component: (
                   <Box className={classes.wrapper}>
                     <UserArtwork
-                      userUsername={userUsername}
+                      profileUsername={profileUsername}
                       type="artwork"
                       fixed
                       shouldPause={tabs.value !== 0}
@@ -88,11 +94,11 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                 loading: artworkLoading,
               },
               {
-                display: profile.displayFavorites,
+                display: shouldDisplayFavorites,
                 component: (
                   <Box className={classes.wrapper}>
                     <UserFavorites
-                      userUsername={userUsername}
+                      profileUsername={profileUsername}
                       type="favorite"
                       fixed
                       shouldPause={tabs.value !== 1}

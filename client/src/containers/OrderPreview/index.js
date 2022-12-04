@@ -1,5 +1,5 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { Link as RouterLink, useHistory } from "react-router-dom";
 import ImageWrapper from "../../components/ImageWrapper/index";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
 import Box from "../../domain/Box";
@@ -8,6 +8,7 @@ import Typography from "../../domain/Typography";
 import orderPreviewStyles from "./styles";
 
 const OrderPreview = () => {
+  const artwork = useOrderDetails((state) => state.order.data.artwork);
   const version = useOrderDetails((state) => state.order.data.version);
   const loading = useOrderDetails((state) => state.order.loading);
 
@@ -27,11 +28,17 @@ const OrderPreview = () => {
         />
       </Box>
       <Box className={classes.detailsWrapper}>
-        <Typography className={classes.title} loading={loading}>
+        <Typography
+          component={RouterLink}
+          to={`/artwork/${artwork.id}`}
+          className={classes.title}
+          loading={loading}
+        >
           {!loading
             ? `${version.title}, ${new Date(version.created).getFullYear()}`
             : "Fetching artwork title"}
         </Typography>
+
         <Typography variant="body2" loading={loading}>
           {!loading
             ? version.description || "No description"

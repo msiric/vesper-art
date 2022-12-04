@@ -22,6 +22,7 @@ const useSettingsStyles = makeStyles((muiTheme) => ({
   wrapper: {
     display: "flex",
     flexDirection: "column",
+    flexGrow: 1,
   },
 }));
 

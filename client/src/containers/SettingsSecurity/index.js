@@ -39,9 +39,9 @@ const SettingsSecurity = ({ handleLogout }) => {
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   return (
-    <Card>
+    <Card className={classes.container}>
       <FormProvider control={control}>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
           <CardContent>
             <EditPasswordForm errors={errors} loading={loading} />
           </CardContent>

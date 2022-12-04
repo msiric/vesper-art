@@ -16,14 +16,19 @@ import { containsErrors, renderError } from "../../utils/helpers";
 
 const useOrderStyles = makeStyles((muiTheme) => ({
   container: {
+    position: "relative",
+  },
+  stickyWrapper: {
+    position: "sticky",
+    top: 0,
+    right: 0,
     display: "flex",
     flexDirection: "column",
     [muiTheme.breakpoints.down("sm")]: {
-      display: "flex",
+      position: "static",
       flexDirection: "row",
     },
     [muiTheme.breakpoints.down("xs")]: {
-      display: "flex",
       flexDirection: "column",
     },
   },
@@ -63,22 +68,24 @@ const Order = ({ match }) => {
 
   return !containsErrors(retry, redirect) ? (
     <Container className={globalClasses.gridContainer}>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} className={classes.container}>
         <Grid item xs={12} md={8}>
           <OrderPreview paramId={paramId} />
         </Grid>
-        <Grid item xs={12} md={4} className={classes.container}>
-          <Box
-            className={`${classes.ownerWrapper} ${globalClasses.responsiveSpacing}`}
-          >
-            <UserSection />
-          </Box>
-          <Box className={classes.actions}>
-            <Box className={globalClasses.bottomSpacing}>
-              <ReviewCard paramId={paramId} highlightRef={highlightRef} />
+        <Grid item xs={12} md={4}>
+          <Box className={classes.stickyWrapper}>
+            <Box
+              className={`${classes.ownerWrapper} ${globalClasses.responsiveSpacing}`}
+            >
+              <UserSection />
             </Box>
-            <Box>
-              <DownloadCard />
+            <Box className={classes.actions}>
+              <Box className={globalClasses.bottomSpacing}>
+                <ReviewCard paramId={paramId} highlightRef={highlightRef} />
+              </Box>
+              <Box>
+                <DownloadCard />
+              </Box>
             </Box>
           </Box>
         </Grid>
@@ -88,8 +95,8 @@ const Order = ({ match }) => {
           </Box>
           <LicenseCard />
         </Grid>
+        <RatingWrapper paramId={paramId} />
       </Grid>
-      <RatingWrapper paramId={paramId} />
     </Container>
   ) : (
     renderError({ retry, redirect, message, reinitializeState })

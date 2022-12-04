@@ -60,7 +60,7 @@ const SettingsAccount = ({ handleLogout }) => {
   return (
     <Card className={classes.container}>
       <FormProvider control={control}>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
           <CardContent>
             <EmailForm errors={errors} loading={loading} />
           </CardContent>

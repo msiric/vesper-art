@@ -16,6 +16,7 @@ const EditUserForm = ({
   trigger,
   editable,
   userName,
+  userUsername,
   loading,
 }) => {
   const classes = {};
@@ -53,6 +54,17 @@ const EditUserForm = ({
           type="text"
           label="Full name"
           defaultValue={userName}
+          variant="outlined"
+          margin="dense"
+          disabled
+          inputProps={{ readOnly: true }}
+          fullWidth
+          loading={loading}
+        />
+        <TextField
+          type="text"
+          label="Username"
+          defaultValue={userUsername}
           variant="outlined"
           margin="dense"
           disabled
