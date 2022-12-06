@@ -74,7 +74,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                 component: (
                   <Box className={classes.wrapper}>
                     <UserArtwork
-                      userUsername={userUsername}
+                      userUsername={profile.name}
                       shouldPause={tabs.value !== 0}
                       type="artwork"
                       fixed
@@ -98,7 +98,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                 component: (
                   <Box className={classes.wrapper}>
                     <UserFavorites
-                      userUsername={userUsername}
+                      userUsername={profile.name}
                       shouldPause={tabs.value !== 1}
                       type="favorite"
                       fixed
