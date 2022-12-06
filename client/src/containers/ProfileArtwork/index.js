@@ -74,10 +74,10 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                 component: (
                   <Box className={classes.wrapper}>
                     <UserArtwork
-                      profileUsername={profileUsername}
+                      userUsername={userUsername}
+                      shouldPause={tabs.value !== 0}
                       type="artwork"
                       fixed
-                      shouldPause={tabs.value !== 0}
                     />
                   </Box>
                 ),
@@ -98,10 +98,10 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                 component: (
                   <Box className={classes.wrapper}>
                     <UserFavorites
-                      profileUsername={profileUsername}
+                      userUsername={userUsername}
+                      shouldPause={tabs.value !== 1}
                       type="favorite"
                       fixed
-                      shouldPause={tabs.value !== 1}
                     />
                   </Box>
                 ),
