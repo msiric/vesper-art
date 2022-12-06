@@ -113,7 +113,8 @@ const initActions = (set, get) => ({
         data,
       });
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   removeArtwork: async ({ userId, artworkId }) => {
@@ -125,7 +126,8 @@ const initActions = (set, get) => ({
       });
       set((state) => ({ ...state, isDeleting: false }));
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   toggleModal: () => {

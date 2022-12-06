@@ -195,7 +195,8 @@ const initActions = (set) => ({
         stripeId,
       });
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     } finally {
       set((state) => ({
         ...state,

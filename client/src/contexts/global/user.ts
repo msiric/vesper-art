@@ -106,7 +106,8 @@ const initActions = (set, get) => ({
         state: { message: "Reset link sent to your email" },
       });
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   authenticateUser: async ({ data, setUser, setEvents, history }) => {
@@ -142,7 +143,8 @@ const initActions = (set, get) => ({
       }
       history.push("/");
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   resendToken: async ({ data, history }) => {
@@ -153,32 +155,37 @@ const initActions = (set, get) => ({
         state: { message: "Verification link sent to your email" },
       });
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   resetPassword: async ({ resetToken, data, history }) => {
     try {
-      await postReset.request({ resetToken, data });
+      const userId = get().id;
+      await postReset.request({ userId, resetToken, data });
       history.push({
         pathname: "/login",
         state: { message: "Password successfully changed" },
       });
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   registerUser: async ({ data }) => {
     try {
       await postSignup.request({ data });
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   updateEmail: async ({ data }) => {
     try {
       await postEmail.request({ data });
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   toggleMenu: ({ event }) => {
@@ -206,7 +213,8 @@ const initActions = (set, get) => ({
       resetEvents();
       history.push(window.location.pathname);
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   resetUser: () => {

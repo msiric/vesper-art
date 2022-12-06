@@ -81,15 +81,11 @@ const ArtworkModifier = ({ paramId }) => {
   const classes = artworkModifierClasses();
 
   const onSubmit = async (values) => {
-    try {
-      await updateArtwork({ userId, artworkId: artwork.id, values });
-      history.push({
-        pathname: "/",
-        state: { message: "Artwork updated" },
-      });
-    } catch (err) {
-      // do nothing
-    }
+    await updateArtwork({ userId, artworkId: artwork.id, values });
+    history.push({
+      pathname: "/my_artwork",
+      state: { message: "Artwork updated" },
+    });
   };
 
   const watchedValues = watch();

@@ -38,15 +38,11 @@ const SettingsAccount = ({ handleLogout }) => {
     });
 
   const onSubmit = async (values) => {
-    try {
-      await updateEmail({ userId: user.id, values, handleLogout });
-      if (socket?.instance) socket.instance.emit("disconnectUser");
-      resetUser();
-      resetEvents();
-      history.push("/login");
-    } catch (err) {
-      // do nothing
-    }
+    await updateEmail({ userId: user.id, values, handleLogout });
+    if (socket?.instance) socket.instance.emit("disconnectUser");
+    resetUser();
+    resetEvents();
+    history.push("/login");
   };
 
   const watchedValues = watch();

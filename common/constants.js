@@ -38,7 +38,7 @@ export const upload = {
   artwork: {
     // 10 megabytes
     fileSize: 10 * 1024 * 1024,
-    fileDimensions: { height: 1200, width: 1200 },
+    fileDimensions: { height: 1024, width: 1024 },
     fileTransform: {
       width: TRANSFORMED_ARTWORK_WIDTH,
       height: (fileHeight, fileWidth) =>

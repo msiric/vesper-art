@@ -114,7 +114,7 @@ const Interceptor = () => {
       },
       async (error) => {
         if (error?.response?.data?.message === auth.loginMessage) {
-          history.push("/login");
+          if (history) history.push("/login");
           return Promise.reject(error);
         }
         if (error?.response?.config?.url === auth.refreshEndpoint) {

@@ -61,15 +61,11 @@ const ResendToken = () => {
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   const onSubmit = async (values) => {
-    try {
-      await postResend.request({ data: values });
-      history.push({
-        pathname: "/login",
-        state: { message: "Verification link sent to your email" },
-      });
-    } catch (err) {
-      // do nothing
-    }
+    await postResend.request({ data: values });
+    history.push({
+      pathname: "/login",
+      state: { message: "Verification link sent to your email" },
+    });
   };
 
   return (

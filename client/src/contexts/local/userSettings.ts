@@ -73,7 +73,8 @@ const initActions = (set) => ({
         },
       }));
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   updateEmail: async ({ userId, values, handleLogout }) => {
@@ -85,7 +86,8 @@ const initActions = (set) => ({
       });
       await handleLogout();
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   updatePreferences: async ({ userId, values }) => {
@@ -107,7 +109,8 @@ const initActions = (set) => ({
         },
       }));
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   updatePassword: async ({ userId, values, handleLogout }) => {
@@ -118,7 +121,8 @@ const initActions = (set) => ({
       });
       await handleLogout();
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   deactivateUser: async ({ userId }) => {
@@ -126,7 +130,8 @@ const initActions = (set) => ({
       set((state) => ({ ...state, isDeactivating: true }));
       await deleteUser.request({ userId });
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     } finally {
       set((state) => ({ ...state, isDeactivating: false }));
     }

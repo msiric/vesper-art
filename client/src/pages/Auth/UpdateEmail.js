@@ -56,11 +56,7 @@ const UpdateEmail = () => {
     });
 
   const onSubmit = async (values) => {
-    try {
-      await postEmail.request({ data: values });
-    } catch (err) {
-      // do nothing
-    }
+    await postEmail.request({ data: values });
   };
 
   const history = useHistory();

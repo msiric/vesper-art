@@ -62,15 +62,11 @@ const ForgotPassword = () => {
   const classes = useStyles();
 
   const onSubmit = async (values) => {
-    try {
-      await postRecover.request({ data: values });
-      history.push({
-        pathname: "/login",
-        state: { message: "Reset link sent to your email" },
-      });
-    } catch (err) {
-      // do nothing
-    }
+    await postRecover.request({ data: values });
+    history.push({
+      pathname: "/login",
+      state: { message: "Reset link sent to your email" },
+    });
   };
 
   return (

@@ -74,14 +74,10 @@ const OnboardingCard = () => {
   });
 
   const onSubmit = async (values) => {
-    try {
-      await postAuthorize.request({
-        userBusinessAddress: values.userBusinessAddress,
-        userEmail,
-      });
-    } catch (err) {
-      // do nothing
-    }
+    await postAuthorize.request({
+      userBusinessAddress: values.userBusinessAddress,
+      userEmail,
+    });
   };
 
   const watchedValues = watch();

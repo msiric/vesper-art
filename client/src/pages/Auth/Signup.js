@@ -60,12 +60,8 @@ const Signup = () => {
   const history = useHistory();
 
   const onSubmit = async (values) => {
-    try {
-      await postSignup.request({ data: values });
-      history.push("/login");
-    } catch (err) {
-      // do nothing
-    }
+    await postSignup.request({ data: values });
+    history.push("/login");
   };
 
   const classes = useStyles();

@@ -72,15 +72,11 @@ const ArtworkCreator = () => {
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   const onSubmit = async (values) => {
-    try {
-      await createArtwork({ values });
-      history.push({
-        pathname: "/",
-        state: { message: "Artwork published" },
-      });
-    } catch (err) {
-      // do nothing
-    }
+    await createArtwork({ values });
+    history.push({
+      pathname: "/my_artwork",
+      state: { message: "Artwork published" },
+    });
   };
 
   useEffect(() => {

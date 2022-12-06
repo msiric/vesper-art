@@ -23,33 +23,23 @@ const LikeButton = ({
   const classes = likeButtonStyles();
 
   const handleLikeComment = async (id) => {
-    try {
-      setState({ loading: true });
-      await postLike.request({
-        artworkId,
-        commentId: comment.id,
-      });
-      handleCallback(true);
-    } catch (err) {
-      // do nothing
-    } finally {
-      setState((prevState) => ({ ...prevState, loading: false }));
-    }
+    setState({ loading: true });
+    await postLike.request({
+      artworkId,
+      commentId: comment.id,
+    });
+    handleCallback(true);
+    setState((prevState) => ({ ...prevState, loading: false }));
   };
 
   const handleDislikeComment = async () => {
-    try {
-      setState({ loading: true });
-      await deleteLike.request({
-        artworkId,
-        commentId: comment.id,
-      });
-      handleCallback(false);
-    } catch (err) {
-      // do nothing
-    } finally {
-      setState((prevState) => ({ ...prevState, loading: false }));
-    }
+    setState({ loading: true });
+    await deleteLike.request({
+      artworkId,
+      commentId: comment.id,
+    });
+    handleCallback(false);
+    setState((prevState) => ({ ...prevState, loading: false }));
   };
 
   return labeled ? (
