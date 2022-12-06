@@ -60,7 +60,8 @@ const initActions = (set, get) => ({
       document.body.appendChild(link);
       link.click();
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   submitRating: async ({ userId, orderId, values }) => {
@@ -102,7 +103,8 @@ const initActions = (set, get) => ({
         },
       }));
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   toggleModal: () => {

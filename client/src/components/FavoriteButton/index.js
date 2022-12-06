@@ -24,37 +24,27 @@ const FavoriteButton = ({
   const classes = favoriteButtonStyles();
 
   const handleFavoriteArtwork = async (id) => {
-    try {
-      setState({ loading: true });
-      await postFavorite.request({ artworkId: id });
-      updateFavorites({
-        favorites: {
-          [id]: true,
-        },
-      });
-      if (handleCallback) handleCallback({ incrementBy: 1 });
-    } catch (err) {
-      // do nothing
-    } finally {
-      setState({ loading: false });
-    }
+    setState({ loading: true });
+    await postFavorite.request({ artworkId: id });
+    updateFavorites({
+      favorites: {
+        [id]: true,
+      },
+    });
+    if (handleCallback) handleCallback({ incrementBy: 1 });
+    setState({ loading: false });
   };
 
   const handleUnfavoriteArtwork = async (id) => {
-    try {
-      setState({ loading: true });
-      await deleteFavorite.request({ artworkId: id });
-      updateFavorites({
-        favorites: {
-          [id]: false,
-        },
-      });
-      if (handleCallback) handleCallback({ incrementBy: -1 });
-    } catch (err) {
-      // do nothing
-    } finally {
-      setState({ loading: false });
-    }
+    setState({ loading: true });
+    await deleteFavorite.request({ artworkId: id });
+    updateFavorites({
+      favorites: {
+        [id]: false,
+      },
+    });
+    if (handleCallback) handleCallback({ incrementBy: -1 });
+    setState({ loading: false });
   };
 
   return labeled ? (

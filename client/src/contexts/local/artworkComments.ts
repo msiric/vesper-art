@@ -53,7 +53,8 @@ const fetchHighlight = async (artworkId, commentId) => {
     });
     return data;
   } catch (err) {
-    // do nothing
+    const error = err as string;
+    throw new Error(error);
   }
 };
 
@@ -96,7 +97,8 @@ const resolveHighlight = async (
     }
     return { highlightData, foundHighlight, fetchedHighlight };
   } catch (err) {
-    // do nothing
+    const error = err as string;
+    throw new Error(error);
   }
 };
 
@@ -199,7 +201,8 @@ const initActions = (set, get) => ({
       }));
       reset();
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   updateComment: async ({ userId, commentId, values }) => {
@@ -229,7 +232,8 @@ const initActions = (set, get) => ({
         },
       }));
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   deleteComment: async ({ userId, commentId }) => {

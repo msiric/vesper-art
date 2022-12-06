@@ -69,35 +69,31 @@ const Login = () => {
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   const onSubmit = async (values) => {
-    try {
-      const { data } = await postLogin.request({ data: values });
+    const { data } = await postLogin.request({ data: values });
 
-      if (data.user) {
-        setUser({
-          authenticated: true,
-          token: data.accessToken,
-          id: data.user.id,
-          name: data.user.name,
-          fullName: data.user.fullName,
-          email: data.user.email,
-          avatar: data.user.avatar,
-          stripeId: data.user.stripeId,
-          onboarded: data.user.onboarded,
-          country: data.user.country,
-          favorites: data.user.favorites.reduce((object, item) => {
-            object[item.artworkId] = true;
-            return object;
-          }, {}),
-        });
-        setEvents({
-          notifications: {
-            count: data.user.notifications,
-          },
-        });
-        updateCount({ enabled: true });
-      }
-    } catch (err) {
-      // do nothing
+    if (data.user) {
+      setUser({
+        authenticated: true,
+        token: data.accessToken,
+        id: data.user.id,
+        name: data.user.name,
+        fullName: data.user.fullName,
+        email: data.user.email,
+        avatar: data.user.avatar,
+        stripeId: data.user.stripeId,
+        onboarded: data.user.onboarded,
+        country: data.user.country,
+        favorites: data.user.favorites.reduce((object, item) => {
+          object[item.artworkId] = true;
+          return object;
+        }, {}),
+      });
+      setEvents({
+        notifications: {
+          count: data.user.notifications,
+        },
+      });
+      updateCount({ enabled: true });
     }
   };
 

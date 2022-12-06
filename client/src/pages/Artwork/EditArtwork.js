@@ -57,12 +57,8 @@ const EditArtwork = ({ match }) => {
   const classes = useEditorStyles();
 
   const handleDeleteArtwork = async () => {
-    try {
-      await removeArtwork({ userId, artworkId: artwork.id });
-      history.push("/");
-    } catch (err) {
-      // do nothing
-    }
+    await removeArtwork({ userId, artworkId: artwork.id });
+    history.push("/");
   };
 
   const reinitializeState = () => {

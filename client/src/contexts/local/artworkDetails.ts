@@ -108,7 +108,8 @@ const initActions = (set) => ({
       }));
       history.push("/orders");
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   trackView: async ({ artworkId }) => {
@@ -117,7 +118,8 @@ const initActions = (set) => ({
         artworkId,
       });
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   toggleFavorite: async ({ incrementBy }) => {

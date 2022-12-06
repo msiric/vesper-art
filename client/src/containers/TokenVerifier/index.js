@@ -15,15 +15,11 @@ const TokenVerifier = ({ paramId }) => {
   const history = useHistory();
 
   const handleTokenVerification = async () => {
-    try {
-      await fetchToken({ tokenId: paramId });
-      history.push({
-        pathname: "/login",
-        state: { message: "Email successfully verified" },
-      });
-    } catch (err) {
-      // do nothing
-    }
+    await fetchToken({ tokenId: paramId });
+    history.push({
+      pathname: "/login",
+      state: { message: "Email successfully verified" },
+    });
   };
 
   useEffect(() => {

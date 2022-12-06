@@ -67,7 +67,8 @@ const initActions = (set, get) => ({
         isDeleting: false,
       }));
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   openModal: ({ artworkId }) => {

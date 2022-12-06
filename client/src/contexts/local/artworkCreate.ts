@@ -60,7 +60,8 @@ const initActions = (set, get) => ({
       }
       await postArtwork.request({ data: formData });
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   resetRequirements: () => {

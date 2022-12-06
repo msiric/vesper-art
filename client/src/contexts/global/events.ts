@@ -255,7 +255,7 @@ const initActions = (set, get) => ({
   },
   readNotification: async ({ userId, event = window.event, id }) => {
     try {
-      event.stopPropagation();
+      event?.stopPropagation();
       set((state) => ({
         ...state,
         notifications: {
@@ -278,12 +278,13 @@ const initActions = (set, get) => ({
         },
       }));
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   unreadNotification: async ({ userId, event = window.event, id }) => {
     try {
-      event.stopPropagation();
+      event?.stopPropagation();
       set((state) => ({
         ...state,
         notifications: {
@@ -306,7 +307,8 @@ const initActions = (set, get) => ({
         },
       }));
     } catch (err) {
-      // do nothing
+      const error = err as string;
+      throw new Error(error);
     }
   },
   addNotification: ({ notification, cursor, count = 1 }) => {

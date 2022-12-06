@@ -60,19 +60,15 @@ const ResetPassword = ({ match }) => {
   const classes = useStyles();
 
   const onSubmit = async (values) => {
-    try {
-      await postReset.request({
-        userId: match.params.userId,
-        resetToken: match.params.tokenId,
-        data: values,
-      });
-      history.push({
-        pathname: "/login",
-        state: { message: "Password successfully changed" },
-      });
-    } catch (err) {
-      // do nothing
-    }
+    await postReset.request({
+      userId: match.params.userId,
+      resetToken: match.params.tokenId,
+      data: values,
+    });
+    history.push({
+      pathname: "/login",
+      state: { message: "Password successfully changed" },
+    });
   };
 
   const watchedValues = watch();
