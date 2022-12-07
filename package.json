@@ -39,7 +39,7 @@
     "migrate:up": "cross-env NODE_ENV=development ts-node ./node_modules/typeorm/cli.js migration:run",
     "migrate:down": "cross-env NODE_ENV=development ts-node ./node_modules/typeorm/cli.js migration:revert",
     "deploy:staging": "flyctl deploy --app vesperart-staging --config ./fly.staging.toml",
-    "deploy:production": "flyctl deploy --app vesperart-production --config ./fly.production.toml"
+    "deploy:production": "flyctl deploy --app vesperart-production --config ./fly.production.toml --strategy bluegreen"
   },
   "author": "",
   "license": "ISC",

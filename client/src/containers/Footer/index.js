@@ -29,6 +29,12 @@ const Footer = () => {
 
   const history = useHistory();
 
+  const handleEmailClick = (e) => {
+    e.preventDefault();
+    const email = `info@${window.location.hostname}`;
+    window.location.href = `mailto:${email}`;
+  };
+
   return (
     <footer className={classes.container}>
       <Toolbar disableGutters>
@@ -118,7 +124,8 @@ const Footer = () => {
                   <Typography
                     className={classes.link}
                     component={RouterLink}
-                    to="/contact"
+                    to="#"
+                    onClick={handleEmailClick}
                   >
                     Reach out
                   </Typography>
