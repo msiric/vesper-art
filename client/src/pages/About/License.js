@@ -70,7 +70,7 @@ const LicenseInformation = () => {
             `}
           </Typography>
           <Typography className={classes.paragraph}>
-            {`Additionally, this also allows you to download the artwork's digital file on as many devices as you like, as long as you are the one using it.
+            {`Additionally, this also allows you to download artworks' digital files on as many devices as you like, as long as you are the one using it.
             A license can be assigned to an individual, meaning to you personally, or to a business, which allows your company to use it.
             `}
           </Typography>
@@ -80,7 +80,7 @@ const LicenseInformation = () => {
             `}
           </Typography>
           <Typography className={classes.paragraph}>
-            {`Every generated license contains a license fingerprint, an assignor identifier and an assignee identifier. These values are used by either the artist or the collector to verify an order's license information.
+            {`Every generated license contains a license fingerprint, an assignor identifier (generated to the artist) and an assignee identifier (generated to the collector). These values are used by either the artist or the collector to verify an order's license information.
             Entering the license fingerprint on the platform's verifier will reveal basic information about the license, the collector and the artist of the artwork in question.
             `}
           </Typography>

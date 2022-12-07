@@ -29,6 +29,17 @@ const Footer = () => {
 
   const history = useHistory();
 
+  const handleEmailClick = (e) => {
+    e.preventDefault();
+    const email = `info@${window.location.hostname}`;
+    window.location.href = `mailto:${email}`;
+  };
+
+  const handleSupportClick = (e) => {
+    e.preventDefault();
+    window.location.replace("https://www.buymeacoffee.com/elduderino05");
+  };
+
   return (
     <footer className={classes.container}>
       <Toolbar disableGutters>
@@ -118,9 +129,20 @@ const Footer = () => {
                   <Typography
                     className={classes.link}
                     component={RouterLink}
-                    to="/contact"
+                    to="#"
+                    onClick={handleEmailClick}
                   >
                     Reach out
+                  </Typography>
+                </ListItem>
+                <ListItem disableGutters>
+                  <Typography
+                    className={classes.link}
+                    component={RouterLink}
+                    to="#"
+                    onClick={handleSupportClick}
+                  >
+                    Buy me a coffee
                   </Typography>
                 </ListItem>
               </List>
