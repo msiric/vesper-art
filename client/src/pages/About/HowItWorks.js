@@ -125,7 +125,7 @@ const BUYER_ILLUSTRATIONS = [
   {
     heading: "Make it yours",
     paragraph:
-      "Once you have your eyes on a specific piece, choose a license and download/purchase it, depending on what the artist is offering.",
+      "Once you have your eyes set on a specific piece, choose a license and download/purchase it, depending on what the artist is offering.",
     illustration: <StripePayment />,
   },
   {

@@ -70,7 +70,7 @@ const Selling = () => {
           }
           <Typography variant="h4">{`Selling on ${appName}`}</Typography>
           <Typography className={classes.paragraph}>
-            {`Signing up is free and required for artists to start selling art on ${appName}. When you sign up, you will be able to upload, sell and control the way users interact with your artwork. 
+            {`Signing up is free and required for artists to start uploading art on ${appName}. When you sign up, you will be able to upload, sell and control the way users interact with your artwork. 
             Your art can be published as „preview only“, which allows users to only view your artwork without downloading or purchasing, or „available for download“, which allows users to purchase or download your artwork for free, depending on your preferences. 
             `}
           </Typography>
@@ -87,9 +87,9 @@ const Selling = () => {
           </Typography>
           <Typography className={classes.paragraph}>
             {`Every license that was ever generated on the platform can be verified using the platform's verifer system to ensure that your art is never stolen or used in a way that is outside the scope of what the license permits. 
-            This way, both you, the artist, and the license assignee are protected. When a commercial order is placed, you as a seller (artist) will receive ${
+            This way, both you (license assignor) and the collector (license assignee) are protected. When a commercial order is placed, you as a seller will receive ${
               (1 - payment.appFee) * 100
-            }% of the total order value while the rest goes to the platform. For example, if you price your artwork's personal or commercial license at $100, you will receive $${
+            }% of the total order value while the rest goes to the platform. For example, if you price a specific artwork's personal or commercial license at $100, you will receive $${
               (1 - payment.appFee) * 100
             } once the license has been purchased. Your funds will appear in your Stripe account shortly after being processed.`}
           </Typography>

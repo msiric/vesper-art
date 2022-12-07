@@ -118,7 +118,7 @@ const FAQ = () => {
             How long does it take for me to receive revenues from an order?
           </Typography>
           <Typography className={classes.paragraph}>
-            {`All transactions are processed by ${appName}'s partner, Stripe. 
+            {`All transactions are processed by ${appName}'s payment processing partner, Stripe. 
             Stripe is in charge of securing, processing and verifying payments on the platform which can take longer than usual depending on the circumstances. 
             Head to your Stripe's dashboard and verify the current status of your funds at any time. `}
           </Typography>
@@ -175,7 +175,7 @@ const FAQ = () => {
           </Typography>
           <Typography className={classes.paragraph}>
             {`This depends solely on the artist. If an artist chooses to upload their artwork as „preview only“, then you can only preview the art without the option of downloading or buying it. 
-            On the other hand, an artist can choose to offer the artwork's licenses free of charge or charge a price for a specific license depending on the options selected.`}
+            On the other hand, an artist can choose to offer artworks' licenses free of charge or charge a price for a specific license depending on the options selected.`}
           </Typography>
         </Grid>
         <Grid item sm={12} className={classes.wrapper}>

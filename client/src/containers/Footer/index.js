@@ -35,6 +35,11 @@ const Footer = () => {
     window.location.href = `mailto:${email}`;
   };
 
+  const handleSupportClick = (e) => {
+    e.preventDefault();
+    window.location.replace("https://www.buymeacoffee.com/elduderino05");
+  };
+
   return (
     <footer className={classes.container}>
       <Toolbar disableGutters>
@@ -128,6 +133,16 @@ const Footer = () => {
                     onClick={handleEmailClick}
                   >
                     Reach out
+                  </Typography>
+                </ListItem>
+                <ListItem disableGutters>
+                  <Typography
+                    className={classes.link}
+                    component={RouterLink}
+                    to="#"
+                    onClick={handleSupportClick}
+                  >
+                    Buy me a coffee
                   </Typography>
                 </ListItem>
               </List>
