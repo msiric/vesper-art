@@ -26,19 +26,17 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   const fetchFavorites = useUserArtwork((state) => state.fetchFavorites);
   const changeTab = useUserArtwork((state) => state.changeTab);
 
-  const profileUsername = paramId;
-
   const isVisible = useVisibleElement(artworkRef, artworkFetched.current);
-  const isOwner = !profile.displayFavorites && profileUsername === userUsername;
+  const isOwner = !profile.displayFavorites && paramId === userUsername;
   const shouldDisplayFavorites =
-    profile.displayFavorites || profileUsername === userUsername;
+    profile.displayFavorites || paramId === userUsername;
 
   const classes = profileArtworkStyles();
 
   useEffect(() => {
     if (!artworkFetched.current && isVisible && !artworkLoading) {
       fetchArtwork({
-        userUsername: profileUsername,
+        userUsername: paramId,
       });
       artworkFetched.current = true;
     }
@@ -48,7 +46,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   useEffect(() => {
     if (!tabs.revealed && tabs.value === 1) {
       fetchFavorites({
-        userUsername: profileUsername,
+        userUsername: paramId,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

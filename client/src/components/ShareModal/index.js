@@ -84,11 +84,14 @@ const ShareModal = ({
   useEffect(() => {
     if (state.copy.status !== "idle") {
       setTimeout(() => {
-        handleCopyButton("idle");
+        setState((prevState) => ({
+          ...prevState,
+          copy: { ...prevState.copy, status: "idle" },
+        }));
       }, 1000);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.copy.status]);
+  }, [state]);
 
   return (
     <Box>
@@ -174,7 +177,7 @@ const ShareModal = ({
                 <WhatsappShareButton
                   url={url}
                   title={title}
-                  separator=":: "
+                  separator=": "
                   className={classes.button}
                   onMouseEnter={(e) => {
                     anchorEl.current = e.currentTarget;

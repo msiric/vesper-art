@@ -105,8 +105,8 @@ const globalStyles = makeStyles((muiTheme) => ({
     ".MuiTableRow-root:last-of-type > .MuiTableCell-body": {
       borderBottom: "none !important",
     },
-    ".MuiTableCell-body": {
-      cursor: ({ hoverable }) => (hoverable ? "pointer" : "auto"),
+    ".MuiTableRow-hover": {
+      cursor: "pointer",
     },
     ".MuiSelect-select:focus": {
       borderRadius: artepunktTheme.shape.borderRadius,

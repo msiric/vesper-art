@@ -17,7 +17,7 @@ export const initialState = {
     items: [],
     count: 0,
     opened: false,
-    hasMore: true,
+    hasMore: false,
     cursor: "",
     limit: 5,
     loading: false,
