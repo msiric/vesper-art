@@ -7,7 +7,7 @@ export const initialState = {
   uploads: {
     data: [],
     loading: true,
-    hasMore: true,
+    hasMore: false,
     cursor: "",
     limit: 10,
     error: { retry: false, redirect: false, message: "" },

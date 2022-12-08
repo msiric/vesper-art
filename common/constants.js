@@ -48,8 +48,8 @@ export const upload = {
     mimeTypes: MIME_TYPES,
   },
   user: {
-    // 100 kilobytes
-    fileSize: 100 * 1024,
+    // 1 megabyte
+    fileSize: 1 * 1024 * 1024,
     fileDimensions: { height: 100, width: 100 },
     fileRatio: ALLOWED_AVATAR_RATIO,
     mimeTypes: MIME_TYPES,

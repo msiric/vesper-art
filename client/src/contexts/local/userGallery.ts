@@ -8,7 +8,7 @@ export const initialState = {
     loading: true,
     fetching: false,
     initialized: false,
-    hasMore: true,
+    hasMore: false,
     cursor: "",
     limit: 8,
     error: {
@@ -21,7 +21,7 @@ export const initialState = {
     loading: true,
     fetching: false,
     initialized: false,
-    hasMore: true,
+    hasMore: false,
     cursor: "",
     limit: 8,
     error: {

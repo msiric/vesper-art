@@ -13,7 +13,7 @@ export const initialState = {
     loading: false,
     fetching: false,
     initialized: false,
-    hasMore: true,
+    hasMore: false,
     cursor: "",
     limit: 20,
     error: {

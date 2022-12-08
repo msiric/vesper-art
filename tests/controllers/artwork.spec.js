@@ -2380,9 +2380,7 @@ describe("Artwork tests", () => {
         const res = await request(app, sellerToken).get(
           `/api/users/${seller.id}/uploads`
         );
-        expect(res.body.artwork).toHaveLength(
-          visibleAndActiveArtworkBySeller.length
-        );
+        expect(res.body.artwork).toHaveLength(activeArtworkBySeller.length);
         expect(res.body.artwork[0].current.media.source).toBeTruthy();
         expect(res.statusCode).toEqual(statusCodes.ok);
       });

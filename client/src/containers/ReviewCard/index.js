@@ -37,7 +37,7 @@ const ReviewCard = ({ paramId, highlightRef }) => {
   useEffect(() => {
     fetchOrder({ userId, orderId: paramId, query, highlightRef });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, paramId, query]);
+  }, [userId, paramId]);
 
   return (
     <Card
