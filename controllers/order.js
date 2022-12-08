@@ -25,7 +25,7 @@ import { formatError, formatResponse, generateUuids } from "../utils/helpers";
 import { errors, responses } from "../utils/statuses";
 
 // ovo je test za novi checkout (trenutno delayed)
-// $TODO validacija licenci
+// $TODO Validate licenses
 export const addNewOrder = async ({
   userId,
   versionId,
@@ -33,7 +33,7 @@ export const addNewOrder = async ({
   artworkLicense,
   connection,
 }) => {
-  // $TODO call retrieve paymentintent and create new order
+  // $TODO Call retrieve paymentintent and create new order
 };
 
 export const getSoldOrders = async ({ userId, connection }) => {
@@ -83,9 +83,9 @@ export const getOrderMedia = async ({ userId, orderId, connection }) => {
   throw createError(...formatError(errors.artworkNotFound));
 };
 
-// $TODO ne valja nista
+// $TODO Not good
 export const getBuyerStatistics = async ({ userId, connection }) => {
-  // brisanje accounta
+  // account deletion
   /*     stripe.accounts.del('acct_1Gi3zvL1KEMAcOES', function (err, confirmation) {
     }); */
   const [foundUser, foundFavorites, foundPurchases] = await Promise.all([
@@ -133,7 +133,7 @@ export const getUserSales = async ({ userId, start, end, connection }) => {
     end,
     connection,
   });
-  // $TODO change name
+  // $TODO Change name
   return { statistics: foundOrders };
 };
 
@@ -144,7 +144,7 @@ export const getUserPurchases = async ({ userId, start, end, connection }) => {
     end,
     connection,
   });
-  // $TODO change name
+  // $TODO Change name
   return { statistics: foundOrders };
 };
 
@@ -166,7 +166,7 @@ export const postReview = async ({
         reviewId: null,
         notificationId: null,
       });
-      // $TODO should this be saved or just returned?
+      // $TODO Should this be saved or just returned?
       await addNewReview({
         reviewId,
         orderData: foundOrder,

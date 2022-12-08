@@ -10,7 +10,6 @@ import {
 } from "typeorm";
 import { User } from "./User";
 
-// $TODO ticket status === 'pending' | 'resolved'
 export enum TicketType {
   pending = "pending",
   resolved = "resolved",

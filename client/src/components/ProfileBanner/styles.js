@@ -25,7 +25,7 @@ const profileBannerStyles = makeStyles((muiTheme) => ({
     bottom: 0,
   },
   content: {
-    padding: 24, // $TODO add global padding
+    padding: 24, // $TODO Add global padding
     [muiTheme.breakpoints.down("xs")]: {
       padding: 12,
     },

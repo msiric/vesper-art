@@ -14,10 +14,10 @@ import {
   requestHandler as handler,
 } from "../../../middleware/index";
 
-// $TODO no automated tests
+// $TODO No automated tests
 const router = express.Router();
 
-// $TODO the four routes below need proper authorization
+// $TODO The four routes below need proper authorization
 
 router.route("/accounts/:accountId").get(
   [isAuthenticated, isAuthorized],
@@ -56,7 +56,7 @@ featureFlags.payment &&
     }))
   );
 
-// $TODO Bolje treba sredit
+// $TODO Needs refactoring
 router.route("/authorize").post(
   [isAuthenticated],
   handler(authorizeUser, true, (req, res, next) => ({

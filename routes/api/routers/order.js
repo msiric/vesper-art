@@ -9,12 +9,13 @@ import {
   getSellerStatistics,
   getSoldOrders,
   getUserPurchases,
-  getUserSales, postReview
+  getUserSales,
+  postReview,
 } from "../../../controllers/order";
 import {
   isAuthenticated,
   isAuthorized,
-  requestHandler as handler
+  requestHandler as handler,
 } from "../../../middleware/index";
 
 const router = express.Router();
@@ -62,7 +63,7 @@ router
     }))
   );
 
-// $TODO ne valja
+// $TODO Not good
 router
   .route("/users/:userId/orders/:orderId/reviews")
   // TODO_ Add auth + add userId

@@ -349,7 +349,7 @@ export const fetchFavoritesCount = async ({ artworkId, connection }) => {
   const foundFavorites = await connection
     .getRepository(Favorite)
     .createQueryBuilder("favorite")
-    // $TODO should artwork.active and artwork.visible be checked as well?
+    // $TODO Should artwork.active and artwork.visible be checked as well?
     .select([...FAVORITE_SELECTION["STRIPPED_INFO"]()])
     .where("favorite.artworkId = :artworkId", {
       artworkId,
@@ -452,10 +452,10 @@ export const addNewVersion = async ({
         use: artworkData.artworkUse,
         personal: artworkData.artworkPersonal,
         commercial: artworkData.artworkCommercial,
-        // $TODO restore after category implementation
+        // $TODO Restore after category implementation
         // category: artworkData.artworkCategory,
         description: artworkData.artworkDescription,
-        // $TODO restore after tags implementation
+        // $TODO Restore after tags implementation
         /* tags: artworkUpload.fileDominant, */
         coverId,
         mediaId,
@@ -952,7 +952,7 @@ export const editExistingComment = async ({
     .update(Comment)
     .set({ content: commentContent, modified: true })
     .where(
-      // $TODO should artwork.active and artwork.visibility be checked as well?
+      // $TODO Should artwork.active and artwork.visibility be checked as well?
       'id = :commentId AND "ownerId" = :userId',
       {
         commentId,

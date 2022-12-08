@@ -193,7 +193,7 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
       Notification,
       "notification",
       "notification.receiverId = :userId AND notification.read = :read",
-      // $TODO read const
+      // $TODO Read const
       { userId, read: false }
     )
     .leftJoinAndMapMany(
@@ -214,7 +214,7 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
       ...FAVORITE_SELECTION["ESSENTIAL_INFO"](),
       ...FAVORITE_SELECTION["ARTWORK_INFO"](),
     ])
-    // $TODO verified doesn't need to be checked (it's done in all the controllers)
+    // $TODO Verified doesn't need to be checked (it's done in all the controllers)
     .where("user.id = :userId AND user.active = :active", {
       userId,
       active: USER_SELECTION["ACTIVE_STATUS"],
@@ -228,7 +228,7 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-// $TODO add appropriate visiblity tag
+// $TODO Add appropriate visiblity tag
 export const fetchUserProfile = async ({
   userUsername,
   userId,
@@ -391,7 +391,7 @@ export const removeUserAvatar = async ({ userId, avatarId, connection }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-// $TODO how to conditionally update?
+// $TODO How to conditionally update?
 export const editUserProfile = async ({
   foundUser,
   userDescription = "",
@@ -485,7 +485,7 @@ export const editUserPreferences = async ({
   foundUser.displayFavorites = userFavorites;
   return await User.save(foundUser); */
 
-  // $TODO teska debilana
+  // $TODO Needs to be done better
   const displayFavorites = userFavorites === "true";
 
   const updatedUser = await connection

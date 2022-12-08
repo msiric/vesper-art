@@ -4,7 +4,7 @@ import RangePicker from "../../domain/RangePicker";
 import TextField from "../../domain/TextField";
 import rangeInputStyles from "./styles";
 
-// $TODO Treba sredit
+// $TODO Refactor
 const RangeInput = ({
   fromLabel,
   toLabel,

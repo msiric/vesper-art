@@ -24,7 +24,7 @@ export const addNewUser = async ({
         fullName: userName,
         name: userUsername,
         password: hashedPassword,
-        // $TODO should be avatarId?
+        // $TODO Should be avatarId?
         avatar: null,
         verificationToken,
         verificationExpiry,

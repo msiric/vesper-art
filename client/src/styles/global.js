@@ -46,7 +46,7 @@ const globalStyles = makeStyles((muiTheme) => ({
     ".infinite-scroll-component__outerdiv, .infinite-scroll-component": {
       height: "100% !important",
     },
-    // $TODO gadljivo
+    // $TODO Improve
     ".VerifierTable": {
       display: "flex",
       "& thead, tbody": {

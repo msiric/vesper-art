@@ -213,7 +213,6 @@ export const formatArtworkValues = (data) => {
           ? data.artworkCommercial
           : data.artworkPersonal
         : 0,
-    // $TODO restore after tags are implemented
     // artworkTags: JSON.parse(data.artworkTags),
   };
 };

@@ -40,7 +40,7 @@ export const getCheckout = async ({ userId, versionId, connection }) => {
   throw createError(...formatError(errors.artworkNotFound));
 };
 
-// $TODO not good
+// $TODO Not good
 // transaction is not working correctly???
 export const postDownload = async ({
   userId,

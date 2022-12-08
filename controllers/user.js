@@ -162,7 +162,7 @@ export const getUserSettings = async ({ userId, connection }) => {
     connection,
   });
   if (!isObjectEmpty(foundUser)) {
-    // $TODO change name
+    // $TODO Change name
     return { user: foundUser };
   }
   throw createError(...formatError(errors.userNotFound));

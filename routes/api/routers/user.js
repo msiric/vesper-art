@@ -86,7 +86,7 @@ router.route("/users/:userId/password").patch(
   }))
 );
 
-// $TODO no automated tests
+// $TODO No automated tests
 // FEATURE FLAG - stripe
 // FEATURE FLAG - payment
 featureFlags.stripe &&

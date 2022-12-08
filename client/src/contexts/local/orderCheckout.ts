@@ -256,7 +256,7 @@ const initActions = (set, get) => ({
         ...state,
         intent: { ...state.intent, loading: true },
       }));
-      // $TODO REMOVE INTENT AND FETCH FROM API
+      // $TODO Remove intent and fetch from api
       const version = get().version.data;
       const discount = get().discount.data;
       const { data } = await postIntent.request({

@@ -94,7 +94,7 @@ const seedS3 = async () => {
         // avatar
         user.avatar.data.id = avatarId;
         user.avatar.data.ownerId = userId;
-        // $TODO - handle avatar upload
+        // $TODO - Handle avatar upload
         // end of todo
 
         await connection
@@ -128,11 +128,11 @@ const seedS3 = async () => {
           artwork.version.data.mediaId = mediaId;
           // media
           artwork.version.media.data.id = mediaId;
-          // $TODO - handle media upload
+          // $TODO - Handle media upload
           // end of todo
           // cover
           artwork.version.cover.data.id = coverId;
-          // $TODO - handle cover upload
+          // $TODO - Handle cover upload
           // end of todo
           await Promise.all([
             connection

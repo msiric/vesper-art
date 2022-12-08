@@ -77,7 +77,7 @@ export const fetchUserResults = async ({
     )
     .orderBy("ts_rank(to_tsvector(user.name), to_tsquery(:query))", "DESC")
     .getMany();
-  // $TODO treba ovo odradit ranije
+  // $TODO Needs to be done earlier
   for (let user of foundUsers) {
     user.rating = calculateRating({
       active: user.active,

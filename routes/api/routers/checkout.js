@@ -15,7 +15,7 @@ featureFlags.stripe &&
   featureFlags.payment &&
   router
     .route("/checkout/:versionId")
-    // $TODO not tested
+    // $TODO Not tested
     .get(
       [isAuthenticated],
       handler(getCheckout, false, (req, res, next) => ({
@@ -25,7 +25,7 @@ featureFlags.stripe &&
 
 router
   .route("/download/:versionId")
-  // $TODO not tested
+  // $TODO Not tested
   .post(
     [isAuthenticated],
     handler(postDownload, true, (req, res, next) => ({

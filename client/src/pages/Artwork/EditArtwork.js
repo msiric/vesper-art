@@ -87,7 +87,7 @@ const EditArtwork = ({ match }) => {
           </Grid>
         </Grid>
       ) : (
-        // $TODO push to home and display error notification
+        // $TODO Push to home and display error notification
         "Not found"
       )}
       <PromptModal

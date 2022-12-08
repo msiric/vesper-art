@@ -79,7 +79,7 @@ export const renderRedirectLink = ({ active, isUsername = false }) =>
 
 // FEATURE FLAG - payment
 export const getBarState = () => ({
-  // $TODO temporary disabled banner
+  // $TODO Temporary disabled banner
   // visible: !featureFlags.payment,
   visible: false,
   message: "Purchasing artwork is temporarily disabled",

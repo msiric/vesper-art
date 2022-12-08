@@ -302,7 +302,7 @@ export const fetchUserReviews = async ({ userId, connection }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-// $TODO remove @AfterLoad for earned, spent and fee
+// $TODO Remove @AfterLoad for earned, spent and fee
 export const fetchUserPurchases = async ({
   userId,
   cursor,

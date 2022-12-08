@@ -26,10 +26,10 @@ router.route("/refresh_token").post(
   }))
 );
 
-// $TODO only for admin (remove in prod)
+// $TODO Only for admin (remove in prod)
 // router
 //   .route("/revoke_token/:userId")
-//   // $TODO not tested
+//   // $TODO Not tested
 //   .post(handler(postRevokeToken, true, (req, res, next) => ({})));
 
 // Unauthenticated routes

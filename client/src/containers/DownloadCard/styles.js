@@ -5,7 +5,7 @@ const downloadCardStyles = makeStyles(() => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: 24, // $TODO insert global padding here
+    padding: 24, // $TODO Insert global padding here
     textAlign: "center",
   },
   label: {
