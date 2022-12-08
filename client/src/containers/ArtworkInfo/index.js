@@ -45,20 +45,11 @@ const ArtworkInfo = () => {
     licenseType: license,
   });
 
-  const {
-    getValues,
-    handleSubmit,
-    formState,
-    errors,
-    control,
-    setValue,
-    trigger,
-    watch,
-    reset,
-  } = useForm({
-    defaultValues: setDefaultValues(),
-    resolver,
-  });
+  const { getValues, handleSubmit, formState, errors, control, watch, reset } =
+    useForm({
+      defaultValues: setDefaultValues(),
+      resolver,
+    });
 
   const watchedValues = watch();
 
@@ -76,6 +67,7 @@ const ArtworkInfo = () => {
 
   useEffect(() => {
     reset(setDefaultValues());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [license]);
 
   return (

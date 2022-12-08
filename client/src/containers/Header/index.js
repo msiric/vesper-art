@@ -33,9 +33,7 @@ const Header = () => {
   const fetchNotifications = useEventsStore(
     (state) => state.fetchNotifications
   );
-  const refreshNotifications = useEventsStore(
-    (state) => state.refreshNotifications
-  );
+
   const searchQuery = useEventsStore((state) => state.searchQuery);
 
   const { handleSubmit, errors, control, setValue, getValues } = useForm({
@@ -53,6 +51,7 @@ const Header = () => {
 
   useEffect(() => {
     setValue("searchType", search);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
   return (

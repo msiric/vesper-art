@@ -3,8 +3,6 @@ import React from "react";
 import TextInput from "../../controls/TextInput/index";
 
 const CommentForm = ({ errors, loading }) => {
-  const classes = {};
-
   return (
     <Box>
       <TextInput

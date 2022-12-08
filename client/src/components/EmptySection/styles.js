@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const emptySectionStyles = makeStyles((muiTheme) => ({
+const emptySectionStyles = makeStyles(() => ({
   container: {
     display: "flex",
     justifyContent: "center",

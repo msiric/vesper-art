@@ -1,5 +1,4 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
 import LogoItem from "../../components/LogoItem";
 import { useAppStore } from "../../contexts/global/app";
 import Backdrop from "../../domain/Backdrop";
@@ -11,7 +10,6 @@ import authStyles from "./styles";
 const AuthLayout = ({ children }) => {
   const loading = useAppStore((state) => state.loading);
 
-  const history = useHistory();
   const classes = authStyles();
 
   return (

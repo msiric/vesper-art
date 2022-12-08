@@ -61,7 +61,6 @@ const ArtworkCreator = () => {
     trigger,
     getValues,
     watch,
-    reset,
   } = useForm({
     defaultValues: setDefaultValues(),
     resolver,
@@ -81,7 +80,8 @@ const ArtworkCreator = () => {
 
   useEffect(() => {
     if (stripeId) fetchRequirements({ stripeId });
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stripeId]);
 
   return (
     <Card>

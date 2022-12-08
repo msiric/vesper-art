@@ -23,7 +23,7 @@ const SettingsSecurity = ({ handleLogout }) => {
     userConfirm: "",
   });
 
-  const { handleSubmit, formState, errors, control, watch, getValues, reset } =
+  const { handleSubmit, formState, errors, control, watch, getValues } =
     useForm({
       defaultValues: setDefaultValues(),
       resolver: yupResolver(passwordValidation),
@@ -34,7 +34,7 @@ const SettingsSecurity = ({ handleLogout }) => {
 
   const classes = settingsSecurityStyles();
 
-  const watchedValues = watch();
+  watch();
 
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 

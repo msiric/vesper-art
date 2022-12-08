@@ -3,10 +3,10 @@ import express from "express";
 const router = express.Router();
 
 // Authenticated routes
-// $TODO no automated tests
-// $TODO only for test (remove in prod)
+// $TODO No automated tests
+// $TODO Only for test (remove in prod)
 router.route("/contact");
-// $TODO not tested
+// $TODO Not tested
 // .post(
 //   [isAuthenticated],
 //   handler(postTicket, true, (req, res, next) => ({

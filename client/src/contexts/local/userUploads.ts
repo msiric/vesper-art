@@ -24,7 +24,6 @@ const initState = () => ({ ...initialState });
 const initActions = (set, get) => ({
   fetchUploads: async ({ userId }) => {
     try {
-      const uploads = get().uploads;
       const { data } = await getMyArtwork.request({
         userId,
       });

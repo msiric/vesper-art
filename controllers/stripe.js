@@ -401,7 +401,7 @@ export const createPayout = async ({ userId, connection }) => {
   throw createError(...formatError(errors.userNotFound));
 };
 
-// $TODO not good
+// $TODO Not good
 // $TODO validacija svih ID-ova
 // $TODO validacija license i pricea
 // vjerojatno najbolje fetchat svaki od ID-ova i verifyat data-u

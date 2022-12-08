@@ -24,6 +24,7 @@ const TokenVerifier = ({ paramId }) => {
 
   useEffect(() => {
     handleTokenVerification();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return loading ? (

@@ -40,12 +40,14 @@ const DashboardStatistics = ({ layout }) => {
 
   useEffect(() => {
     fetchAggregateStats({ userId, display });
-  }, [display.type]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, display.type]);
 
   return (
     <Grid container spacing={2} className={classes.container}>
       {cards.map((card, index) => (
         <Grid
+          key={card.label}
           item
           xs={12}
           sm={index !== cards.length - 1 ? 6 : 8}

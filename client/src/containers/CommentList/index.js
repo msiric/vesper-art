@@ -61,6 +61,7 @@ const CommentList = ({
       });
       commentsFetched.current = true;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isVisible]);
 
   const renderComment = (comment, loading) => (

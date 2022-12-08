@@ -155,7 +155,8 @@ const OrdersDatatable = () => {
 
   useEffect(() => {
     fetchOrders({ userId, display });
-  }, [display]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, display]);
 
   return (
     <Datatable

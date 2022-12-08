@@ -55,7 +55,7 @@ const CommentSection = ({
       resolver: yupResolver(commentValidation),
     });
 
-  const watchedValues = watch();
+  watch();
 
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 

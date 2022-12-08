@@ -6,7 +6,7 @@ import SkeletonWrapper from "../../components/SkeletonWrapper";
 const StyledStepConnector = withStyles({})(MaterialStepConnector);
 
 const StepConnector = forwardRef(
-  ({ loading = false, variant = "rect", children, ...props }, ref) => {
+  ({ loading = false, variant = "rect", ...props }, ref) => {
     return (
       <SkeletonWrapper variant={variant} loading={loading}>
         <StyledStepConnector ref={ref} {...props} />

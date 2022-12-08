@@ -79,7 +79,7 @@ const initActions = (set) => ({
   },
   updateEmail: async ({ userId, values, handleLogout }) => {
     try {
-      // $TODO log user out server side
+      // $TODO Log user out server side
       await patchEmail.request({
         userId,
         data: values,

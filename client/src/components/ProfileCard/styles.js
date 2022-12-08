@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 import { artepunktTheme } from "../../styles/theme";
 
-const profileCardStyles = makeStyles((muiTheme) => ({
+const profileCardStyles = makeStyles(() => ({
   container: {
     height: "100%",
     width: "100%",

@@ -1,5 +1,5 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const favoriteButtonStyles = makeStyles((muiTheme) => ({}));
+const favoriteButtonStyles = makeStyles(() => ({}));
 
 export default favoriteButtonStyles;

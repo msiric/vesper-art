@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 import { artepunktTheme } from "@styles/theme";
 
-const animatedErrorStyles = makeStyles((muiTheme) => ({
+const animatedErrorStyles = makeStyles(() => ({
   error: {
     position: "absolute",
     width: 80,

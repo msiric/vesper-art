@@ -20,7 +20,6 @@ import ListItemText from "../../domain/ListItemText";
 import Menu from "../../domain/Menu";
 import MenuItem from "../../domain/MenuItem";
 import { socket } from "../Interceptor";
-import HeaderStyles from "./styles";
 
 const AccountMenu = () => {
   const userUsername = useUserStore((state) => state.name);
@@ -34,8 +33,6 @@ const AccountMenu = () => {
   const resetEvents = useEventsStore((state) => state.resetEvents);
 
   const history = useHistory();
-
-  const classes = HeaderStyles();
 
   const menuItems = [
     {

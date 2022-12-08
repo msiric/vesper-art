@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const checkoutProcessorStyles = makeStyles((muiTheme) => ({
+const checkoutProcessorStyles = makeStyles(() => ({
   form: {
     height: "100%",
   },

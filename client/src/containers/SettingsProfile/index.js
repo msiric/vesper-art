@@ -48,7 +48,7 @@ const SettingsProfile = () => {
   const onSubmit = async (values) =>
     await updateProfile({ userId: user.id, values });
 
-  const watchedValues = watch();
+  watch();
 
   const classes = settingsProfileStyles();
 
@@ -56,10 +56,12 @@ const SettingsProfile = () => {
 
   useEffect(() => {
     fetchSettings({ userId });
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   useEffect(() => {
     reset(setDefaultValues());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user.avatar, user.description, user.country]);
 
   return (

@@ -1,5 +1,5 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const accountMenuStyles = makeStyles((muiTheme) => ({}));
+const accountMenuStyles = makeStyles(() => ({}));
 
 export default accountMenuStyles;

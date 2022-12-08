@@ -363,7 +363,7 @@ describe("User tests", () => {
       });
     });
 
-    // $TODO add - should have been called
+    // $TODO Add - should have been called
     describe("deactivateUser", () => {
       it("should deactivate buyer", async () => {
         const res = await request(app, buyerToken).delete(

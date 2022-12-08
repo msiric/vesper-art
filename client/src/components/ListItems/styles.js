@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const listItemsStyles = makeStyles((muiTheme) => ({
+const listItemsStyles = makeStyles(() => ({
   item: {
     paddingTop: 0,
     paddingBottom: 0,

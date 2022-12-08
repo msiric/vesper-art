@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { useHistory } from "react-router-dom";
 import ImageWrapper from "../../components/ImageWrapper/index";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import Box from "../../domain/Box";
@@ -14,14 +13,13 @@ const ArtworkPreview = ({ paramId }) => {
   const fetchArtwork = useArtworkDetails((state) => state.fetchArtwork);
   const trackView = useArtworkDetails((state) => state.trackView);
 
-  const history = useHistory();
-
   const classes = artworkPreviewStyles();
 
   useEffect(() => {
     fetchArtwork({ artworkId: paramId });
     trackView({ artworkId: paramId });
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paramId]);
 
   return (
     <Card className={classes.container}>

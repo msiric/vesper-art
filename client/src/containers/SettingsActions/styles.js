@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const settingsActionsStyles = makeStyles((muiTheme) => ({
+const settingsActionsStyles = makeStyles(() => ({
   heading: {
     fontWeight: "bold",
     marginBottom: 12,

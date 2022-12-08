@@ -644,7 +644,7 @@ export const postComment = async ({
       });
       socketApi.sendNotification(
         foundArtwork.ownerId,
-        // $TODO maybe this can be done better
+        // $TODO Maybe this can be done better
         savedNotification.raw[0]
       );
     }

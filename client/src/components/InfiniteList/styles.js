@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const infiniteListStyles = makeStyles((muiTheme) => ({
+const infiniteListStyles = makeStyles(() => ({
   container: {
     overflow: ({ overflow }) => overflow,
   },

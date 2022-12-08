@@ -31,6 +31,7 @@ const Checkout = ({ location }) => {
     return () => {
       reinitializeState();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return !containsErrors(

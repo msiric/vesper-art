@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const settingsProfileStyles = makeStyles((muiTheme) => ({
+const settingsProfileStyles = makeStyles(() => ({
   container: {
     height: "100%",
   },

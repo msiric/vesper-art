@@ -6,7 +6,6 @@ import {
 } from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useHistory } from "react-router-dom";
 import { featureFlags, payment } from "../../../../common/constants";
 import { discountValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
@@ -48,83 +47,75 @@ const CheckoutSummary = ({
     },
   });
 
-  const summaryItems = [
-    <CheckoutItem
-      label={version.title ?? "Fetching artwork title info"}
-      description={
-        state.summary.license
-          ? `${state.summary.license} license`
-          : "No license selected"
-      }
-      amount="Price"
-      animate
-      price={state.values.price}
-      loading={loading}
-    />,
-    <Divider />,
-    <CheckoutItem
-      label="Platform fee"
-      description="Fixed fee"
-      amount="Amount"
-      prefix="+"
-      animate
-      price={state.values.fee}
-      loading={loading}
-    />,
-    <Divider />,
-    discount ? (
-      <>
-        <CheckoutItem
-          label="Discount"
-          description={`${discount.name} (${discount.discount * 100}%)`}
-          amount="Amount"
-          prefix="-"
-          animate
-          price={state.values.discount}
-          loading={loading}
-        />
-        <Divider />
-      </>
-    ) : null,
-    <CheckoutItem
-      label="Order"
-      description={
-        state.summary.license
-          ? `${state.summary.license} license`
-          : "No license selected"
-      }
-      amount="Total"
-      animate
-      price={state.values.total}
-      loading={loading}
-    />,
-  ];
+  const summaryItems = (
+    <>
+      <CheckoutItem
+        label={version.title ?? "Fetching artwork title info"}
+        description={
+          state.summary.license
+            ? `${state.summary.license} license`
+            : "No license selected"
+        }
+        amount="Price"
+        animate
+        price={state.values.price}
+        loading={loading}
+      />
+      <Divider />
+      <CheckoutItem
+        label="Platform fee"
+        description="Fixed fee"
+        amount="Amount"
+        prefix="+"
+        animate
+        price={state.values.fee}
+        loading={loading}
+      />
+      <Divider />
+      {discount ? (
+        <>
+          <CheckoutItem
+            label="Discount"
+            description={`${discount.name} (${discount.discount * 100}%)`}
+            amount="Amount"
+            prefix="-"
+            animate
+            price={state.values.discount}
+            loading={loading}
+          />
+          <Divider />
+        </>
+      ) : null}
+      <CheckoutItem
+        label="Order"
+        description={
+          state.summary.license
+            ? `${state.summary.license} license`
+            : "No license selected"
+        }
+        amount="Total"
+        animate
+        price={state.values.total}
+        loading={loading}
+      />
+    </>
+  );
 
   const setDefaultValues = () => ({
     discountCode: "",
   });
 
-  const {
-    handleSubmit,
-    formState,
-    errors,
-    control,
-    setValue,
-    trigger,
-    getValues,
-    watch,
-  } = useForm({
-    defaultValues: setDefaultValues(),
-    resolver: yupResolver(discountValidation),
-  });
+  const { handleSubmit, formState, errors, control, getValues, watch } =
+    useForm({
+      defaultValues: setDefaultValues(),
+      resolver: yupResolver(discountValidation),
+    });
 
-  const watchedValues = watch();
+  watch();
 
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   const onSubmit = async (values) => await handleDiscountChange({ values });
-
-  const history = useHistory();
 
   const classes = checkoutSummaryStyles();
 
@@ -175,6 +166,7 @@ const CheckoutSummary = ({
     if (version.id) {
       recalculateValues();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [version, licenseType, discount]);
 
   return (

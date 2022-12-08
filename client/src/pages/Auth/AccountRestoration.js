@@ -80,7 +80,7 @@ const AccountRestoration = () => {
       </Grid>
       <Grid container spacing={2} className={classes.content}>
         {RESTORATION_CARDS.map((card) => (
-          <Grid item xs={12} sm={4}>
+          <Grid key={card.title} item xs={12} sm={4}>
             <RestorationCard {...card} />
           </Grid>
         ))}

@@ -4,6 +4,7 @@ export const initialState = {
   loading: true,
   error: false,
   theme: "dark",
+  app: "Vesper",
 };
 
 const initState = () => ({

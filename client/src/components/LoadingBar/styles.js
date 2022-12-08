@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const loadingSpinnerStyles = makeStyles((muiTheme) => ({
+const loadingSpinnerStyles = makeStyles(() => ({
   container: {
     display: "flex",
     justifyContent: "center",

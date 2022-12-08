@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const profileArtworkStyles = makeStyles((muiTheme) => ({
+const profileArtworkStyles = makeStyles(() => ({
   paper: {
     minHeight: 300,
     height: "100%",

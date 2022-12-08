@@ -45,7 +45,6 @@ export const upload = {
         fileHeight / (fileWidth / TRANSFORMED_ARTWORK_WIDTH),
     },
     fileRatio: ALLOWED_ARTWORK_RATIO,
-    // $TODO add support for "image/gif",
     mimeTypes: MIME_TYPES,
   },
   user: {

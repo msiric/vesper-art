@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const galleryPanelStyles = makeStyles((muiTheme) => ({
+const galleryPanelStyles = makeStyles(() => ({
   container: {
     padding: "16px 0",
   },

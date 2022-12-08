@@ -9,7 +9,7 @@ import React from "react";
 import { useEventsStore } from "../../contexts/global/events";
 import TextInput from "../../controls/TextInput/index";
 
-const searchFormStyles = makeStyles((muiTheme) => ({
+const searchFormStyles = makeStyles(() => ({
   searchQuery: {
     margin: 0,
   },

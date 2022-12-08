@@ -33,7 +33,8 @@ const SearchPanel = ({ type }) => {
 
   useEffect(() => {
     fetchResults({ query: location.search, type });
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search, type]);
 
   return (
     <Box className={classes.container}>

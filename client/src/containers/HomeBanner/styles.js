@@ -30,21 +30,40 @@ const Styles = makeStyles((muiTheme) => ({
   },
   content: {
     display: "flex",
+    flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "column",
     zIndex: 1,
+    padding: 0,
+    "&:last-child": {
+      paddingBottom: 0,
+    },
   },
-  wrapper: {
+  headingWrapper: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "column",
     width: "100%",
-    marginBottom: 16,
     padding: 16,
     [muiTheme.breakpoints.down("md")]: {
-      padding: 0,
+      padding: 32,
+    },
+  },
+  wrapper: {
+    display: "flex",
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
+    width: "100%",
+    padding: 16,
+    [muiTheme.breakpoints.down("md")]: {
+      padding: 8,
+    },
+    [muiTheme.breakpoints.down("sm")]: {
+      padding: 32,
     },
   },
   beta: {
@@ -89,23 +108,18 @@ const Styles = makeStyles((muiTheme) => ({
       margin: "6px",
     },
   },
-
   verifier: {
     display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
     width: "100%",
     height: "100%",
-    padding: "0 32px",
-    [muiTheme.breakpoints.down("md")]: {
-      padding: 0,
-    },
+    padding: 0,
   },
   verifierHeading: {
     fontSize: 24,
-    marginBottom: 8,
+    marginBottom: 16,
     fontWeight: "bold",
     textAlign: "center",
+    color: artepunktTheme.palette.primary.main,
   },
   verifierText: {
     textAlign: "center",
@@ -115,6 +129,7 @@ const Styles = makeStyles((muiTheme) => ({
     justifyContent: "space-evenly",
     alignItems: "center",
     width: "100%",
+    height: 100,
   },
 }));
 

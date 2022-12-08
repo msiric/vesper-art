@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const commentListStyles = makeStyles((muiTheme) => ({
+const commentListStyles = makeStyles(() => ({
   list: {
     display: "flex",
     flexDirection: "column-reverse",

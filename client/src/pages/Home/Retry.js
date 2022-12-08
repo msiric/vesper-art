@@ -42,7 +42,7 @@ const useRetryStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-const Retry = ({ message, reinitializeState = window.location.reload }) => {
+const Retry = ({ reinitializeState = window.location.reload }) => {
   const globalClasses = globalStyles();
   const classes = useRetryStyles();
 

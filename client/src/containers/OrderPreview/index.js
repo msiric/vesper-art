@@ -1,5 +1,5 @@
 import React from "react";
-import { Link as RouterLink, useHistory } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import ImageWrapper from "../../components/ImageWrapper/index";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
 import Box from "../../domain/Box";
@@ -12,7 +12,6 @@ const OrderPreview = () => {
   const version = useOrderDetails((state) => state.order.data.version);
   const loading = useOrderDetails((state) => state.order.loading);
 
-  const history = useHistory();
   const classes = orderPreviewStyles();
 
   return (

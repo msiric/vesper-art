@@ -3,7 +3,11 @@ import { withStyles } from "@material-ui/core/styles";
 import React, { forwardRef } from "react";
 import SkeletonWrapper from "../../components/SkeletonWrapper";
 
-const StyledTooltip = withStyles({})(MaterialTooltip);
+const StyledTooltip = withStyles({
+  tooltipPlacementTop: {
+    margin: "4px 0",
+  },
+})(MaterialTooltip);
 
 const Tooltip = forwardRef(({ loading = false, children, ...props }, ref) => {
   return (

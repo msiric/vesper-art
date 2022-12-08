@@ -6,7 +6,7 @@ const router = express.Router();
 // Public routes
 router
   .route("/verifier")
-  // $TODO not tested
+  // $TODO Not tested
   .post(
     handler(verifyLicense, true, (req, res, next) => ({
       licenseFingerprint: req.body.licenseFingerprint,

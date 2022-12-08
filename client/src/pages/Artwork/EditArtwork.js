@@ -12,7 +12,7 @@ import Grid from "../../domain/Grid";
 import globalStyles from "../../styles/global";
 import { containsErrors, renderError } from "../../utils/helpers";
 
-const useEditorStyles = makeStyles((muiTheme) => ({
+const useEditorStyles = makeStyles(() => ({
   wrapper: {
     height: "100%",
     width: "100%",
@@ -69,6 +69,7 @@ const EditArtwork = ({ match }) => {
     return () => {
       reinitializeState();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return !containsErrors(
@@ -86,8 +87,8 @@ const EditArtwork = ({ match }) => {
           </Grid>
         </Grid>
       ) : (
-        // $TODO push to home and display error notification
-        "Ne postoji"
+        // $TODO Push to home and display error notification
+        "Not found"
       )}
       <PromptModal
         open={modal.open}

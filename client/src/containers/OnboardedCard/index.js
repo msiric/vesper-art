@@ -65,6 +65,7 @@ const OnboardedCard = () => {
         fetchDetails({ updateOnboarded });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userUsername, stripeId]);
 
   return (

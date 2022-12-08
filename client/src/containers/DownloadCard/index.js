@@ -1,6 +1,5 @@
 import { GetAppOutlined as DownloadIcon } from "@material-ui/icons";
 import React from "react";
-import { useHistory } from "react-router-dom";
 import AsyncButton from "../../components/AsyncButton/index";
 import { useUserStore } from "../../contexts/global/user";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
@@ -15,7 +14,6 @@ const DownloadCard = () => {
   const loading = useOrderDetails((state) => state.order.loading);
   const downloadArtwork = useOrderDetails((state) => state.downloadArtwork);
 
-  const history = useHistory();
   const classes = downloadCardStyles();
 
   return (

@@ -1,6 +1,5 @@
 import { determineFetchingState, determineLoadingState } from "@utils/helpers";
 import React from "react";
-import { useHistory } from "react-router-dom";
 import InfiniteList from "../../components/InfiniteList/index";
 import LoadingBar from "../../components/LoadingBar/index";
 import NotificationItem from "../../components/NotificationItem/index";
@@ -39,8 +38,6 @@ const NotificationsMenu = () => {
   );
 
   const classes = notificationMenuStyles({ height: MENU_HEIGHT });
-
-  const history = useHistory();
 
   const renderNotification = (notification, loading) => (
     <>

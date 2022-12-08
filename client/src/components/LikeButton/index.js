@@ -22,7 +22,7 @@ const LikeButton = ({
 
   const classes = likeButtonStyles();
 
-  const handleLikeComment = async (id) => {
+  const handleLikeComment = async () => {
     setState({ loading: true });
     await postLike.request({
       artworkId,

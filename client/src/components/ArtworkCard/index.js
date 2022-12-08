@@ -40,7 +40,8 @@ const ArtworkCard = ({
         id: "",
         data: { cover: {} },
         owner: {},
-        favorites: [],
+        favorites: 0,
+        comments: 0,
         src: "",
         height: "",
         width: "",
@@ -83,7 +84,7 @@ const ArtworkCard = ({
 
   useEffect(() => {
     setFavorites(item.favorites);
-  }, [item.id]);
+  }, [item.id, item.favorites]);
 
   return (
     <Card

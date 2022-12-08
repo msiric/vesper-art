@@ -32,12 +32,12 @@ const MainLayout = ({ children }) => {
           <CircularProgress color="primary" />
         </Backdrop>
       ) : (
-        [
-          <Header />,
-          <Box className={classes.appContainer}>{children}</Box>,
-          <Footer />,
-          displayBanner && <CookieBanner handleConsent={handleConsent} />,
-        ]
+        <>
+          <Header />
+          <Box className={classes.appContainer}>{children}</Box>
+          <Footer />
+          {displayBanner && <CookieBanner handleConsent={handleConsent} />}
+        </>
       )}
     </Box>
   );

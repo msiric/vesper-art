@@ -10,10 +10,9 @@ import { useUserStore } from "./contexts/global/user";
 import Box from "./domain/Box";
 import AuthLayout from "./layouts/auth";
 import MainLayout from "./layouts/main";
-import globalStyles from "./styles/global";
 import history from "./utils/history";
 
-const useRouterStyles = makeStyles((muiTheme) => ({
+const useRouterStyles = makeStyles(() => ({
   wrapper: {
     display: "flex",
     flexDirection: "column",
@@ -295,7 +294,7 @@ const LoadingWrapper = () => {
   );
 };
 
-const AppRoute = ({ component: Component, layout: Layout, ...rest }) => {
+const AppRoute = ({ component: Component, ...rest }) => {
   const location = useLocation();
 
   useEffect(() => {
@@ -355,8 +354,6 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => {
 
 const AppRouter = () => {
   const userToken = useUserStore((state) => state.token);
-
-  const globalClasses = globalStyles();
 
   return (
     <Router history={history}>

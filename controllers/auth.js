@@ -159,14 +159,13 @@ export const postRefreshToken = async ({ cookies, response, connection }) => {
   return await refreshAccessToken({ cookies, response, connection });
 };
 
-// $TODO not used?
+// $TODO Not used?
 export const postRevokeToken = async ({ userId, connection }) => {
   await revokeAccessToken({ userId, connection });
   return formatResponse(responses.accessTokenRevoked);
 };
 
-// needs transaction (not tested)
-// $TODO can be improved (remove fetch call and just reset verification token - check if affected rows is not 0)
+// $TODO Can be improved (remove fetch call and just reset verification token - check if affected rows is not 0)
 export const verifyRegisterToken = async ({ tokenId, connection }) => {
   const foundId = await fetchUserIdByVerificationToken({
     tokenId,

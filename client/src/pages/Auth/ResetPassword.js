@@ -71,7 +71,7 @@ const ResetPassword = ({ match }) => {
     });
   };
 
-  const watchedValues = watch();
+  watch();
 
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 

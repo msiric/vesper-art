@@ -6,7 +6,7 @@ import { useHomeArtwork } from "../../contexts/local/homeArtwork";
 import Grid from "../../domain/Grid";
 import globalStyles from "../../styles/global";
 
-const useHomeStyles = makeStyles((muiTheme) => ({
+const useHomeStyles = makeStyles(() => ({
   banner: {
     marginBottom: 0,
     paddingBottom: 0,
@@ -27,26 +27,29 @@ const Home = () => {
     return () => {
       reinitializeState();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return [
-    <Grid
-      className={`${globalClasses.largeContainer} ${globalClasses.gridContainer} ${classes.banner}`}
-    >
-      <Grid container spacing={2}>
-        <HomeBanner />
-      </Grid>
-    </Grid>,
-    <Grid
-      className={`${globalClasses.largeContainer} ${globalClasses.gridContainer}`}
-    >
-      <Grid container spacing={2}>
-        <Grid item xs={12} className={classes.artworkWrapper}>
-          <ArtworkPanel type="artwork" />
+  return (
+    <>
+      <Grid
+        className={`${globalClasses.largeContainer} ${globalClasses.gridContainer} ${classes.banner}`}
+      >
+        <Grid container spacing={2}>
+          <HomeBanner />
         </Grid>
       </Grid>
-    </Grid>,
-  ];
+      <Grid
+        className={`${globalClasses.largeContainer} ${globalClasses.gridContainer}`}
+      >
+        <Grid container spacing={2}>
+          <Grid item xs={12} className={classes.artworkWrapper}>
+            <ArtworkPanel type="artwork" />
+          </Grid>
+        </Grid>
+      </Grid>
+    </>
+  );
 };
 
 export default Home;

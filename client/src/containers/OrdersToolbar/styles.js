@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const ordersToolbarStyles = makeStyles((muiTheme) => ({
+const ordersToolbarStyles = makeStyles(() => ({
   wrapper: {
     display: "flex",
     justifyContent: "space-between",

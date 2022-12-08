@@ -1,5 +1,5 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const mainHeadingStyles = makeStyles((muiTheme) => ({}));
+const mainHeadingStyles = makeStyles(() => ({}));
 
 export default mainHeadingStyles;

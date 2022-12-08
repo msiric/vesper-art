@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const logoItemStyles = makeStyles((muiTheme) => ({
+const logoItemStyles = makeStyles(() => ({
   logo: {
     width: 130,
     cursor: "pointer",

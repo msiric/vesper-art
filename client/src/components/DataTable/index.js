@@ -4,9 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import IconButton from "../../domain/IconButton";
 import Tooltip from "../../domain/Tooltip";
-import globalStyles from "../../styles/global";
 import EmptySection from "../EmptySection/index";
-import dataTableStyles from "./styles";
 
 const CustomToolbar = ({ addOptions }) => {
   const history = useHistory();
@@ -43,11 +41,8 @@ const DataTable = ({
 }) => {
   const [displayedData, setDisplayedData] = useState([null]);
   const [responsive, setResponsive] = useState("simple");
-  const [tableBodyHeight, setTableBodyHeight] = useState("100%");
-  const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState("");
-
-  const globalClasses = globalStyles({ hoverable });
-  const classes = dataTableStyles();
+  const [tableBodyHeight] = useState("100%");
+  const [tableBodyMaxHeight] = useState("");
 
   const history = useHistory();
 

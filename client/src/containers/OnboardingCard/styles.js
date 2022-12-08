@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const onboardingCardStyles = makeStyles((muiTheme) => ({
+const onboardingCardStyles = makeStyles(() => ({
   content: {
     display: "flex",
     flexDirection: "column",

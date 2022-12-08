@@ -80,7 +80,7 @@ const OnboardingCard = () => {
     });
   };
 
-  const watchedValues = watch();
+  watch();
 
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 

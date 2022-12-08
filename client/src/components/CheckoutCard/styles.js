@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const checkoutCardStyles = makeStyles((muiTheme) => ({
+const checkoutCardStyles = makeStyles(() => ({
   container: {
     padding: 0,
     margin: "16px 0",

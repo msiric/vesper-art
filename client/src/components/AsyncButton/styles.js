@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const asyncButtonStyles = makeStyles((muiTheme) => ({
+const asyncButtonStyles = makeStyles(() => ({
   container: {
     position: "relative",
     display: "flex",

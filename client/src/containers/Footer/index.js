@@ -15,7 +15,7 @@ import {
   Twitter as TwitterIcon,
 } from "@material-ui/icons";
 import React from "react";
-import { Link as RouterLink, useHistory } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { appName } from "../../../../common/constants";
 import LogoItem from "../../components/LogoItem";
 import IconButton from "../../domain/IconButton";
@@ -26,8 +26,6 @@ import footerStyles from "./styles";
 const Footer = () => {
   const globalClasses = globalStyles();
   const classes = footerStyles();
-
-  const history = useHistory();
 
   const handleEmailClick = (e) => {
     e.preventDefault();

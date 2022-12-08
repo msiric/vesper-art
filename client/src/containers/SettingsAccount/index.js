@@ -45,12 +45,13 @@ const SettingsAccount = ({ handleLogout }) => {
     history.push("/login");
   };
 
-  const watchedValues = watch();
+  watch();
 
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   useEffect(() => {
     reset(setDefaultValues());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user.email]);
 
   return (

@@ -9,7 +9,7 @@ import Grid from "../../domain/Grid";
 import globalStyles from "../../styles/global";
 import { containsErrors, renderError } from "../../utils/helpers";
 
-const MyArtwork = ({}) => {
+const MyArtwork = () => {
   const userId = useUserStore((state) => state.id);
 
   const modal = useUserUploads((state) => state.modal);
@@ -35,6 +35,7 @@ const MyArtwork = ({}) => {
     return () => {
       reinitializeState();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return !containsErrors(retry, redirect) ? (

@@ -32,7 +32,7 @@ const ArtworkActions = () => {
             <IncrementCounter newValue={favorites} size="large" />
             <FavoriteButton
               artwork={artwork}
-              favorited={userFavorites[artwork.id] ?? isDisabled}
+              favorited={userFavorites[artwork.id] || isDisabled}
               handleCallback={toggleFavorite}
               loading={loading}
               disabled={isDisabled}

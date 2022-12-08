@@ -8,8 +8,6 @@ import EmptySection from "../EmptySection";
 import infiniteListStyles from "./styles";
 
 const InfiniteList = ({
-  style,
-  className,
   dataLength,
   next,
   hasMore,
@@ -19,8 +17,6 @@ const InfiniteList = ({
   error,
   label,
   height,
-  loaderHeight,
-  loaderMargin,
   emptyHeight,
   shouldPause = false,
   overflow = "visible !important",

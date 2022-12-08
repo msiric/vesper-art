@@ -280,12 +280,14 @@ const CheckoutProcessor = () => {
 
   useEffect(() => {
     fetchCheckout({ license: licenseValue, versionId });
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [versionId]);
 
   useEffect(() => {
     version.artwork.id &&
       fetchOrders({ userId, artworkId: version.artwork.id });
-  }, [version.artwork.id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [version.artwork.id, userId]);
 
   return (
     <Grid container spacing={2}>
@@ -365,7 +367,7 @@ const CheckoutProcessor = () => {
           </Grid>
         </>
       ) : (
-        // $TODO push to home and display error notification
+        // $TODO Push to home and display error notification
         history.push("/")
       )}
     </Grid>

@@ -1,3 +1,4 @@
+import { useAppStore } from "@contexts/global/app";
 import {
   CloseRounded as CloseIcon,
   LinkRounded as CopyIcon,
@@ -32,13 +33,14 @@ const ShareModal = ({
   promptTitle,
   promptCancel,
 }) => {
+  const app = useAppStore((state) => state.app);
   const [state, setState] = useState({
     popper: { open: false, label: "" },
     copy: { status: "idle" },
   });
   const anchorEl = useRef(null);
   const url = `${window.location.origin}${href}`;
-  const title = "test"; // $TODO appStore.brand;
+  const title = app;
 
   const classes = shareModalStyles();
 
@@ -85,6 +87,7 @@ const ShareModal = ({
         handleCopyButton("idle");
       }, 1000);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.copy.status]);
 
   return (

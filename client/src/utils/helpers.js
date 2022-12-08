@@ -33,10 +33,6 @@ export const resolvePaginationId = (data) => {
 };
 
 export const resolveAsyncError = (err, isInfinite = false) => {
-  console.log("err", err);
-  console.log("res", err.response);
-  console.log("mes", err.message);
-
   let errorType = "retry";
   if (err && err.response) {
     const statusCode = err.response.data.status;
@@ -83,7 +79,7 @@ export const renderRedirectLink = ({ active, isUsername = false }) =>
 
 // FEATURE FLAG - payment
 export const getBarState = () => ({
-  // $TODO temporary disabled banner
+  // $TODO Temporary disabled banner
   // visible: !featureFlags.payment,
   visible: false,
   message: "Purchasing artwork is temporarily disabled",

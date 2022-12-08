@@ -54,7 +54,7 @@ const ForgotPassword = () => {
       resolver: yupResolver(emailValidation),
     });
 
-  const watchedValues = watch();
+  watch();
 
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 

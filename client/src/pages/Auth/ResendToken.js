@@ -56,7 +56,7 @@ const ResendToken = () => {
   const history = useHistory();
   const classes = useStyles();
 
-  const watchedValues = watch();
+  watch();
 
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 

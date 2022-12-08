@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const artworkInfoStyles = makeStyles((muiTheme) => ({
+const artworkInfoStyles = makeStyles(() => ({
   content: {
     padding: 0,
     "&:last-child": {

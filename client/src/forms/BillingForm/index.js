@@ -5,7 +5,7 @@ import { countries } from "../../../../common/constants";
 import AutocompleteInput from "../../controls/AutocompleteInput/index";
 import TextInput from "../../controls/TextInput/index";
 
-const billingFormStyles = makeStyles((muiTheme) => ({
+const billingFormStyles = makeStyles(() => ({
   container: {
     "&>div": {
       padding: "0px 8px !important",

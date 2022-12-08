@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const dashboardCardStyles = makeStyles((muiTheme) => ({
+const dashboardCardStyles = makeStyles(() => ({
   container: {
     display: "flex",
     justifyContent: "center",

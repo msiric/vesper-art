@@ -1,20 +1,11 @@
 import * as React from "react";
 import RangeDelimiter from "../../domain/RangeDelimiter";
-import RangePicker from "../../domain/RangePicker";
+import RangePickerInput from "../../domain/RangePicker";
 import TextField from "../../domain/TextField";
-import rangePickerStyles from "./styles";
 
-const RangePicker = ({
-  fromLabel,
-  toLabel,
-  selectedDate,
-  handleChange,
-  handleApply,
-}) => {
-  const classes = rangePickerStyles();
-
+const RangePicker = ({ fromLabel, toLabel, selectedDate, handleChange }) => {
   return (
-    <RangePicker
+    <RangePickerInput
       startText={fromLabel}
       endText={toLabel}
       value={selectedDate}

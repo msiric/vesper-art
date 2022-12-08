@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const galleryToolbarStyles = makeStyles((muiTheme) => ({
+const galleryToolbarStyles = makeStyles(() => ({
   container: {
     display: "flex",
     justifyContent: "space-between",

@@ -46,7 +46,7 @@ const RatingModal = ({
     resolver: yupResolver(reviewValidation),
   });
 
-  const watchedValues = watch();
+  watch();
 
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 

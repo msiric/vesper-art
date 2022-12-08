@@ -1,7 +1,6 @@
 import React from "react";
 import ProgressBar from "react-topbar-progress-indicator";
 import { artepunktTheme } from "../../styles/theme";
-import topBarStyles from "./styles";
 
 ProgressBar.config({
   barColors: {
@@ -12,8 +11,6 @@ ProgressBar.config({
 });
 
 const TopBar = () => {
-  const classes = topBarStyles();
-
   return <ProgressBar />;
 };
 

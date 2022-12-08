@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const checkoutSummaryStyles = makeStyles((muiTheme) => ({
+const checkoutSummaryStyles = makeStyles(() => ({
   container: {
     height: "100%",
     display: "flex",

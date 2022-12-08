@@ -76,7 +76,7 @@ export class License extends BaseEntity {
   })
   type: LicenseType;
 
-  // $TODO temp nullable, remove later
+  // $TODO Temp nullable, remove later
   @Column({
     type: "enum",
     enum: LicenseUsage,

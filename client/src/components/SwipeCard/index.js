@@ -24,7 +24,11 @@ const SwipeCard = ({ tabs, handleTabsChange, margin, loading }) => {
           {tabs.headings
             .filter((tab) => !!tab.display)
             .map((heading) => (
-              <Tab label={heading.label} {...heading.props} />
+              <Tab
+                key={heading.label}
+                label={heading.label}
+                {...heading.props}
+              />
             ))}
         </Tabs>
       </AppBar>
@@ -38,6 +42,7 @@ const SwipeCard = ({ tabs, handleTabsChange, margin, loading }) => {
           .filter((tab) => !!tab.display)
           .map((item, index) => (
             <Box
+              key={item.component}
               className={`${classes.wrapper} ${
                 tabs.value !== index && classes.hidden
               }`}

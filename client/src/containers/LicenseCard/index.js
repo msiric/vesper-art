@@ -7,7 +7,6 @@ import {
   determineLoadingState,
   renderTableBody,
 } from "../../utils/helpers";
-import licenseCardStyles from "./styles";
 
 const renderColumns = (loading) => [
   {
@@ -89,8 +88,6 @@ const renderData = (license, loading) => [
 const LicenseCard = () => {
   const license = useOrderDetails((state) => state.order.data.license);
   const loading = useOrderDetails((state) => state.order.loading);
-
-  const classes = licenseCardStyles();
 
   return (
     <Datatable

@@ -45,7 +45,6 @@ export const requestHandler =
       if (result) return res.json(result);
       return res.json({ message: "OK" });
     } catch (error) {
-      console.log("err", error);
       if (transaction) await rollbackTransaction(connection);
       next(error);
     } finally {
@@ -75,7 +74,7 @@ export const isAuthenticated = (req, res, next) => {
 
 export const isNotAuthenticated = async (req, res, next) => {
   const authentication = req.headers["authorization"];
-  // $TODO ovo treba handleat tako da ne stucka frontend
+  // $TODO prevent frontend getting stuck
   if (authentication)
     return next(createError(...formatError(errors.alreadyAuthenticated)));
   return next();
