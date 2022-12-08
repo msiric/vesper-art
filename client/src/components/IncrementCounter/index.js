@@ -1,5 +1,5 @@
 import abbreviate from "number-abbreviate";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Typography from "../../domain/Typography";
 import incrementCounterStyles from "./styles";
 
@@ -15,8 +15,8 @@ const WIDTH_OPTIONS = {
   large: 25,
 };
 
-const IncrementCounter = ({ newValue = 0, size = "medium" }) => {
-  const [value, setValue] = useState(newValue);
+const IncrementCounter = ({ newValue = null, size = "medium" }) => {
+  const [value, setValue] = useState(null);
   const [animationValue, setAnimationValue] = useState("initial");
 
   const classes = incrementCounterStyles({
@@ -24,32 +24,33 @@ const IncrementCounter = ({ newValue = 0, size = "medium" }) => {
     minWidth: WIDTH_OPTIONS[size],
   });
 
-  const handleIncrement = () => {
+  const handleIncrement = useCallback(() => {
     setTimeout(() => setAnimationValue("goUp"), 0);
     setTimeout(() => setValue(value + 1), 100);
     setTimeout(() => setAnimationValue("waitDown"), 100);
     setTimeout(() => setAnimationValue("initial"), 200);
-  };
+  }, [value]);
 
-  const handleDecrement = () => {
+  const handleDecrement = useCallback(() => {
     setTimeout(() => setAnimationValue("waitDown"), 0);
     setTimeout(() => setValue(value - 1), 100);
     setTimeout(() => setAnimationValue("goUp"), 100);
     setTimeout(() => setAnimationValue("initial"), 200);
-  };
+  }, [value]);
 
   useEffect(() => {
-    if (newValue < value) handleDecrement();
-    if (newValue > value) handleIncrement();
+    if (value === null && newValue !== null) setValue(newValue);
+    else if (newValue < value) handleDecrement();
+    else if (newValue > value) handleIncrement();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newValue]);
+  }, [newValue, value]);
 
   return (
     <div className={classes.container}>
       <div className={classes.wrapper}>
         <span className={classes[animationValue]}>
           <Typography className={classes.value}>
-            {abbreviate(value, 2)}
+            {abbreviate(value ?? 0, 2)}
           </Typography>
         </span>
       </div>

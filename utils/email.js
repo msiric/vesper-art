@@ -29,7 +29,6 @@ export const sendEmail = async ({
     const sentEmail = await smtpTransport.sendMail(mailOptions);
     return sentEmail;
   } catch (err) {
-    console.log(err);
     throw createError(...formatError(errors.emailNotSent));
   }
 };

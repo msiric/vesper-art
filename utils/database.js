@@ -335,7 +335,6 @@ export const loadFixture = async (name, connection) => {
     const file = yaml.safeLoad(
       fs.readFileSync(`./test/fixtures/${name}.yml`, "utf8")
     );
-    console.log(file);
     items = file["fixtures"];
   } catch (e) {
     console.log("fixtures error", e);

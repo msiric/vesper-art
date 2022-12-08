@@ -48,7 +48,6 @@ export const constructStripePayout = async ({
 // ovo je test za novi checkout (trenutno delayed)
 export const retrieveStripeIntent = async ({ intentId }) => {
   const foundIntent = await stripe.paymentIntents.retrieve(intentId);
-  console.log(foundIntent);
   return foundIntent;
 };
 
@@ -60,15 +59,6 @@ export const constructStripeIntent = async ({
   sellerId,
   orderData,
 }) => {
-  console.log(
-    "construct",
-    intentMethod,
-    intentPaid,
-    intentSold,
-    intentCurrency,
-    sellerId,
-    orderData
-  );
   const createdIntent = await stripe.paymentIntents.create({
     payment_method_types: [intentMethod],
     amount: intentPaid,

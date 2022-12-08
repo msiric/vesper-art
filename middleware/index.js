@@ -45,7 +45,6 @@ export const requestHandler =
       if (result) return res.json(result);
       return res.json({ message: "OK" });
     } catch (error) {
-      console.log("err", error);
       if (transaction) await rollbackTransaction(connection);
       next(error);
     } finally {

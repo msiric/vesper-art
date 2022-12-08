@@ -222,7 +222,7 @@ const CommentCard = ({
                     <LikeButton
                       artworkId={artworkId}
                       comment={comment}
-                      liked={isCommentLiked ?? isCommentDisabled}
+                      liked={isCommentLiked || isCommentDisabled}
                       disabled={isCommentDisabled}
                       handleCallback={handleLikeToggle}
                     />

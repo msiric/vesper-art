@@ -33,10 +33,6 @@ export const resolvePaginationId = (data) => {
 };
 
 export const resolveAsyncError = (err, isInfinite = false) => {
-  console.log("err", err);
-  console.log("res", err.response);
-  console.log("mes", err.message);
-
   let errorType = "retry";
   if (err && err.response) {
     const statusCode = err.response.data.status;

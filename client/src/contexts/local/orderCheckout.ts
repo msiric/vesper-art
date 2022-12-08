@@ -171,8 +171,6 @@ const initActions = (set, get) => ({
     }));
     const secret = get().secret;
     if (!secret || !stripe || !elements) {
-      console.log("nije dobro");
-      console.log(secret, stripe, elements);
       set((state) => ({
         ...state,
         payment: {
@@ -189,7 +187,6 @@ const initActions = (set, get) => ({
       // $TODO Enqueue error;
     }
 
-    console.log("SUBMITTING", values);
     const cardElement = elements.getElement(CardNumberElement);
     const stripeData = {
       payment_method: {
@@ -214,11 +211,7 @@ const initActions = (set, get) => ({
       stripeData
     );
 
-    console.log("paymentIntent", paymentIntent, "err", error);
-
     if (error) {
-      console.log("fail");
-      console.log(error);
       set((state) => ({
         ...state,
         intent: { ...state.intent, loading: false },
@@ -234,7 +227,6 @@ const initActions = (set, get) => ({
         },
       }));
     } else if (paymentIntent && paymentIntent.status === "succeeded") {
-      console.log("success");
       set((state) => ({
         ...state,
         intent: { ...state.intent, loading: false },
