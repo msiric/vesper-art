@@ -716,7 +716,7 @@ export const fetchUserUploadsWithMedia = async ({
       ...MEDIA_SELECTION["ESSENTIAL_INFO"](),
     ])
     .where(
-      `artwork.ownerId = :userId AND artwork.active = :active AND artwork.visibility = :visibility AND artwork.serial > 
+      `artwork.ownerId = :userId AND artwork.active = :active AND artwork.serial > 
       ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
       {
         userId,
