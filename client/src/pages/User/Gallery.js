@@ -11,7 +11,7 @@ import Grid from "../../domain/Grid";
 import globalStyles from "../../styles/global";
 import { renderUserData } from "../../utils/helpers";
 
-const useGalleryStyles = makeStyles((muiTheme) => ({
+const useGalleryStyles = makeStyles(() => ({
   wrapper: {
     display: "flex",
     flexDirection: "row",
@@ -76,6 +76,7 @@ const Gallery = () => {
     return () => {
       reinitializeState();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

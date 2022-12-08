@@ -1,5 +1,5 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const tagInputStyles = makeStyles((muiTheme) => ({}));
+const tagInputStyles = makeStyles(() => ({}));
 
 export default tagInputStyles;

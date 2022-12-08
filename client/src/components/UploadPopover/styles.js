@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const uploadPopoverStyles = makeStyles((muiTheme) => ({
+const uploadPopoverStyles = makeStyles(() => ({
   container: {
     margin: "0 0 16px 0",
     display: "flex",

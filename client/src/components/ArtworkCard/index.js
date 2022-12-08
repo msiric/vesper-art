@@ -83,7 +83,7 @@ const ArtworkCard = ({
 
   useEffect(() => {
     setFavorites(item.favorites);
-  }, [item.id]);
+  }, [item.id, item.favorites]);
 
   return (
     <Card

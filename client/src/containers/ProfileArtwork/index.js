@@ -42,6 +42,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
       });
       artworkFetched.current = true;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isVisible]);
 
   useEffect(() => {
@@ -50,7 +51,8 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
         userUsername: profileUsername,
       });
     }
-  }, [tabs.value]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tabs.value, tabs.revealed]);
 
   return (
     <Grid item xs={12}>

@@ -38,7 +38,7 @@ const SettingsPreferences = () => {
   const onSubmit = async (values) =>
     await updatePreferences({ userId: user.id, values });
 
-  const watchedValues = watch();
+  watch();
 
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
@@ -46,6 +46,7 @@ const SettingsPreferences = () => {
 
   useEffect(() => {
     reset(setDefaultValues());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user.displayFavorites]);
 
   return (

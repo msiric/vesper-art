@@ -17,6 +17,7 @@ export const useVisibleElement = (ref, shouldStop) => {
     return () => {
       observer.disconnect();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ref.current, shouldStop]);
 
   return isIntersecting;

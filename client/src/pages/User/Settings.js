@@ -18,7 +18,7 @@ import { postLogout } from "../../services/user";
 import globalStyles from "../../styles/global";
 import { containsErrors, renderError } from "../../utils/helpers";
 
-const useSettingsStyles = makeStyles((muiTheme) => ({
+const useSettingsStyles = makeStyles(() => ({
   wrapper: {
     display: "flex",
     flexDirection: "column",
@@ -28,7 +28,6 @@ const useSettingsStyles = makeStyles((muiTheme) => ({
 
 const Settings = ({ location }) => {
   // $TODO Update user store on every change in settings (ex. avatar change)
-  const userId = useUserStore((state) => state.id);
   const resetUser = useUserStore((state) => state.resetUser);
 
   const resetEvents = useEventsStore((state) => state.resetEvents);
@@ -59,6 +58,7 @@ const Settings = ({ location }) => {
     return () => {
       reinitializeState();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return !containsErrors(retry, redirect) ? (

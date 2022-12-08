@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const pricingCardStyles = makeStyles((muiTheme) => ({
+const pricingCardStyles = makeStyles(() => ({
   container: {
     width: "100%",
     height: "100%",

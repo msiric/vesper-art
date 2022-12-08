@@ -70,7 +70,7 @@ const WizardTimeline = ({ illustrations }) => {
   return (
     <Timeline align="alternate" className={classes.container}>
       {illustrations.map((item, index) => (
-        <TimelineItem>
+        <TimelineItem key={item.heading}>
           <TimelineOppositeContent className={classes.heading}>
             <Typography variant="h4" color="textSecondary">
               {`${index + 1}.`}

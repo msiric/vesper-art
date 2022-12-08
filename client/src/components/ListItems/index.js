@@ -22,7 +22,7 @@ const ListItems = ({
       {custom
         ? items.map((item) => item)
         : items.map((item) => (
-            <ListItem className={noPadding && classes.item}>
+            <ListItem key={item.icon} className={noPadding && classes.item}>
               {loading ? (
                 <Box className={classes.box}>
                   <Avatar loading={loading} className={classes.avatar} />

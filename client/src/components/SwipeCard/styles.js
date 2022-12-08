@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const swipeCardStyles = makeStyles((muiTheme) => ({
+const swipeCardStyles = makeStyles(() => ({
   container: {
     height: "100%",
     width: "100%",

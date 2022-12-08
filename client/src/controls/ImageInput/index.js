@@ -44,9 +44,10 @@ const Input = ({
         file: preview,
         imagePreviewUrl: preview,
       }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preview, loading]);
 
-  const showFileUpload = async (e) => {
+  const showFileUpload = async () => {
     if (editable) {
       if (!error && state.file && !noEmpty) {
         setValue(name, "");

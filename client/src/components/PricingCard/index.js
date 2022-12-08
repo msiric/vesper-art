@@ -72,7 +72,7 @@ const PricingCard = ({
           </Typography>
           <List component="nav" aria-label="Features" disablePadding>
             {list.map((item) => (
-              <ListItem loading={loading}>
+              <ListItem key={item.label} loading={loading}>
                 <ListItemIcon>
                   <CheckIcon />
                 </ListItemIcon>

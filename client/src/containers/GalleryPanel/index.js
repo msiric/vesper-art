@@ -1,7 +1,6 @@
 import { determineFetchingState, determineLoadingState } from "@utils/helpers";
 import React from "react";
 import Masonry from "react-masonry-css";
-import { useHistory } from "react-router-dom";
 import SimpleReactLightbox, { SRLWrapper } from "simple-react-lightbox";
 import ImageWrapper from "../../components/ImageWrapper/index";
 import InfiniteList from "../../components/InfiniteList";
@@ -28,8 +27,6 @@ const GalleryPanel = ({ formatArtwork }) => {
 
   const fetchUser = useUserGallery((state) => state.fetchUser);
   const loadArtwork = useUserGallery((state) => state.loadArtwork);
-
-  const history = useHistory();
 
   const classes = galleryPanelStyles({ loading });
 

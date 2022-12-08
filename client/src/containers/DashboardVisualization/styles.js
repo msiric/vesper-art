@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const dashboardVisualizationStyles = makeStyles((muiTheme) => ({
+const dashboardVisualizationStyles = makeStyles(() => ({
   container: {
     display: "flex",
     flexDirection: "column",

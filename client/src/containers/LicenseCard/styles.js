@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const licenseCardStyles = makeStyles((muiTheme) => ({
+const licenseCardStyles = makeStyles(() => ({
   root: {
     minWidth: 275,
   },

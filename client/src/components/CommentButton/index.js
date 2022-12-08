@@ -2,7 +2,6 @@ import { CommentRounded as CommentIcon } from "@material-ui/icons";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import IconButton from "../../domain/IconButton";
-import commentButtonStyles from "./styles";
 
 const CommentButton = ({
   artworkId,
@@ -10,8 +9,6 @@ const CommentButton = ({
   size = "medium",
   ...props
 }) => {
-  const classes = commentButtonStyles();
-
   return (
     <IconButton
       size={size}

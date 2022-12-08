@@ -9,7 +9,6 @@ import {
 import { formatDistance } from "date-fns";
 import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useHistory } from "react-router-dom";
 import { commentValidation } from "../../../../common/validation";
 import { useUserStore } from "../../contexts/global/user";
 import Avatar from "../../domain/Avatar";
@@ -61,14 +60,13 @@ const CommentCard = ({
       resolver: yupResolver(commentValidation),
     });
 
-  const watchedValues = watch();
+  watch();
 
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   const isHighlight = queryRef && queryRef === comment.id;
   const shouldBlink = isHighlight && highlightRef.current;
 
-  const history = useHistory();
   const classes = commentCardStyles();
 
   const handleLikeToggle = (liked) => {
@@ -83,6 +81,7 @@ const CommentCard = ({
 
   useEffect(() => {
     reset(setDefaultValues());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comment.content]);
 
   useEffect(() => {
@@ -128,8 +127,10 @@ const CommentCard = ({
                         data: comment?.owner?.name,
                         isUsername: true,
                       })}
-                      <Tooltip title="OP">
-                        <Box>&nbsp;🎨</Box>
+                      <Tooltip title="OP" placement="top" arrow>
+                        <span role="img" aria-label="OP">
+                          &nbsp;🎨
+                        </span>
                       </Tooltip>
                     </Box>
                   ) : (

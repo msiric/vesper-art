@@ -3,7 +3,6 @@ import Step from "../../domain/Step";
 import StepLabel from "../../domain/StepLabel";
 import Stepper from "../../domain/Stepper";
 import SkeletonWrapper from "../SkeletonWrapper/index";
-import stepperItemsStyles from "./styles";
 
 const StepperItems = ({
   connector,
@@ -13,8 +12,6 @@ const StepperItems = ({
   loading,
   ...props
 }) => {
-  const classes = stepperItemsStyles();
-
   return (
     <Stepper
       alternativeLabel
@@ -22,9 +19,9 @@ const StepperItems = ({
       activeStep={activeStep}
       {...props}
     >
-      {steps.map((e) => (
-        <SkeletonWrapper variant="circle" loading={loading}>
-          <Step key={e}>
+      {steps.map((step) => (
+        <SkeletonWrapper key={step} variant="circle" loading={loading}>
+          <Step>
             <StepLabel StepIconComponent={icons} />
           </Step>
         </SkeletonWrapper>

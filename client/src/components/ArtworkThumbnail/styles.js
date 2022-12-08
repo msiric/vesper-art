@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const artworkThumbnailStyles = makeStyles((muiTheme) => ({
+const artworkThumbnailStyles = makeStyles(() => ({
   thumbnail: {
     width: "100%",
   },

@@ -48,13 +48,62 @@ const Interceptor = () => {
 
   const [playNotification] = useSound(notificationSound);
 
-  const classes = {};
-
   const { enqueueSnackbar } = useSnackbar();
 
   const handleAuthError = () => {
     resetUser();
     if (history) history.push("/login");
+  };
+
+  const handleSocketNotification = (data) => {
+    return addNotification({
+      notification: data,
+      cursor: data.id,
+    });
+  };
+
+  const handleSocketRefresh = async () => {
+    try {
+      if (socket?.instance) socket.instance.emit("disconnectUser");
+      const { data } = await postRefresh.request();
+      updateUser({
+        token: data.accessToken,
+        email: data.user.email,
+        avatar: data.user.avatar,
+        stripeId: data.user.stripeId,
+        onboarded: data.user.onboarded,
+        country: data.user.country,
+        favorites: data.user.favorites.reduce(
+          (object, item) => ({ ...object, [item.artworkId]: true }),
+          {}
+        ),
+      });
+      updateEvents({
+        notifications: { count: data.user.notifications },
+      });
+    } catch (err) {
+      disconnectMenu();
+    }
+  };
+
+  const handleNotificationRefresh = async () => {
+    if (initialized) {
+      await refreshNotifications({ userId });
+    }
+  };
+
+  const handleSocket = (token) => {
+    if (token) {
+      socket.instance = openSocket();
+      socket.instance.emit("authenticateUser", {
+        token: token ? `Bearer ${token}` : null,
+      });
+      socket.instance.on("sendNotification", handleSocketNotification);
+      socket.instance.on("expiredToken", handleSocketRefresh);
+      socket.instance.on("connect", handleNotificationRefresh);
+    } else if (socket?.instance) {
+      socket.instance.emit("disconnectUser");
+    }
   };
 
   const getRefreshToken = async () => {
@@ -159,57 +208,6 @@ const Interceptor = () => {
     handleSocket(token);
   };
 
-  const handleSocketNotification = (data) => {
-    return addNotification({
-      notification: data,
-      cursor: data.id,
-    });
-  };
-
-  const handleSocketRefresh = async () => {
-    try {
-      if (socket?.instance) socket.instance.emit("disconnectUser");
-      const { data } = await postRefresh.request();
-      updateUser({
-        token: data.accessToken,
-        email: data.user.email,
-        avatar: data.user.avatar,
-        stripeId: data.user.stripeId,
-        onboarded: data.user.onboarded,
-        country: data.user.country,
-        favorites: data.user.favorites.reduce(
-          (object, item) => ({ ...object, [item.artworkId]: true }),
-          {}
-        ),
-      });
-      updateEvents({
-        notifications: { count: data.user.notifications },
-      });
-    } catch (err) {
-      disconnectMenu();
-    }
-  };
-
-  const handleNotificationRefresh = async () => {
-    if (initialized) {
-      await refreshNotifications({ userId });
-    }
-  };
-
-  const handleSocket = (token) => {
-    if (token) {
-      socket.instance = openSocket();
-      socket.instance.emit("authenticateUser", {
-        token: token ? `Bearer ${token}` : null,
-      });
-      socket.instance.on("sendNotification", handleSocketNotification);
-      socket.instance.on("expiredToken", handleSocketRefresh);
-      socket.instance.on("connect", handleNotificationRefresh);
-    } else if (socket?.instance) {
-      socket.instance.emit("disconnectUser");
-    }
-  };
-
   useEffect(() => {
     getRefreshToken();
     return () => {
@@ -219,6 +217,7 @@ const Interceptor = () => {
         socket.instance.off("connect", handleNotificationRefresh);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -227,6 +226,7 @@ const Interceptor = () => {
       axios.interceptors.request.eject(ax);
       axios.interceptors.response.eject(ax);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userToken]);
 
   useEffect(() => {
@@ -241,6 +241,7 @@ const Interceptor = () => {
     if (isUpdating) notificationState.current.shouldUpdate = false;
     else notificationState.current.shouldUpdate = true;
     notificationState.current.count = count;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [count, isUpdating]);
 
   return loading ? <Backdrop loading={loading} /> : <App />;

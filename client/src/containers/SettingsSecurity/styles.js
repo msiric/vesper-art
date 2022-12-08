@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const settingsSecurityStyles = makeStyles((muiTheme) => ({
+const settingsSecurityStyles = makeStyles(() => ({
   container: {
     display: "flex",
     flexDirection: "column",

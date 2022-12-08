@@ -12,13 +12,13 @@ import LocalizationProvider from "../../domain/LocalizationProvider";
 import globalStyles from "../../styles/global";
 import { containsErrors, renderError } from "../../utils/helpers";
 
-const useDashboardStyles = makeStyles((muiTheme) => ({
+const useDashboardStyles = makeStyles(() => ({
   wrapper: {
     flexDirection: "column",
   },
 }));
 
-const Dashboard = ({}) => {
+const Dashboard = () => {
   const aggregateRetry = useUserStats(
     (state) => state.aggregateStats.error.retry
   );
@@ -50,6 +50,7 @@ const Dashboard = ({}) => {
     return () => {
       reinitializeState();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return !containsErrors(

@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const userArtworkStyles = makeStyles((muiTheme) => ({
+const userArtworkStyles = makeStyles(() => ({
   container: {
     width: "100%",
     height: "100%",

@@ -70,7 +70,8 @@ const DashboardVisualization = () => {
       const dateTo = format(new Date(range[1]), "MM/dd/yyyy");
       fetchSelectedData({ userId, display, dateFrom, dateTo });
     }
-  }, [range, display.type]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, range, display.type]);
 
   return (
     <Grid container spacing={2}>
@@ -113,7 +114,13 @@ const DashboardVisualization = () => {
       <Grid item xs={12} md={4}>
         <Grid container spacing={2} className={classes.wrapper}>
           {cards.map((card, index) => (
-            <Grid item xs={12} sm={index !== cards.length - 1 ? 6 : 8} md={12}>
+            <Grid
+              key={card.label}
+              item
+              xs={12}
+              sm={index !== cards.length - 1 ? 6 : 8}
+              md={12}
+            >
               <DashboardCard
                 currency={card.currency}
                 data={card.data}

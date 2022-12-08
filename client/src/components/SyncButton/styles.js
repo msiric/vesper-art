@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const syncButtonStyles = makeStyles((muiTheme) => ({
+const syncButtonStyles = makeStyles(() => ({
   container: {
     position: "relative",
     display: "flex",

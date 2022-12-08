@@ -11,7 +11,6 @@ const Input = ({
   label,
   value,
   setValue,
-  error,
   helperText,
   loading = false,
   ...props

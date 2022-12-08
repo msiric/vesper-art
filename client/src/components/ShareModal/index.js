@@ -85,6 +85,7 @@ const ShareModal = ({
         handleCopyButton("idle");
       }, 1000);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.copy.status]);
 
   return (

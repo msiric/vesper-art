@@ -1,14 +1,9 @@
 import React from "react";
-import { Link as RouterLink, useHistory } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import LogoDesktop from "../../../../common/assets/logo.svg";
-import { useHomeArtwork } from "../../contexts/local/homeArtwork";
 import logoItemStyles from "./styles";
 
 const LogoItem = ({ style }) => {
-  const loading = useHomeArtwork((state) => state.artwork.loading);
-
-  const history = useHistory();
-
   const classes = logoItemStyles();
 
   return (

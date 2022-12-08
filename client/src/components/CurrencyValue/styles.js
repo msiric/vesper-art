@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const currencyValueStyles = makeStyles((muiTheme) => ({
+const currencyValueStyles = makeStyles(() => ({
   popover: {
     "&>div": {
       minWidth: "auto",

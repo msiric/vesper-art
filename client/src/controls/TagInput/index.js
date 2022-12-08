@@ -1,16 +1,15 @@
+import { InputAdornment } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import Autocomplete from "../../domain/Autocomplete";
 import FormControl from "../../domain/FormControl";
 import FormHelperText from "../../domain/FormHelperText";
 import TextField from "../../domain/TextField";
-import tagInputStyles from "./styles";
 
 const Input = ({
   value,
   name,
   trigger,
-  label,
   handleChange,
   helperText,
   error,
@@ -20,7 +19,6 @@ const Input = ({
   ...props
 }) => {
   const [state, setState] = useState({ tags: value, changed: false });
-  const classes = tagInputStyles();
 
   const handleKeyDown = (e) => {
     switch (e.key) {
@@ -48,6 +46,7 @@ const Input = ({
 
   useEffect(() => {
     handleEdit();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.tags, state.changed]);
 
   useEffect(() => {

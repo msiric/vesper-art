@@ -25,27 +25,19 @@ const VerifierCard = () => {
     assignorIdentifier: "",
   });
 
-  const {
-    handleSubmit,
-    formState,
-    errors,
-    control,
-    setValue,
-    trigger,
-    getValues,
-    watch,
-    reset,
-  } = useForm({
-    defaultValues: setDefaultValues(),
-    resolver: yupResolver(fingerprintValidation),
-  });
+  const { handleSubmit, formState, errors, control, getValues, watch, reset } =
+    useForm({
+      defaultValues: setDefaultValues(),
+      resolver: yupResolver(fingerprintValidation),
+    });
 
-  const watchedValues = watch();
+  watch();
 
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 
   useEffect(() => {
     reset(setDefaultValues());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [license]);
 
   return (

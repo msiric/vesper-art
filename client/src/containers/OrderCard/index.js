@@ -8,7 +8,6 @@ import {
   renderTableBody,
   renderUserData,
 } from "../../utils/helpers";
-import orderCardStyles from "./styles";
 
 const renderColumns = (isSeller, loading) => [
   {
@@ -84,8 +83,6 @@ const OrderCard = () => {
   const loading = useOrderDetails((state) => state.order.loading);
 
   const isSeller = seller.id === userId;
-
-  const classes = orderCardStyles();
 
   return (
     <Datatable

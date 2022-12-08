@@ -19,8 +19,6 @@ const EditUserForm = ({
   userUsername,
   loading,
 }) => {
-  const classes = {};
-
   return (
     <Box>
       <ImageInput

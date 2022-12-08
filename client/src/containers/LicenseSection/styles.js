@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const licenseSectionStyles = makeStyles((muiTheme) => ({
+const licenseSectionStyles = makeStyles(() => ({
   emptyWrapper: {
     padding: 12,
   },

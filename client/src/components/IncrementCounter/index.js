@@ -24,12 +24,6 @@ const IncrementCounter = ({ newValue = 0, size = "medium" }) => {
     minWidth: WIDTH_OPTIONS[size],
   });
 
-  const handleInitialization = () => {
-    setAnimationValue("hide");
-    setTimeout(() => setAnimationValue("waitDown"), 70);
-    setTimeout(() => setAnimationValue("initial"), 150);
-  };
-
   const handleIncrement = () => {
     setTimeout(() => setAnimationValue("goUp"), 0);
     setTimeout(() => setValue(value + 1), 100);
@@ -47,7 +41,7 @@ const IncrementCounter = ({ newValue = 0, size = "medium" }) => {
   useEffect(() => {
     if (newValue < value) handleDecrement();
     if (newValue > value) handleIncrement();
-    if (newValue === value) handleInitialization();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newValue]);
 
   return (

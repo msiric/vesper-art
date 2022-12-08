@@ -6,7 +6,7 @@ import {
 } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { Link as RouterLink, useHistory } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { recoveryValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import Avatar from "../../domain/Avatar";
@@ -59,10 +59,9 @@ const UpdateEmail = () => {
     await postEmail.request({ data: values });
   };
 
-  const history = useHistory();
   const classes = useStyles();
 
-  const watchedValues = watch();
+  watch();
 
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 

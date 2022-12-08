@@ -291,58 +291,6 @@ const initActions = (set, get) => ({
           loading: true,
         },
       }));
-      const discount = get().discount.data;
-      const version = get().version.data;
-      const license = get().license;
-      // $TODO no longer
-      /*       if (discount && values.discountCode === null) {
-        await postIntent.request({
-          versionId: version.id,
-          artworkLicense: {
-            assignee: "",
-            company: "",
-            type: license,
-          },
-          discountId: null,
-        });
-        set((state) => ({
-          ...set,
-          discount: {
-            ...state.discount,
-            data: null,
-            loading: false,
-            error: false,
-          },
-        }));
-      }
-      if (!discount && values.discountCode) {
-        const { data } = await getDiscount.request({
-          discountCode: values.discountCode,
-        });
-        if (!isObjectEmpty(data.payload)) {
-          console.log("ADDAS DISCOUNT");
-          await postIntent.request({
-            versionId: version.id,
-            artworkLicense: {
-              assignee: "",
-              company: "",
-              type: license,
-            },
-            discountId: data.payload.id,
-          });
-          set((state) => ({
-            ...set,
-            discount: {
-              ...state.discount,
-              data: data.payload,
-              loading: false,
-              error: false,
-            },
-          }));
-        } else {
-          console.log("$TODO discount does not exist");
-        }
-      } */
     } catch (err) {
       set((state) => ({
         ...set,

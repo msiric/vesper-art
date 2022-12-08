@@ -13,7 +13,13 @@ const PaymentDisclaimer = () => {
       <Grid container spacing={2} className={classes.container}>
         <Grid className={classes.cards} item xs={12}>
           {cardLogos.map((card) => (
-            <img key={card} src={card} width="50px" style={{ padding: 6 }} />
+            <img
+              key={card}
+              src={card}
+              alt={card}
+              width="50px"
+              style={{ padding: 6 }}
+            />
           ))}
         </Grid>
         <Grid className={classes.wrapper} item xs={12} sm={9}>

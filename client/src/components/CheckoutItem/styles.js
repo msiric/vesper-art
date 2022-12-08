@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const checkoutItemStyles = makeStyles((muiTheme) => ({
+const checkoutItemStyles = makeStyles(() => ({
   description: {
     "&:first-letter": {
       textTransform: "capitalize",

@@ -46,6 +46,7 @@ const ImageWrapper = memo(
           <img
             className={`${classes.media} ${shouldCover && classes.coverParent}`}
             src={source}
+            alt={caption}
           />
         </Box>
       ) : (
@@ -60,7 +61,11 @@ const ImageWrapper = memo(
       )
     ) : (
       <Box className={classes.hiddenWrapper} width="100%">
-        <img className={`${classes.media} ${classes.hidden}`} src={source} />
+        <img
+          className={`${classes.media} ${classes.hidden}`}
+          src={source}
+          alt={caption}
+        />
       </Box>
     );
   }

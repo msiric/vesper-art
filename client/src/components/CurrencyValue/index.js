@@ -1,7 +1,6 @@
 import React from "react";
 import NumberFormat from "react-number-format";
 import SkeletonWrapper from "../SkeletonWrapper/index";
-import currencyValueStyles from "./styles";
 
 const CurrencyValue = ({
   loading = false,
@@ -13,8 +12,6 @@ const CurrencyValue = ({
   onValueChange,
   ...props
 }) => {
-  const classes = currencyValueStyles();
-
   return (
     <SkeletonWrapper variant="text" loading={loading}>
       <NumberFormat

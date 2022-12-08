@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const orderPreviewStyles = makeStyles((muiTheme) => ({
+const orderPreviewStyles = makeStyles(() => ({
   container: {
     display: "flex",
     flexDirection: "column",

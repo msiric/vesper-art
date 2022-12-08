@@ -24,7 +24,8 @@ const GalleryToolbar = ({ formatArtwork, location }) => {
 
   useEffect(() => {
     fetchUser({ userId, userUsername, formatArtwork });
-  }, [location, display]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, userUsername, location, display]);
 
   return (
     <Box className={classes.container}>

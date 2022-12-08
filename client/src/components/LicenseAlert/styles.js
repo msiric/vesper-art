@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const licenseAlertStyles = makeStyles((muiTheme) => ({
+const licenseAlertStyles = makeStyles(() => ({
   alert: {
     textAlign: "center",
   },

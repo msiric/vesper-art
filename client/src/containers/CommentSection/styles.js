@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const commentSectionStyles = makeStyles((muiTheme) => ({
+const commentSectionStyles = makeStyles(() => ({
   wrapper: {
     "&:last-child": {
       paddingBottom: 0,

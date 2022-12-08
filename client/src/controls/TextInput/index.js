@@ -2,7 +2,6 @@ import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import InputAdornment from "../../domain/InputAdornment";
 import TextField from "../../domain/TextField";
-import textInputStyles from "./styles";
 
 const Input = ({
   margin = "dense",
@@ -12,8 +11,6 @@ const Input = ({
   readOnly = false,
   ...props
 }) => {
-  const classes = textInputStyles();
-
   return (
     <TextField
       InputProps={{

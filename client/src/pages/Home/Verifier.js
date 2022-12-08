@@ -62,9 +62,6 @@ const useVerifierStyles = makeStyles((muiTheme) => ({
 }));
 
 const Verifier = () => {
-  const retry = useLicenseVerifier((state) => state.license.error.retry);
-  const redirect = useLicenseVerifier((state) => state.license.error.redirect);
-  const message = useLicenseVerifier((state) => state.license.error.message);
   const resetToken = useLicenseVerifier((state) => state.resetToken);
 
   const globalClasses = globalStyles();
@@ -96,6 +93,7 @@ const Verifier = () => {
     return () => {
       reinitializeState();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -66,7 +66,7 @@ const Signup = () => {
 
   const classes = useStyles();
 
-  const watchedValues = watch();
+  watch();
 
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 

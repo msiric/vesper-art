@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const downloadCardStyles = makeStyles((muiTheme) => ({
+const downloadCardStyles = makeStyles(() => ({
   container: {
     display: "flex",
     flexDirection: "column",

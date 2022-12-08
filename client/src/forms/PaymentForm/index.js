@@ -9,24 +9,7 @@ import React, { useImperativeHandle, useState } from "react";
 import { useOrderCheckout } from "../../contexts/local/orderCheckout";
 
 export const StripeInput = (props) => {
-  const {
-    component: Component,
-    inputRef,
-    "aria-invalid": ariaInvalid,
-    "aria-describedby": ariaDescribeBy,
-    defaultValue,
-    required,
-    onKeyDown,
-    onKeyUp,
-    readOnly,
-    autoComplete,
-    autoFocus,
-    type,
-    name,
-    rows,
-    options,
-    ...other
-  } = props;
+  const { component: Component, inputRef, options, ...other } = props;
   const theme = useTheme();
   const [mountNode, setMountNode] = useState(null);
 
@@ -93,7 +76,7 @@ export const StripeTextField = ({ loading, ...props }) => {
   );
 };
 
-const paymentFormStyles = makeStyles((muiTheme) => ({
+const paymentFormStyles = makeStyles(() => ({
   container: {
     "&>div": {
       padding: "0px 8px !important",
@@ -101,7 +84,7 @@ const paymentFormStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-const PaymentForm = ({ secret, version, loading }) => {
+const PaymentForm = ({ loading }) => {
   const errors = useOrderCheckout((state) => state.errors);
   const reflectErrors = useOrderCheckout((state) => state.reflectErrors);
 

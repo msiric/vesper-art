@@ -1,7 +1,6 @@
 import React from "react";
 import MenuItem from "../../domain/MenuItem";
 import TextField from "../../domain/TextField";
-import dropdownItemsStyles from "./styles";
 
 const DropdownItems = ({
   label,
@@ -10,11 +9,8 @@ const DropdownItems = ({
   items,
   variant = "outlined",
   margin = "dense",
-  children,
   ...props
 }) => {
-  const classes = dropdownItemsStyles();
-
   return (
     <TextField
       variant={variant}

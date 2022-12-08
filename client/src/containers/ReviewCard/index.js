@@ -1,7 +1,7 @@
 import { StarsRounded as ReviewIcon } from "@material-ui/icons";
 import queryString from "query-string";
 import React, { useEffect } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import SubHeading from "../../components/SubHeading/index";
 import SyncButton from "../../components/SyncButton";
 import { useUserStore } from "../../contexts/global/user";
@@ -32,12 +32,12 @@ const ReviewCard = ({ paramId, highlightRef }) => {
   const isHighlight = query && query.notif === "review";
   const shouldBlink = isHighlight && highlightRef.current;
 
-  const history = useHistory();
   const classes = reviewCardStyles();
 
   useEffect(() => {
     fetchOrder({ userId, orderId: paramId, query, highlightRef });
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, paramId, query]);
 
   return (
     <Card

@@ -6,7 +6,7 @@ import {
 } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { Link as RouterLink, useHistory } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { loginValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import { useEventsStore } from "../../contexts/global/events";
@@ -61,10 +61,9 @@ const Login = () => {
       resolver: yupResolver(loginValidation),
     });
 
-  const history = useHistory();
   const classes = useStyles();
 
-  const watchedValues = watch();
+  watch();
 
   const isDisabled = isFormDisabled(getValues(), setDefaultValues(), formState);
 

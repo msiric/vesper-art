@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const settingsAccountStyles = makeStyles((muiTheme) => ({
+const settingsAccountStyles = makeStyles(() => ({
   container: {
     marginBottom: 16,
     display: "flex",

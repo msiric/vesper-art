@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const paymentDisclaimerStyles = makeStyles((muiTheme) => ({
+const paymentDisclaimerStyles = makeStyles(() => ({
   container: {
     "&>div": {
       padding: "0px 8px !important",

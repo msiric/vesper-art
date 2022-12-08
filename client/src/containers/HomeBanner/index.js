@@ -32,81 +32,84 @@ const HomeBanner = () => {
     fetchArtwork();
     setBar();
     setWrapper();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const classes = homeBannerStyles();
 
-  return [
-    <Grid item xs={12} md={9}>
-      {barVisible && (
-        <HelpBox type="alert" label={barMessage} margin="0 0 12px 0" />
-      )}
-      <Card className={classes.banner}>
-        {wrapperVisible && (
-          <Box className={classes.beta}>
-            <Typography className={classes.message}>
-              {wrapperMessage}
-            </Typography>
-          </Box>
+  return (
+    <>
+      <Grid item xs={12} md={9}>
+        {barVisible && (
+          <HelpBox type="alert" label={barMessage} margin="0 0 12px 0" />
         )}
-        <CardContent className={classes.content}>
-          <Box className={classes.headingWrapper}>
-            <Typography className={classes.bannerHeading}>
-              Browse, share and collect digital art the way it was imagined
-            </Typography>
-          </Box>
-          <Box className={classes.bannerActions}>
-            {!authenticated && (
+        <Card className={classes.banner}>
+          {wrapperVisible && (
+            <Box className={classes.beta}>
+              <Typography className={classes.message}>
+                {wrapperMessage}
+              </Typography>
+            </Box>
+          )}
+          <CardContent className={classes.content}>
+            <Box className={classes.headingWrapper}>
+              <Typography className={classes.bannerHeading}>
+                Browse, share and collect digital art the way it was imagined
+              </Typography>
+            </Box>
+            <Box className={classes.bannerActions}>
+              {!authenticated && (
+                <SyncButton
+                  component={RouterLink}
+                  to="/signup"
+                  className={classes.bannerButton}
+                  startIcon={<SignupIcon />}
+                >
+                  Sign up
+                </SyncButton>
+              )}
               <SyncButton
                 component={RouterLink}
-                to="/signup"
+                to="/how_it_works"
+                color="secondary"
                 className={classes.bannerButton}
-                startIcon={<SignupIcon />}
+                startIcon={<InfoIcon />}
               >
-                Sign up
+                How it works
               </SyncButton>
-            )}
-            <SyncButton
-              component={RouterLink}
-              to="/how_it_works"
-              color="secondary"
-              className={classes.bannerButton}
-              startIcon={<InfoIcon />}
-            >
-              How it works
-            </SyncButton>
-          </Box>
-        </CardContent>
-      </Card>
-    </Grid>,
-    <Grid item xs={12} md={3} className={classes.verifierContainer}>
-      <Card className={classes.verifier}>
-        <CardContent className={classes.content}>
-          <Box className={classes.wrapper}>
-            <Typography className={classes.verifierHeading}>
-              Need to verify a license?
-            </Typography>
-            <Typography className={classes.verifierText}>
-              Head to the platform's verifier system and confirm its validity
-              and authenticity
-            </Typography>
-          </Box>
-          <Divider light />
-          <Box className={classes.verifierButton}>
-            <SyncButton
-              component={RouterLink}
-              to="/verifier"
-              variant="outlined"
-              color="secondary"
-              startIcon={<VerifyIcon />}
-            >
-              Verify license
-            </SyncButton>
-          </Box>
-        </CardContent>
-      </Card>
-    </Grid>,
-  ];
+            </Box>
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid item xs={12} md={3} className={classes.verifierContainer}>
+        <Card className={classes.verifier}>
+          <CardContent className={classes.content}>
+            <Box className={classes.wrapper}>
+              <Typography className={classes.verifierHeading}>
+                Need to verify a license?
+              </Typography>
+              <Typography className={classes.verifierText}>
+                Head to the platform's verifier system and confirm its validity
+                and authenticity
+              </Typography>
+            </Box>
+            <Divider light />
+            <Box className={classes.verifierButton}>
+              <SyncButton
+                component={RouterLink}
+                to="/verifier"
+                variant="outlined"
+                color="secondary"
+                startIcon={<VerifyIcon />}
+              >
+                Verify license
+              </SyncButton>
+            </Box>
+          </CardContent>
+        </Card>
+      </Grid>
+    </>
+  );
 };
 
 export default HomeBanner;

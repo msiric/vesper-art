@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 import { artepunktTheme } from "@styles/theme";
 
-const animatedSuccessStyles = makeStyles((muiTheme) => ({
+const animatedSuccessStyles = makeStyles(() => ({
   success: {
     position: "absolute",
     width: 80,

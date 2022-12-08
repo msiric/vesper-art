@@ -7,7 +7,6 @@ import { useUserStore } from "../../contexts/global/user";
 import IconButton from "../../domain/IconButton";
 import { deleteFavorite, postFavorite } from "../../services/artwork";
 import AsyncButton from "../AsyncButton/index";
-import favoriteButtonStyles from "./styles";
 
 const FavoriteButton = ({
   artwork,
@@ -20,8 +19,6 @@ const FavoriteButton = ({
 }) => {
   const [state, setState] = useState({ loading: false });
   const updateFavorites = useUserStore((state) => state.updateFavorites);
-
-  const classes = favoriteButtonStyles();
 
   const handleFavoriteArtwork = async (id) => {
     setState({ loading: true });

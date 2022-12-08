@@ -3,26 +3,21 @@ import { Controller, useFormContext } from "react-hook-form";
 import Autocomplete from "../../domain/Autocomplete";
 import InputAdornment from "../../domain/InputAdornment";
 import TextField from "../../domain/TextField";
-import autocompleteInputStyles from "./styles";
 
 const Input = ({
   value,
   name,
   label,
   setValue,
-  getOptionLabel,
   helperText,
   error,
   options,
-  variant = "text",
   loading = false,
   adornment = null,
   autoHighlight = true,
   autoSelect = true,
   ...props
 }) => {
-  const classes = autocompleteInputStyles();
-
   return (
     <Autocomplete
       {...props}

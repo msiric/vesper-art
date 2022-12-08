@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const likeButtonStyles = makeStyles((muiTheme) => ({
+const likeButtonStyles = makeStyles(() => ({
   button: {
     padding: 0,
     "& svg": {

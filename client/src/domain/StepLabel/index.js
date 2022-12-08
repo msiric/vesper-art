@@ -6,7 +6,7 @@ import SkeletonWrapper from "../../components/SkeletonWrapper";
 const StyledStepLabel = withStyles({})(MaterialStepLabel);
 
 const StepLabel = forwardRef(
-  ({ loading = false, variant = "rect", children, ...props }, ref) => {
+  ({ loading = false, variant = "rect", ...props }, ref) => {
     return (
       <SkeletonWrapper variant={variant} loading={loading}>
         <StyledStepLabel ref={ref} {...props} />

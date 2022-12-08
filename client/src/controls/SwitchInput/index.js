@@ -12,10 +12,8 @@ const Input = ({
   label,
   setValue,
   helperText = null,
-  error = null,
   labelPlacement = "start",
   loading = false,
-  ...props
 }) => {
   const classes = switchInputStyles();
 

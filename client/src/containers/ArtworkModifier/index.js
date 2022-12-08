@@ -97,10 +97,12 @@ const ArtworkModifier = ({ paramId }) => {
       fetchArtwork({ userId, artworkId: paramId }),
       ...(stripeId && [fetchRequirements({ stripeId })]),
     ]);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, paramId, stripeId]);
 
   useEffect(() => {
     reset(setDefaultValues());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [artwork]);
 
   return (

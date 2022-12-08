@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const incrementCounter = makeStyles((muiTheme) => ({
+const incrementCounter = makeStyles(() => ({
   hide: {
     display: "none",
   },

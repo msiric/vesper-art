@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 import { artepunktTheme } from "../../styles/theme";
 
-const notificationItemStyles = makeStyles((muiTheme) => ({
+const notificationItemStyles = makeStyles(() => ({
   item: {
     cursor: "pointer",
     width: "100%",

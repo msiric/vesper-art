@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const dashboardToolbarStyles = makeStyles((muiTheme) => ({
+const dashboardToolbarStyles = makeStyles(() => ({
   wrapper: {
     display: "flex",
     justifyContent: "space-between",
