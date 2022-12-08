@@ -12,6 +12,7 @@ import { useHomeArtwork } from "../../contexts/local/homeArtwork";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import CardContent from "../../domain/CardContent";
+import Divider from "../../domain/Divider";
 import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
 import homeBannerStyles from "./styles";
@@ -49,9 +50,9 @@ const HomeBanner = () => {
           </Box>
         )}
         <CardContent className={classes.content}>
-          <Box className={classes.wrapper}>
+          <Box className={classes.headingWrapper}>
             <Typography className={classes.bannerHeading}>
-              Browse, share and collect digital art the way it's intended
+              Browse, share and collect digital art the way it was imagined
             </Typography>
           </Box>
           <Box className={classes.bannerActions}>
@@ -86,14 +87,17 @@ const HomeBanner = () => {
               Need to verify a license?
             </Typography>
             <Typography className={classes.verifierText}>
-              Head to the platform's verifier
+              Head to the platform's verifier system and confirm its validity
+              and authenticity
             </Typography>
           </Box>
+          <Divider light />
           <Box className={classes.verifierButton}>
             <SyncButton
               component={RouterLink}
               to="/verifier"
               variant="outlined"
+              color="secondary"
               startIcon={<VerifyIcon />}
             >
               Verify license
