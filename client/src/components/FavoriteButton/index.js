@@ -67,6 +67,7 @@ const FavoriteButton = ({
     </AsyncButton>
   ) : (
     <IconButton
+      title={`${favorited ? "Unfavorite artwork" : "Favorite artwork"}`}
       aria-label={`${favorited ? "Unfavorite artwork" : "Favorite artwork"}`}
       onClick={() =>
         favorited

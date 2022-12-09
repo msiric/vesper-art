@@ -151,6 +151,7 @@ const Footer = () => {
               </Typography>
               <List>
                 <IconButton
+                  title="Facebook"
                   aria-label="Facebook"
                   href={socialLinks.facebook}
                   className={classes.button}
@@ -158,6 +159,7 @@ const Footer = () => {
                   <FacebookIcon />
                 </IconButton>
                 <IconButton
+                  title="Instagram"
                   aria-label="Instagram"
                   href={socialLinks.instagram}
                   className={classes.button}
@@ -165,6 +167,7 @@ const Footer = () => {
                   <InstagramIcon />
                 </IconButton>
                 <IconButton
+                  title="Twitter"
                   aria-label="Twitter"
                   href={socialLinks.twitter}
                   className={classes.button}
@@ -172,6 +175,7 @@ const Footer = () => {
                   <TwitterIcon />
                 </IconButton>
                 <IconButton
+                  title="Reddit"
                   aria-label="Reddit"
                   href={socialLinks.reddit}
                   className={classes.button}

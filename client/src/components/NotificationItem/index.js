@@ -115,6 +115,7 @@ const NotificationItem = ({
                   handleReadClick({ userId, event: e, id: notification?.id })
           }
           edge="end"
+          title={notification?.read ? "Mark unread" : "Mark read"}
           aria-label={notification?.read ? "Mark unread" : "Mark read"}
           disabled={isUpdating}
           loading={loading}

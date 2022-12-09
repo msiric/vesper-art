@@ -59,6 +59,7 @@ const ShareButton = ({
       ) : (
         <SkeletonWrapper loading={loading}>
           <IconButton
+            title="Share artwork"
             aria-label="Share artwork"
             onClick={() => handleModalOpen()}
             {...props}

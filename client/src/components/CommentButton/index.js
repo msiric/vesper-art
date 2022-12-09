@@ -11,6 +11,8 @@ const CommentButton = ({
 }) => {
   return (
     <IconButton
+      title="Comments"
+      aria-label="Comments"
       size={size}
       component={RouterLink}
       to={`/artwork/${artworkId}#comments`}

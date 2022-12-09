@@ -16,7 +16,11 @@ const CustomToolbar = ({ addOptions }) => {
   return (
     addOptions.enabled && (
       <Tooltip title={addOptions.title}>
-        <IconButton onClick={handleAdd}>
+        <IconButton
+          aria-label="Add artwork"
+          title="Add artwork"
+          onClick={handleAdd}
+        >
           <AddIcon />
         </IconButton>
       </Tooltip>

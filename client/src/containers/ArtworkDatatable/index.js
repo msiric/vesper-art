@@ -178,6 +178,8 @@ const ArtworkDatatable = () => {
   const actionsColumn = (artworkId) => (
     <Box className={classes.wrapper}>
       <IconButton
+        title="Edit artwork"
+        aria-label="Edit artwork"
         color="secondary"
         disabled={loading}
         className={classes.button}
@@ -190,6 +192,8 @@ const ArtworkDatatable = () => {
         <EditIcon />
       </IconButton>
       <IconButton
+        title="Delete artwork"
+        aria-label="Delete artwork"
         color="primary"
         disabled={loading}
         className={classes.button}

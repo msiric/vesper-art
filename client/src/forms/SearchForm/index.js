@@ -36,7 +36,8 @@ const SearchForm = ({ handleToggle, getValues, setValue, loading }) => {
           startAdornment: (
             <InputAdornment position="start">
               <IconButton
-                title={search === "artwork" ? "Search artwork" : "Search users"}
+                title={search === "artwork" ? "Artwork" : "Users"}
+                aria-label={search === "artwork" ? "Artwork" : "Users"}
                 onClick={handleToggle}
                 size="small"
                 disableFocusRipple
@@ -49,6 +50,8 @@ const SearchForm = ({ handleToggle, getValues, setValue, loading }) => {
           endAdornment: (
             <InputAdornment position="end">
               <IconButton
+                title="Search"
+                aria-label="Search"
                 type="submit"
                 size="small"
                 disableFocusRipple

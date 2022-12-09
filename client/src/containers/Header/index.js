@@ -90,6 +90,7 @@ const Header = () => {
                 </IconButton> */}
                 <IconButton
                   onClick={(e) => fetchNotifications({ userId, event: e })}
+                  title="Show notifications"
                   aria-label="Show notifications"
                   color="inherit"
                 >
@@ -99,6 +100,7 @@ const Header = () => {
                 </IconButton>
                 <IconButton
                   edge="end"
+                  title="Show profile"
                   aria-label="Show profile"
                   aria-haspopup="true"
                   onClick={(e) => toggleMenu({ event: e })}
