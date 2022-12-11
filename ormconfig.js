@@ -3,7 +3,6 @@ import path from "path";
 import { environment, ENV_OPTIONS } from "./config/secret";
 
 const __rootdir = path.resolve();
-const dirname = path.resolve();
 
 // yarn run migrate:generate -- <INSERT NAME OF MIGRATION HERE>
 
@@ -19,8 +18,8 @@ const config = {
   migrationsRun: environment === ENV_OPTIONS.PRODUCTION ? false : true,
   logging: environment === ENV_OPTIONS.DEVELOPMENT ? true : false,
   logger: environment === ENV_OPTIONS.PRODUCTION ? "file" : "advanced-console",
-  migrations: [path.join(dirname, "dist/migrations/*{.ts,.js}")],
-  entities: [path.join(dirname, "dist/entities/*{.ts,.js}")],
+  migrations: [path.join(__rootdir, "dist/migrations/*{.ts,.js}")],
+  entities: [path.join(__rootdir, "dist/entities/*{.ts,.js}")],
   cli: {
     migrationsDir: "migrations",
     entitiesDir: "entities",

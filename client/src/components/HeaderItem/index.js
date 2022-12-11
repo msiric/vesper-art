@@ -34,7 +34,7 @@ const HeaderItem = ({
     )
   ) : auth ? (
     <MenuItem onClick={handleClick}>
-      <IconButton aria-label={ariaLabel} color="inherit">
+      <IconButton title={ariaLabel} aria-label={ariaLabel} color="inherit">
         {showBadge && (
           <Badge badgeContent={badgeValue} color="primary">
             {icon}

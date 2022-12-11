@@ -80,6 +80,7 @@ const Provider = () => {
         action={(key) => (
           <IconButton
             color="inherit"
+            title="Close"
             aria-label="Close"
             className={classes.close}
             onClick={handleAlertClose(key)}

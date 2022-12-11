@@ -122,19 +122,34 @@ const Input = ({
             </Box>
           ) : error ? (
             <Box className={`${classes.input} ${classes.error}`}>
-              <IconButton disableRipple className={classes.icon}>
+              <IconButton
+                title="Error"
+                aria-label="Error"
+                disableRipple
+                className={classes.icon}
+              >
                 <ErrorIcon fontSize="large" />
               </IconButton>
             </Box>
           ) : state.file ? (
             <Box className={`${classes.input} ${classes.remove}`}>
-              <IconButton disableRipple className={classes.icon}>
+              <IconButton
+                title="Clear"
+                aria-label="Clear"
+                disableRipple
+                className={classes.icon}
+              >
                 <ClearIcon fontSize="large" />
               </IconButton>
             </Box>
           ) : (
             <Box className={`${classes.input} ${classes.upload}`}>
-              <IconButton disableRipple className={classes.icon}>
+              <IconButton
+                title="Upload"
+                aria-label="Upload"
+                disableRipple
+                className={classes.icon}
+              >
                 <UploadIcon fontSize="large" />
               </IconButton>
             </Box>

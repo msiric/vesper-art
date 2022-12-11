@@ -329,3 +329,6 @@ export const isFullyOnboarded = ({
   detailsSubmitted,
   payoutsEnabled,
 }) => detailsSubmitted && payoutsEnabled && capabilities.transfers === "active";
+
+export const constructFullUrl = (req) =>
+  `${req.protocol}://${req.get("host")}${req.originalUrl}`;

@@ -1,3 +1,4 @@
+import Box from "@domain/Box";
 import {
   AttachMoneyRounded as SellerIcon,
   BarChartRounded as DashboardIcon,
@@ -128,7 +129,7 @@ const AccountMenu = () => {
       {menuItems.map(
         (item) =>
           !item.hidden && (
-            <>
+            <Box key={item.label}>
               <MenuItem onClick={item.handleClick} disableRipple>
                 <ListItemAvatar>
                   <Avatar>{item.icon}</Avatar>
@@ -136,7 +137,7 @@ const AccountMenu = () => {
                 <ListItemText primary={item.label} />
               </MenuItem>
               <Divider />
-            </>
+            </Box>
           )
       )}
     </Menu>

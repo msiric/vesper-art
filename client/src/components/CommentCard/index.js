@@ -243,6 +243,7 @@ const CommentCard = ({
               }
               edge="end"
               aria-label="More"
+              title="More"
               className={classes.button}
             >
               <MoreIcon />

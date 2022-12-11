@@ -57,6 +57,7 @@ const LikeButton = ({
     </AsyncButton>
   ) : (
     <IconButton
+      title={`${liked ? "Dislike comment" : "Like comment"}`}
       aria-label={`${liked ? "Dislike comment" : "Like comment"}`}
       onClick={() => (liked ? handleDislikeComment() : handleLikeComment())}
       disabled={disabled || state.loading}

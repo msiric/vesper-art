@@ -69,6 +69,7 @@ export const updateUserProfile = async ({
   userPath,
   userFilename,
   userMimetype,
+  userMedia,
   userDescription,
   userCountry,
   connection,
@@ -78,6 +79,7 @@ export const updateUserProfile = async ({
     filePath: userPath,
     fileName: userFilename,
     mimeType: userMimetype,
+    fileMedia: userMedia,
     fileType: "user",
   });
   await profileValidation.validate({ userDescription, userCountry });
@@ -122,9 +124,8 @@ export const updateUserProfile = async ({
         connection,
       });
     } else {
-      if (!foundUser.avatar) {
-        avatarId = null;
-      }
+      const shouldDelete = foundUser.avatar && !userMedia;
+      avatarId = shouldDelete ? null : foundUser.avatar;
       await editUserProfile({
         foundUser,
         userDescription,
@@ -132,7 +133,7 @@ export const updateUserProfile = async ({
         avatarId,
         connection,
       });
-      if (foundUser.avatar) {
+      if (shouldDelete) {
         await deleteS3Object({
           fileLink: foundUser.avatar.source,
           folderName: "userMedia/",
