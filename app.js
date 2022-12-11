@@ -5,6 +5,7 @@ import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import createError from "http-errors";
+import isBot from "isbot";
 import morgan from "morgan";
 import path from "path";
 import "reflect-metadata";
@@ -13,6 +14,7 @@ import { cookie, domain, environment, ENV_OPTIONS } from "./config/secret";
 import { authRateLimiter, commonRateLimiter } from "./lib/limiter";
 import api from "./routes/api/index";
 import auth from "./routes/auth/index";
+import bot from "./routes/bot/index";
 import stripe from "./routes/stripe/index";
 import hooks from "./routes/webhooks/index";
 import { connectToDatabase } from "./utils/database";
@@ -53,16 +55,6 @@ const dirname = path.resolve();
     })
   );
 
-  // mongoose.connect(
-  //   mongo.database,
-  //   { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false },
-  //   (err) => {
-  //     if (err) console.log(err);
-  //     console.log("Connected to MongoDB");
-  //   }
-  // );
-
-  // mongoose.set("useCreateIndex", true);
   if (environment !== ENV_OPTIONS.TESTING) {
     try {
       await connectToDatabase();
@@ -90,8 +82,6 @@ const dirname = path.resolve();
   //   })
   // );
 
-  // app.use(rateLimiter);
-
   // FEATURE FLAG - stripe
   featureFlags.stripe && app.use("/webhook", hooks);
 
@@ -99,14 +89,24 @@ const dirname = path.resolve();
 
   app.use("/auth", authRateLimiter, auth);
   app.use("/api", commonRateLimiter, api);
+  app.use("/bot", commonRateLimiter, bot);
   // FEATURE FLAG - stripe
   featureFlags.stripe && app.use("/stripe", stripe);
 
   app.use(express.static(path.join(dirname, "client/build")));
   app.use(express.static(path.join(dirname, "public")));
 
-  app.use((req, res, next) => {
-    res.sendFile(path.join(dirname, "client/build", "index.html"));
+  app.use(async (req, res, next) => {
+    try {
+      if (isBot(req.get("user-agent"))) {
+        req.url = `/bot${req.url}`;
+        app.handle(req, res);
+      } else {
+        res.sendFile(path.join(dirname, "client/build", "index.html"));
+      }
+    } catch (err) {
+      // do nothing
+    }
   });
 
   app.use((req, res, next) => {
