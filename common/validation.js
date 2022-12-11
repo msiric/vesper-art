@@ -942,12 +942,14 @@ export const avatarValidation = Yup.object().shape({
       errors.userMediaType.message,
       (value) =>
         !value ||
+        value.id ||
         (value && Object.keys(upload.user.mimeTypes).includes(value.type))
     )
     .test(
       "fileSize",
       errors.userMediaSize.message,
-      (value) => !value || (value && value.size <= upload.user.fileSize)
+      (value) =>
+        !value || value.id || (value && value.size <= upload.user.fileSize)
     ),
 });
 

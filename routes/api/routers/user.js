@@ -36,6 +36,7 @@ router
       userId: req.params.userId,
       userDescription: req.body.userDescription,
       userCountry: req.body.userCountry,
+      userMedia: req.body.userMedia,
       userPath: req.file ? req.file.path : "",
       userFilename: req.file ? req.file.filename : "",
       userMimetype: req.file ? req.file.mimetype : "",

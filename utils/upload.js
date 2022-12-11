@@ -92,6 +92,7 @@ export const finalizeMediaUpload = async ({
   fileName,
   mimeType,
   fileType,
+  fileMedia = null,
 }) => {
   const fileUpload = {
     fileCover: "",
@@ -102,6 +103,7 @@ export const finalizeMediaUpload = async ({
     fileOrientation: "",
   };
   try {
+    if (fileMedia) return fileUpload;
     // $TODO Verify that the user uploading the avatar is valid and check its id
     if (filePath && fileName) {
       const verifiedInput = await verifyDimensions({ filePath, fileType });
