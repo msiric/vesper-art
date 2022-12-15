@@ -234,6 +234,7 @@ const CheckoutProcessor = () => {
       case 0:
         return (
           <LicenseForm
+            getValues={getValues}
             version={version}
             userName={userName}
             isFree={false}

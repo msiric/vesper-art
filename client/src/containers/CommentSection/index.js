@@ -79,7 +79,11 @@ const CommentSection = ({
                 })
             )}
           >
-            <CommentForm errors={errors} loading={loading} />
+            <CommentForm
+              getValues={getValues}
+              errors={errors}
+              loading={loading}
+            />
             <AsyncButton
               type="submit"
               color="secondary"

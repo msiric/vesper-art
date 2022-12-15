@@ -2,10 +2,11 @@ import { Box } from "@material-ui/core";
 import React from "react";
 import TextInput from "../../controls/TextInput";
 
-const EditEmailForm = ({ errors, loading }) => {
+const EmailForm = ({ getValues, errors, loading }) => {
   return (
     <Box>
       <TextInput
+        value={getValues("userEmail")}
         name="userEmail"
         type="text"
         label="Email"
@@ -16,4 +17,4 @@ const EditEmailForm = ({ errors, loading }) => {
   );
 };
 
-export default EditEmailForm;
+export default EmailForm;

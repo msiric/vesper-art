@@ -213,6 +213,7 @@ const ArtworkInfo = () => {
             )}
           >
             <LicenseForm
+              getValues={getValues}
               version={artwork.current}
               userName={userName}
               isFree

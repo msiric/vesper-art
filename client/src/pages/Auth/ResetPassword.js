@@ -13,7 +13,7 @@ import Avatar from "../../domain/Avatar";
 import Box from "../../domain/Box";
 import Container from "../../domain/Container";
 import Typography from "../../domain/Typography";
-import ResetPasswordForm from "../../forms/ResetForm";
+import ResetForm from "../../forms/ResetForm";
 import { postReset } from "../../services/auth";
 import { isFormDisabled } from "../../utils/helpers";
 
@@ -86,7 +86,7 @@ const ResetPassword = ({ match }) => {
         </Typography>
         <FormProvider control={control}>
           <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
-            <ResetPasswordForm
+            <ResetForm
               errors={errors}
               setValue={setValue}
               trigger={trigger}

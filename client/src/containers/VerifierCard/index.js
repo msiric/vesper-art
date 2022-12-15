@@ -45,7 +45,11 @@ const VerifierCard = () => {
       <FormProvider control={control}>
         <form onSubmit={handleSubmit(fetchLicense)}>
           <CardContent>
-            <VerifierForm errors={errors} loading={loading} />
+            <VerifierForm
+              getValues={getValues}
+              errors={errors}
+              loading={loading}
+            />
           </CardContent>
           <CardActions className={classes.actions}>
             <AsyncButton

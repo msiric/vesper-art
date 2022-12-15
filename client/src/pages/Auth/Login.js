@@ -107,7 +107,7 @@ const Login = () => {
         </Typography>
         <FormProvider control={control}>
           <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
-            <LoginForm errors={errors} />
+            <LoginForm getValues={getValues} errors={errors} />
             <AsyncButton
               type="submit"
               fullWidth

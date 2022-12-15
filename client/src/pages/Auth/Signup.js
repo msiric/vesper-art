@@ -81,7 +81,7 @@ const Signup = () => {
         </Typography>
         <FormProvider control={control}>
           <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
-            <SignupForm errors={errors} />
+            <SignupForm getValues={getValues} errors={errors} />
             <AsyncButton
               type="submit"
               fullWidth

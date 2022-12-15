@@ -2,10 +2,11 @@ import { Box } from "@material-ui/core";
 import React from "react";
 import TextInput from "../../controls/TextInput";
 
-const DiscountForm = ({ errors, loading }) => {
+const DiscountForm = ({ getValues, errors, loading }) => {
   return (
     <Box>
       <TextInput
+        value={getValues("discountCode")}
         name="discountCode"
         type="text"
         label="Discount code"

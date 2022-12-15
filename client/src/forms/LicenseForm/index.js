@@ -9,6 +9,7 @@ import TextInput from "../../controls/TextInput/index";
 import TextField from "../../domain/TextField";
 
 const LicenseForm = ({
+  getValues,
   version,
   errors,
   isFree,
@@ -49,6 +50,7 @@ const LicenseForm = ({
       />
       {licenseUsage === "business" && (
         <TextInput
+          value={getValues("licenseCompany")}
           name="licenseCompany"
           type="text"
           label="License company"

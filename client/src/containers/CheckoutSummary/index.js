@@ -204,7 +204,11 @@ const CheckoutSummary = ({
           ) : (
             <FormProvider control={control}>
               <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
-                <DiscountForm errors={errors} loading={state.loading} />
+                <DiscountForm
+                  getValues={getValues}
+                  errors={errors}
+                  loading={state.loading}
+                />
                 <AsyncButton
                   type="submit"
                   fullWidth

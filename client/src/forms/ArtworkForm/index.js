@@ -61,6 +61,7 @@ const ArtworkForm = ({
       )}
       <Box>
         <TextInput
+          value={getValues("artworkTitle")}
           name="artworkTitle"
           type="text"
           label="Artwork title"

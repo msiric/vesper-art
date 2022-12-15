@@ -157,7 +157,11 @@ const CommentCard = ({
                       })
                   )}
                 >
-                  <CommentForm errors={errors} loading={loading} />
+                  <CommentForm
+                    getValues={getValues}
+                    errors={errors}
+                    loading={loading}
+                  />
                   <Box className={classes.actions}>
                     <AsyncButton
                       type="submit"

@@ -12,7 +12,7 @@ import { useUserSettings } from "../../contexts/local/userSettings";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
-import EditUserForm from "../../forms/UserForm/index";
+import UserForm from "../../forms/UserForm/index";
 import { isFormDisabled } from "../../utils/helpers";
 import settingsProfileStyles from "./styles";
 
@@ -69,7 +69,7 @@ const SettingsProfile = () => {
       <FormProvider control={control}>
         <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
           <CardContent className={classes.content}>
-            <EditUserForm
+            <UserForm
               preview={user.avatar && user.avatar.source}
               errors={errors}
               getValues={getValues}

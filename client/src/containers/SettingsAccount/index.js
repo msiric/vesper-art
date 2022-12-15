@@ -10,7 +10,7 @@ import { useEventsStore } from "../../contexts/global/events";
 import { useUserStore } from "../../contexts/global/user";
 import { useUserSettings } from "../../contexts/local/userSettings";
 import Card from "../../domain/Card";
-import EmailForm from "../../forms/EmailForm/index";
+import EmailForm from "../../forms/EmailForm";
 import { isFormDisabled } from "../../utils/helpers";
 import { socket } from "../Interceptor";
 import settingsAccountStyles from "./styles";
@@ -59,7 +59,11 @@ const SettingsAccount = ({ handleLogout }) => {
       <FormProvider control={control}>
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
           <CardContent>
-            <EmailForm errors={errors} loading={loading} />
+            <EmailForm
+              getValues={getValues}
+              errors={errors}
+              loading={loading}
+            />
           </CardContent>
           <CardActions className={classes.actions}>
             <AsyncButton

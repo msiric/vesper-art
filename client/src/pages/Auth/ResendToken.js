@@ -79,7 +79,7 @@ const ResendToken = () => {
         </Typography>
         <FormProvider control={control}>
           <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
-            <EmailForm errors={errors} />
+            <EmailForm getValues={getValues} errors={errors} />
             <AsyncButton
               type="submit"
               fullWidth

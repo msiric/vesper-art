@@ -8,7 +8,7 @@ import { useUserSettings } from "../../contexts/local/userSettings";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
-import EditPreferencesForm from "../../forms/PreferencesForm/index";
+import PreferencesForm from "../../forms/PreferencesForm/index";
 import { isFormDisabled } from "../../utils/helpers";
 import settingsPreferencesStyles from "./styles";
 
@@ -54,7 +54,7 @@ const SettingsPreferences = () => {
       <FormProvider control={control}>
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
           <CardContent>
-            <EditPreferencesForm
+            <PreferencesForm
               setValue={setValue}
               getValues={getValues}
               errors={errors}

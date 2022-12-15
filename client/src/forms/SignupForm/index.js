@@ -2,10 +2,11 @@ import { Box } from "@material-ui/core";
 import React from "react";
 import TextInput from "../../controls/TextInput/index";
 
-const SignupForm = ({ errors, loading }) => {
+const SignupForm = ({ getValues, errors, loading }) => {
   return (
     <Box>
       <TextInput
+        value={getValues("userName")}
         name="userName"
         type="text"
         label="Full name"
@@ -13,14 +14,22 @@ const SignupForm = ({ errors, loading }) => {
         loading={loading}
       />
       <TextInput
+        value={getValues("userUsername")}
         name="userUsername"
         type="text"
         label="Username"
         errors={errors}
         loading={loading}
       />
-      <TextInput name="userEmail" type="text" label="Email" errors={errors} />
       <TextInput
+        value={getValues("userEmail")}
+        name="userEmail"
+        type="text"
+        label="Email"
+        errors={errors}
+      />
+      <TextInput
+        value={getValues("userPassword")}
         name="userPassword"
         type="password"
         label="Password"
@@ -28,6 +37,7 @@ const SignupForm = ({ errors, loading }) => {
         loading={loading}
       />
       <TextInput
+        value={getValues("userConfirm")}
         name="userConfirm"
         type="password"
         label="Confirm password"

@@ -20,6 +20,7 @@ const BillingForm = ({ errors, setValue, getValues, loading }) => {
     <Grid container spacing={2} className={classes.container}>
       <Grid item xs={12} sm={6}>
         <TextInput
+          value={getValues("billingName")}
           name="billingName"
           type="text"
           label="First name"
@@ -29,6 +30,7 @@ const BillingForm = ({ errors, setValue, getValues, loading }) => {
       </Grid>
       <Grid item xs={12} sm={6}>
         <TextInput
+          value={getValues("billingSurname")}
           name="billingSurname"
           type="text"
           label="Last name"
@@ -38,6 +40,7 @@ const BillingForm = ({ errors, setValue, getValues, loading }) => {
       </Grid>
       <Grid item xs={12}>
         <TextInput
+          value={getValues("billingEmail")}
           name="billingEmail"
           type="text"
           label="Email address"
@@ -47,6 +50,7 @@ const BillingForm = ({ errors, setValue, getValues, loading }) => {
       </Grid>
       <Grid item xs={12}>
         <TextInput
+          value={getValues("billingAddress")}
           name="billingAddress"
           type="text"
           label="Street address"
@@ -56,6 +60,7 @@ const BillingForm = ({ errors, setValue, getValues, loading }) => {
       </Grid>
       <Grid item xs={12} sm={6}>
         <TextInput
+          value={getValues("billingZip")}
           name="billingZip"
           type="text"
           label="Zip code"
@@ -65,6 +70,7 @@ const BillingForm = ({ errors, setValue, getValues, loading }) => {
       </Grid>
       <Grid item xs={12} sm={6}>
         <TextInput
+          value={getValues("billingCity")}
           name="billingCity"
           type="text"
           label="City"

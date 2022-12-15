@@ -36,6 +36,8 @@ const TextInput = (props) => {
     error.message = props.errors[props.name].message;
   }
 
+  console.log("props", props);
+
   return (
     <Controller
       as={Input}

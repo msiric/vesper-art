@@ -2,7 +2,7 @@ import { Box } from "@material-ui/core";
 import React from "react";
 import SwitchInput from "../../controls/SwitchInput/index";
 
-const EditPreferencesForm = ({ setValue, getValues, errors, loading }) => {
+const PreferencesForm = ({ setValue, getValues, errors, loading }) => {
   return (
     <Box>
       <SwitchInput
@@ -18,4 +18,4 @@ const EditPreferencesForm = ({ setValue, getValues, errors, loading }) => {
   );
 };
 
-export default EditPreferencesForm;
+export default PreferencesForm;
