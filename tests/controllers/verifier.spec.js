@@ -137,7 +137,7 @@ describe("Verifier tests", () => {
         .post("/api/verifier")
         .send({
           assigneeIdentifier: new Array(
-            ranges.licenseIdentifier.exact + 2
+            ranges.assigneeIdentifier.exact + 2
           ).join("a"),
         });
       expect(res.body.message).toEqual(
@@ -153,7 +153,7 @@ describe("Verifier tests", () => {
         .post("/api/verifier")
         .send({
           assignorIdentifier: new Array(
-            ranges.licenseIdentifier.exact + 2
+            ranges.assignorIdentifier.exact + 2
           ).join("a"),
         });
       expect(res.body.message).toEqual(

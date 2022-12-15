@@ -40,7 +40,7 @@ const ArtworkPreview = ({ paramId }) => {
             ? `${version.title}, ${new Date(version.created).getFullYear()}`
             : "Fetching artwork title"}
         </Typography>
-        <Typography loading={loading} className={classes.description}>
+        <Typography loading={loading} className={classes.description} preWrap>
           {!loading
             ? version.description || "No description"
             : "Fetching artwork description containing detailed artwork information"}

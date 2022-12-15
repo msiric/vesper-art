@@ -9,24 +9,34 @@ import {
 } from "./constants";
 import { formatArtworkPrice, formatBytes, formatMimeTypes } from "./helpers";
 
+const FULLNAME_MAX = 70;
+// $TODO not sure if this is correct
+const COUNTRY_MAX = 2;
+
 export const ranges = {
-  firstName: {
+  billingName: {
     max: 35,
   },
-  lastName: {
+  billingSurname: {
     max: 35,
   },
-  fullName: {
-    max: 70,
+  licenseAssignee: {
+    max: FULLNAME_MAX,
   },
-  email: {
+  licenseAssignor: {
+    max: FULLNAME_MAX,
+  },
+  userName: {
+    max: FULLNAME_MAX,
+  },
+  userEmail: {
     max: 320,
   },
-  password: {
+  userPassword: {
     min: 10,
     max: 300,
   },
-  username: {
+  userUsername: {
     min: 5,
     max: 25,
   },
@@ -36,32 +46,37 @@ export const ranges = {
   artworkDescription: {
     max: 300,
   },
-  address: {
+  billingAddress: {
     max: 300,
   },
-  postalCode: {
+  billingZip: {
     max: 12,
   },
-  city: {
+  billingCity: {
     max: 100,
   },
-  country: {
-    // $TODO not sure if this is correct
-    max: 2,
+  billingCountry: {
+    max: COUNTRY_MAX,
   },
-  comment: {
+  userBusinessAddress: {
+    max: COUNTRY_MAX,
+  },
+  userCountry: {
+    max: COUNTRY_MAX,
+  },
+  commentContent: {
     max: 300,
   },
   discountCode: {
     max: 50,
   },
-  company: {
+  licenseCompany: {
     max: 100,
   },
-  intentId: {
+  orderIntent: {
     exact: 27,
   },
-  profileDescription: {
+  userDescription: {
     max: 250,
   },
   searchQuery: {
@@ -71,7 +86,11 @@ export const ranges = {
     // because of hex value (if 20 is passed to randomBytes, 40 characters will get returned, hence the doubling)
     exact: generatedData.fingerprint * 2,
   },
-  licenseIdentifier: {
+  assigneeIdentifier: {
+    // because of hex value (if 10 is passed to randomBytes, 20 characters will get returned, hence the doubling)
+    exact: generatedData.identifier * 2,
+  },
+  assignorIdentifier: {
     // because of hex value (if 10 is passed to randomBytes, 20 characters will get returned, hence the doubling)
     exact: generatedData.identifier * 2,
   },
@@ -235,7 +254,7 @@ export const errors = {
   },
   billingNameMax: {
     status: statusCodes.badRequest,
-    message: `First name cannot contain more than ${ranges.firstName.max} characters`,
+    message: `First name cannot contain more than ${ranges.billingName.max} characters`,
     expose: true,
   },
   billingSurnameRequired: {
@@ -245,7 +264,7 @@ export const errors = {
   },
   billingSurnameMax: {
     status: statusCodes.badRequest,
-    message: `Last name cannot contain more than ${ranges.lastName.max} characters`,
+    message: `Last name cannot contain more than ${ranges.billingSurname.max} characters`,
     expose: true,
   },
   billingAddressRequired: {
@@ -255,7 +274,7 @@ export const errors = {
   },
   billingAddressMax: {
     status: statusCodes.badRequest,
-    message: `Address cannot contain more than ${ranges.address.max} characters`,
+    message: `Address cannot contain more than ${ranges.billingAddress.max} characters`,
     expose: true,
   },
   billingZipRequired: {
@@ -265,7 +284,7 @@ export const errors = {
   },
   billingZipMax: {
     status: statusCodes.badRequest,
-    message: `Postal code cannot contain more than ${ranges.postalCode.max} characters`,
+    message: `Postal code cannot contain more than ${ranges.billingZip.max} characters`,
     expose: true,
   },
   billingCityRequired: {
@@ -275,7 +294,7 @@ export const errors = {
   },
   billingCityMax: {
     status: statusCodes.badRequest,
-    message: `City cannot contain more than ${ranges.city.max} characters`,
+    message: `City cannot contain more than ${ranges.billingCity.max} characters`,
     expose: true,
   },
   billingCountryRequired: {
@@ -285,7 +304,7 @@ export const errors = {
   },
   billingCountryMax: {
     status: statusCodes.badRequest,
-    message: `Country code cannot contain more than ${ranges.country.max} characters`,
+    message: `Country code cannot contain more than ${ranges.billingCountry.max} characters`,
     expose: true,
   },
   commentContentRequired: {
@@ -295,7 +314,7 @@ export const errors = {
   },
   commentContentMax: {
     status: statusCodes.badRequest,
-    message: `Comment cannot contain more than ${ranges.comment.max} characters`,
+    message: `Comment cannot contain more than ${ranges.commentContent.max} characters`,
     expose: true,
   },
   discountCodeRequired: {
@@ -315,7 +334,7 @@ export const errors = {
   },
   licenseAssigneeMax: {
     status: statusCodes.badRequest,
-    message: `License assignee cannot contain more than ${ranges.fullName.max} characters`,
+    message: `License assignee cannot contain more than ${ranges.licenseAssignee.max} characters`,
     expose: true,
   },
   licenseAssignorRequired: {
@@ -325,7 +344,7 @@ export const errors = {
   },
   licenseAssignorMax: {
     status: statusCodes.badRequest,
-    message: `License assignor cannot contain more than ${ranges.fullName.max} characters`,
+    message: `License assignor cannot contain more than ${ranges.licenseAssignor.max} characters`,
     expose: true,
   },
   licenseTypeRequired: {
@@ -360,7 +379,7 @@ export const errors = {
   },
   licenseCompanyMax: {
     status: statusCodes.badRequest,
-    message: `License company cannot contain more than ${ranges.company.max} characters`,
+    message: `License company cannot contain more than ${ranges.licenseCompany.max} characters`,
     expose: true,
   },
   userNameRequired: {
@@ -370,7 +389,7 @@ export const errors = {
   },
   userNameMax: {
     status: statusCodes.badRequest,
-    message: `Full name cannot contain more than ${ranges.fullName.max} characters`,
+    message: `Full name cannot contain more than ${ranges.userName.max} characters`,
     expose: true,
   },
   userUsernameRequired: {
@@ -380,12 +399,12 @@ export const errors = {
   },
   userUsernameMin: {
     status: statusCodes.badRequest,
-    message: `Username must contain at least ${ranges.username.min} characters`,
+    message: `Username must contain at least ${ranges.userUsername.min} characters`,
     expose: true,
   },
   userUsernameMax: {
     status: statusCodes.badRequest,
-    message: `Username cannot contain more than ${ranges.username.max} characters`,
+    message: `Username cannot contain more than ${ranges.userUsername.max} characters`,
     expose: true,
   },
   userPasswordRequired: {
@@ -395,12 +414,12 @@ export const errors = {
   },
   userPasswordMin: {
     status: statusCodes.badRequest,
-    message: `Password must contain at least ${ranges.password.min} characters`,
+    message: `Password must contain at least ${ranges.userPassword.min} characters`,
     expose: true,
   },
   userPasswordMax: {
     status: statusCodes.badRequest,
-    message: `Password cannot contain more than ${ranges.password.max} characters`,
+    message: `Password cannot contain more than ${ranges.userPassword.max} characters`,
     expose: true,
   },
   artworkMediaRequired: {
@@ -451,7 +470,7 @@ export const errors = {
   },
   originCountryMax: {
     status: statusCodes.badRequest,
-    message: `Country code cannot contain more than ${ranges.country.max} characters`,
+    message: `Country code cannot contain more than ${ranges.userBusinessAddress.max} characters`,
     expose: true,
   },
   userNewRequired: {
@@ -476,7 +495,7 @@ export const errors = {
   },
   userDescriptionMax: {
     status: statusCodes.badRequest,
-    message: `Description cannot contain more than ${ranges.profileDescription.max} characters`,
+    message: `Description cannot contain more than ${ranges.userDescription.max} characters`,
     expose: true,
   },
   reviewRatingRequired: {
@@ -552,7 +571,7 @@ export const errors = {
   },
   userEmailMax: {
     status: statusCodes.badRequest,
-    message: `Email cannot contain more than ${ranges.email.max} characters`,
+    message: `Email cannot contain more than ${ranges.userEmail.max} characters`,
     expose: true,
   },
   userEmailInvalid: {
@@ -562,7 +581,7 @@ export const errors = {
   },
   userCountryMax: {
     status: statusCodes.badRequest,
-    message: `Country code cannot contain more than ${ranges.country.max} characters`,
+    message: `Country code cannot contain more than ${ranges.userCountry.max} characters`,
     expose: true,
   },
   invalidUserCountry: {
@@ -613,8 +632,8 @@ const userUsername = Yup.string()
   .typeError(errors.invalidString.message)
   .required(errors.userUsernameRequired.message)
   .matches(/^([\w.]){0,}$/, errors.userUsernameInvalid.message)
-  .min(ranges.username.min, errors.userUsernameMin.message)
-  .max(ranges.username.max, errors.userUsernameMax.message)
+  .min(ranges.userUsername.min, errors.userUsernameMin.message)
+  .max(ranges.userUsername.max, errors.userUsernameMax.message)
   .test(
     "isValidUsername",
     errors.userUsernameBlacklisted.message,
@@ -626,14 +645,14 @@ const userEmail = Yup.string()
   .trim()
   .typeError(errors.invalidString.message)
   .required(errors.userEmailRequired.message)
-  .max(ranges.email.max, errors.userEmailMax.message);
+  .max(ranges.userEmail.max, errors.userEmailMax.message);
 
 const userPassword = (error = "userPasswordRequired") =>
   Yup.string()
     .typeError(errors.invalidString.message)
     .required(errors[error].message)
-    .min(ranges.password.min, errors.userPasswordMin.message)
-    .max(ranges.password.max, errors.userPasswordMax.message);
+    .min(ranges.userPassword.min, errors.userPasswordMin.message)
+    .max(ranges.userPassword.max, errors.userPasswordMax.message);
 
 const userConfirm = Yup.string()
   .typeError(errors.invalidString.message)
@@ -797,33 +816,33 @@ export const billingValidation = Yup.object().shape({
     .trim()
     .typeError(errors.invalidString.message)
     .required(errors.billingNameRequired.message)
-    .max(ranges.firstName.max, errors.billingNameMax.message),
+    .max(ranges.billingName.max, errors.billingNameMax.message),
   billingSurname: Yup.string()
     .trim()
     .typeError(errors.invalidString.message)
     .required(errors.billingSurnameRequired.message)
-    .max(ranges.lastName.max, errors.billingSurnameMax.message),
+    .max(ranges.billingSurname.max, errors.billingSurnameMax.message),
   billingEmail: userEmail,
   billingAddress: Yup.string()
     .trim()
     .typeError(errors.invalidString.message)
     .required(errors.billingAddressRequired.message)
-    .max(ranges.address.max, errors.billingSurnameMax.message),
+    .max(ranges.billingAddress.max, errors.billingSurnameMax.message),
   billingZip: Yup.string()
     .trim()
     .typeError(errors.invalidString.message)
     .required(errors.billingZipRequired.message)
-    .max(ranges.postalCode.max, errors.billingZipMax.message),
+    .max(ranges.billingZip.max, errors.billingZipMax.message),
   billingCity: Yup.string()
     .trim()
     .typeError(errors.invalidString.message)
     .required(errors.billingCityRequired.message)
-    .max(ranges.city.max, errors.billingCityMax.message),
+    .max(ranges.billingCity.max, errors.billingCityMax.message),
   billingCountry: Yup.string()
     .trim()
     .typeError(errors.invalidString.message)
     .required(errors.billingCountryRequired.message)
-    .max(ranges.country.max, errors.billingCountryMax.message)
+    .max(ranges.billingCountry.max, errors.billingCountryMax.message)
     .test("isValidCountry", errors.invalidUserCountry.message, (value) =>
       validateUserCountry(value)
     ),
@@ -834,7 +853,7 @@ export const commentValidation = Yup.object().shape({
     .trim()
     .typeError(errors.invalidString.message)
     .required(errors.commentContentRequired.message)
-    .max(ranges.comment.max, errors.commentContentMax.message),
+    .max(ranges.commentContent.max, errors.commentContentMax.message),
 });
 
 export const discountValidation = Yup.object().shape({
@@ -864,7 +883,7 @@ export const licenseValidation = Yup.object().shape({
         .trim()
         .typeError(errors.invalidString.message)
         .required(errors.licenseCompanyRequired.message)
-        .max(ranges.company.max, errors.licenseCompanyMax.message),
+        .max(ranges.licenseCompany.max, errors.licenseCompanyMax.message),
       otherwise: Yup.string()
         .typeError(errors.invalidString.message)
         .matches(/(unavailable)/, errors.licenseCompanyInvalid.message),
@@ -880,12 +899,12 @@ export const actorsValidation = Yup.object().shape({
     .trim()
     .typeError(errors.invalidString.message)
     .required(errors.licenseAssigneeRequired.message)
-    .max(ranges.fullName.max, errors.licenseAssigneeMax.message),
+    .max(ranges.licenseAssignee.max, errors.licenseAssigneeMax.message),
   licenseAssignor: Yup.string()
     .trim()
     .typeError(errors.invalidString.message)
     .required(errors.licenseAssignorRequired.message)
-    .max(ranges.fullName.max, errors.licenseAssignorMax.message),
+    .max(ranges.licenseAssignor.max, errors.licenseAssignorMax.message),
 });
 
 // for commercial artwork
@@ -956,8 +975,8 @@ export const avatarValidation = Yup.object().shape({
 export const intentValidation = Yup.object().shape({
   orderIntent: Yup.string(errors.orderIntentInvalid.message)
     .required(errors.requiredValue.message)
-    .max(ranges.intentId.exact, errors.orderIntentExact.message)
-    .max(ranges.intentId.exact, errors.orderIntentExact.message),
+    .max(ranges.orderIntent.exact, errors.orderIntentExact.message)
+    .max(ranges.orderIntent.exact, errors.orderIntentExact.message),
 });
 
 export const orderValidation = Yup.object().shape({
@@ -1004,7 +1023,7 @@ export const originValidation = Yup.object().shape({
     .trim()
     .typeError(errors.invalidString.message)
     .required(errors.originCountryRequired.message)
-    .max(ranges.country.max, errors.originCountryMax.message)
+    .max(ranges.userBusinessAddress.max, errors.originCountryMax.message)
     .test("isValidCountry", errors.invalidStripeCountry.message, (value) =>
       validateStripeCountry(value)
     ),
@@ -1026,11 +1045,11 @@ export const profileValidation = Yup.object().shape({
   userDescription: Yup.string()
     .trim()
     .typeError(errors.invalidString.message)
-    .max(ranges.profileDescription.max, errors.userDescriptionMax.message),
+    .max(ranges.userDescription.max, errors.userDescriptionMax.message),
   userCountry: Yup.string()
     .trim()
     .typeError(errors.invalidString.message)
-    .max(ranges.country.max, errors.userCountryMax.message)
+    .max(ranges.userCountry.max, errors.userCountryMax.message)
     .test("isValidCountry", errors.invalidUserCountry.message, (value) =>
       validateUserCountry(value)
     ),
@@ -1066,7 +1085,7 @@ export const signupValidation = Yup.object().shape({
     .trim()
     .typeError(errors.invalidString.message)
     .required(errors.userNameRequired.message)
-    .max(ranges.fullName.max, errors.userNameMax.message),
+    .max(ranges.userName.max, errors.userNameMax.message),
   userUsername,
   userEmail,
   userPassword: userPassword(),
@@ -1095,13 +1114,13 @@ export const fingerprintValidation = Yup.object().shape({
   assigneeIdentifier: Yup.string()
     .typeError(errors.invalidString.message)
     .max(
-      ranges.licenseIdentifier.exact,
+      ranges.assigneeIdentifier.exact,
       errors.assigneeIdentifierExact.message
     ),
   assignorIdentifier: Yup.string()
     .typeError(errors.invalidString.message)
     .max(
-      ranges.licenseIdentifier.exact,
+      ranges.assignorIdentifier.exact,
       errors.assignorIdentifierExact.message
     ),
 });

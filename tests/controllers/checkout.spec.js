@@ -431,7 +431,7 @@ describe("Checkout tests", () => {
         .send({
           licenseUsage: LicenseUsage.business,
           licenseType: LicenseType.personal,
-          licenseCompany: new Array(ranges.company.max + 2).join("a"),
+          licenseCompany: new Array(ranges.licenseCompany.max + 2).join("a"),
         });
       expect(res.body.message).toEqual(
         validationErrors.licenseCompanyMax.message

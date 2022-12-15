@@ -188,7 +188,11 @@ const CommentCard = ({
               </FormProvider>
             ) : (
               <Box className={classes.details}>
-                <Typography loading={loading} className={classes.content}>
+                <Typography
+                  loading={loading}
+                  className={classes.content}
+                  preWrap
+                >
                   {comment?.content ||
                     "Fetching artwork's comment content details"}
                 </Typography>

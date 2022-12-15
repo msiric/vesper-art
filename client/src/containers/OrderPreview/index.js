@@ -38,7 +38,7 @@ const OrderPreview = () => {
             : "Fetching artwork title"}
         </Typography>
 
-        <Typography variant="body2" loading={loading}>
+        <Typography variant="body2" loading={loading} preWrap>
           {!loading
             ? version.description || "No description"
             : "Fetching artwork description containing detailed artwork information"}

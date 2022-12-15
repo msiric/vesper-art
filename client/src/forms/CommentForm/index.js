@@ -10,6 +10,8 @@ const CommentForm = ({ getValues, errors, loading }) => {
         name="commentContent"
         type="text"
         label="Add a comment"
+        multiline
+        showMaxChars
         errors={errors}
         loading={loading}
       />

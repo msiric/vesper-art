@@ -3,7 +3,11 @@ import { withStyles } from "@material-ui/core/styles";
 import React, { forwardRef } from "react";
 import SkeletonWrapper from "../../components/SkeletonWrapper";
 
-const StyledTypography = withStyles({})(MaterialTypography);
+const StyledTypography = withStyles({
+  root: {
+    whiteSpace: ({ preWrap }) => (preWrap ? "pre-wrap" : "normal"),
+  },
+})(MaterialTypography);
 
 const Typography = forwardRef(
   ({ loading = false, children, ...props }, ref) => {

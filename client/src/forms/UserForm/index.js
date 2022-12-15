@@ -76,6 +76,7 @@ const UserForm = ({
           type="text"
           label="About"
           multiline
+          showMaxChars
           errors={errors}
           loading={loading}
         />

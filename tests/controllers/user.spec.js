@@ -308,7 +308,7 @@ describe("User tests", () => {
         const res = await request(app, buyerToken)
           .patch(`/api/users/${buyer.id}`)
           .send({
-            userDescription: new Array(ranges.profileDescription.max + 2).join(
+            userDescription: new Array(ranges.userDescription.max + 2).join(
               "a"
             ),
           });
@@ -543,8 +543,8 @@ describe("User tests", () => {
         .patch(`/api/users/${buyer.id}/password`)
         .send({
           userCurrent: validUsers.buyer.password,
-          userPassword: new Array(ranges.password.min).join("a"),
-          userConfirm: new Array(ranges.password.min).join("a"),
+          userPassword: new Array(ranges.userPassword.min).join("a"),
+          userConfirm: new Array(ranges.userPassword.min).join("a"),
         });
       expect(res.body.message).toEqual(
         validationErrors.userPasswordMin.message
@@ -557,8 +557,8 @@ describe("User tests", () => {
         .patch(`/api/users/${buyer.id}/password`)
         .send({
           userCurrent: validUsers.buyer.password,
-          userPassword: new Array(ranges.password.max + 2).join("a"),
-          userConfirm: new Array(ranges.password.max + 2).join("a"),
+          userPassword: new Array(ranges.userPassword.max + 2).join("a"),
+          userConfirm: new Array(ranges.userPassword.max + 2).join("a"),
         });
       expect(res.body.message).toEqual(
         validationErrors.userPasswordMax.message
@@ -642,7 +642,7 @@ describe("User tests", () => {
       const res = await request(app, buyerToken)
         .patch(`/api/users/${buyer.id}/email`)
         .send({
-          userEmail: `${new Array(ranges.email.max).join("a")}@test.com`,
+          userEmail: `${new Array(ranges.userEmail.max).join("a")}@test.com`,
         });
       expect(res.body.message).toEqual(validationErrors.userEmailMax.message);
       expect(res.statusCode).toEqual(validationErrors.userEmailMax.status);

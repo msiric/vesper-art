@@ -1973,7 +1973,7 @@ describe("Artwork tests", () => {
         const res = await request(app, buyerToken)
           .post(`/api/artwork/${activeArtworkBySeller[0].id}/comments`)
           .send({
-            commentContent: new Array(ranges.comment.max + 2).join("a"),
+            commentContent: new Array(ranges.commentContent.max + 2).join("a"),
           });
         expect(res.body.message).toEqual(
           validationErrors.commentContentMax.message
@@ -2044,7 +2044,7 @@ describe("Artwork tests", () => {
         const res = await request(app, buyerToken)
           .patch(`/api//users/${buyer.id}/comments/${buyerComments[0].id}`)
           .send({
-            commentContent: new Array(ranges.comment.max + 2).join("a"),
+            commentContent: new Array(ranges.commentContent.max + 2).join("a"),
           });
         expect(res.body.message).toEqual(
           validationErrors.commentContentMax.message

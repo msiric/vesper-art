@@ -109,6 +109,7 @@ const ProfileCard = ({ user, loading }) => {
           component="p"
           loading={loading}
           className={classes.description}
+          preWrap
         >
           {!loading
             ? renderUserData({

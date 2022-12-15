@@ -108,6 +108,7 @@ const ProfileBanner = ({ profile, loading }) => {
             color="textSecondary"
             loading={loading}
             className={classes.description}
+            preWrap
           >
             {!loading
               ? profile.description || "Nothing here yet"

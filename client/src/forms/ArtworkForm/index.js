@@ -199,6 +199,7 @@ const ArtworkForm = ({
           label="Artwork description"
           errors={errors}
           multiline
+          showMaxChars
           loading={loading}
         />
         {/* <TagInput
