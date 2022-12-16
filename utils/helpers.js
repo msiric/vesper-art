@@ -6,7 +6,7 @@ import createError from "http-errors";
 import jwt from "jsonwebtoken";
 import * as uuidJs from "uuid";
 import { featureFlags, generatedData, statusCodes } from "../common/constants";
-import { trimAllSpaces } from "../common/helpers";
+import { trimAllSpaces, trimMultiLineBreaks } from "../common/helpers";
 import { domain, uuid } from "../config/secret";
 import { errors } from "./statuses";
 
@@ -17,8 +17,14 @@ const {
   [uuid.import]: genUuid,
 } = uuidJs;
 
-const TRIM_KEYS = {
+const TRIM_SPACES_KEYS = {
   licenseCompany: true,
+};
+
+const TRIM_MULTILINES_KEYS = {
+  userDescription: true,
+  artworkDescription: true,
+  commentContent: true,
 };
 
 const LOWERCASE_KEYS = {
@@ -124,7 +130,10 @@ export const sanitizeData = (data) => {
         } else if (typeof data[key] === "object") {
           obj[key] = sanitizeData(data[key]);
         } else if (typeof data[key] === "string") {
-          if (TRIM_KEYS[key]) {
+          if (TRIM_MULTILINES_KEYS[key]) {
+            data[key] = trimMultiLineBreaks(data[key]);
+          }
+          if (TRIM_SPACES_KEYS[key]) {
             data[key] = trimAllSpaces(data[key]);
           }
           if (LOWERCASE_KEYS[key]) {
