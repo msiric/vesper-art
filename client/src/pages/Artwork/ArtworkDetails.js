@@ -1,3 +1,4 @@
+import Hidden from "@domain/Hidden";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useEffect, useRef } from "react";
 import ArtistSection from "../../containers/ArtistSection/index";
@@ -16,18 +17,13 @@ import { containsErrors, renderError } from "../../utils/helpers";
 const useArtworkStyles = makeStyles((muiTheme) => ({
   container: {
     position: "relative",
-  },
-  stickyWrapper: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    height: "100%",
-    width: "100%",
+    display: "flex",
+    flexDirection: "row",
     [muiTheme.breakpoints.down("sm")]: {
-      position: "static",
+      flexDirection: "column-reverse",
     },
   },
-  infoWrapper: {
+  stickyWrapper: {
     position: "sticky",
     top: 0,
     right: 0,
@@ -41,12 +37,11 @@ const useArtworkStyles = makeStyles((muiTheme) => ({
       flexDirection: "column",
     },
   },
+  previewWrapper: {
+    flexDirection: "column",
+  },
   item: {
     width: "100%",
-  },
-  previewWrapper: {
-    display: "flex",
-    height: "100%",
   },
   ownerWrapper: {
     [muiTheme.breakpoints.down("sm")]: {
@@ -94,12 +89,29 @@ const ArtworkDetails = ({ match }) => {
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2} className={classes.container}>
         <Grid item sm={12} md={8} className={classes.item}>
-          <Box className={classes.previewWrapper}>
-            <ArtworkPreview paramId={paramId} />
+          <Box className={`${classes.previewWrapper} ${classes.stickyWrapper}`}>
+            <Hidden smDown>
+              <Box className={globalClasses.bottomSpacing}>
+                <ArtworkPreview paramId={paramId} />
+              </Box>
+            </Hidden>
+            <Box>
+              <CommentSection
+                artworkId={paramId}
+                highlightRef={highlightRef}
+                commentsRef={commentsRef}
+                commentsFetched={commentsFetched}
+              />
+            </Box>
           </Box>
         </Grid>
-        <Grid item sm={12} md={4} className={classes.stickyWrapper}>
-          <Box className={classes.infoWrapper}>
+        <Grid item sm={12} md={4} className={classes.item}>
+          <Hidden mdUp>
+            <Box className={globalClasses.bottomSpacing}>
+              <ArtworkPreview paramId={paramId} />
+            </Box>
+          </Hidden>
+          <Box className={classes.stickyWrapper}>
             <Box
               className={`${classes.ownerWrapper} ${globalClasses.responsiveSpacing}`}
             >
@@ -113,16 +125,6 @@ const ArtworkDetails = ({ match }) => {
                 <ArtworkInfo />
               </Box>
             </Box>
-          </Box>
-        </Grid>
-        <Grid item xs={12} md={8}>
-          <Box>
-            <CommentSection
-              artworkId={paramId}
-              highlightRef={highlightRef}
-              commentsRef={commentsRef}
-              commentsFetched={commentsFetched}
-            />
           </Box>
         </Grid>
       </Grid>

@@ -1,3 +1,4 @@
+import DynamicText from "@components/DynamicText";
 import {
   LocationOnRounded as LocationIcon,
   PersonRounded as MemberIcon,
@@ -103,7 +104,7 @@ const ProfileBanner = ({ profile, loading }) => {
           >
             Description
           </Typography>
-          <Typography
+          <DynamicText
             variant="body2"
             color="textSecondary"
             loading={loading}
@@ -113,7 +114,7 @@ const ProfileBanner = ({ profile, loading }) => {
             {!loading
               ? profile.description || "Nothing here yet"
               : "Fetching user description details"}
-          </Typography>
+          </DynamicText>
         </Box>
       </Box>
     </Card>

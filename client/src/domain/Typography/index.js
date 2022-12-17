@@ -5,7 +5,7 @@ import SkeletonWrapper from "../../components/SkeletonWrapper";
 
 const StyledTypography = withStyles({
   root: {
-    whiteSpace: ({ preWrap }) => (preWrap ? "pre-wrap" : "normal"),
+    whiteSpace: ({ preWrap }) => (preWrap ? "pre-wrap" : ""),
   },
 })(MaterialTypography);
 

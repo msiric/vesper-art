@@ -1,3 +1,4 @@
+import DynamicText from "@components/DynamicText";
 import {
   LocationOnRounded as LocationIcon,
   PersonRounded as MemberIcon,
@@ -103,7 +104,7 @@ const ProfileCard = ({ user, loading }) => {
             </Box>
           )}
         </Box>
-        <Typography
+        <DynamicText
           variant="body2"
           color="textSecondary"
           component="p"
@@ -118,7 +119,7 @@ const ProfileCard = ({ user, loading }) => {
                 fallback: `${user.active ? "Nothing here yet" : "[deleted]"}`,
               })
             : "Fetching user description"}
-        </Typography>
+        </DynamicText>
       </CardContent>
     </Card>
   );

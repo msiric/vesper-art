@@ -1,3 +1,4 @@
+import DynamicText from "@components/DynamicText";
 import React, { useEffect } from "react";
 import ImageWrapper from "../../components/ImageWrapper/index";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
@@ -40,11 +41,11 @@ const ArtworkPreview = ({ paramId }) => {
             ? `${version.title}, ${new Date(version.created).getFullYear()}`
             : "Fetching artwork title"}
         </Typography>
-        <Typography loading={loading} className={classes.description} preWrap>
+        <DynamicText loading={loading} className={classes.description} preWrap>
           {!loading
             ? version.description || "No description"
             : "Fetching artwork description containing detailed artwork information"}
-        </Typography>
+        </DynamicText>
         <Divider />
         <Box className={classes.disclaimerWrapper}>
           <Typography

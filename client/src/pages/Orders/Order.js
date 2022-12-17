@@ -21,7 +21,6 @@ const useOrderStyles = makeStyles((muiTheme) => ({
   stickyWrapper: {
     position: "sticky",
     top: 0,
-    right: 0,
     display: "flex",
     flexDirection: "column",
     [muiTheme.breakpoints.down("sm")]: {
@@ -71,7 +70,9 @@ const Order = ({ match }) => {
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2} className={classes.container}>
         <Grid item xs={12} md={8}>
-          <OrderPreview paramId={paramId} />
+          <Box className={classes.stickyWrapper}>
+            <OrderPreview paramId={paramId} />
+          </Box>
         </Grid>
         <Grid item xs={12} md={4}>
           <Box className={classes.stickyWrapper}>

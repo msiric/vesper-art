@@ -77,7 +77,7 @@ export const ranges = {
     exact: 27,
   },
   userDescription: {
-    max: 250,
+    max: 150,
   },
   searchQuery: {
     max: 100,

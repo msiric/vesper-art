@@ -1,7 +1,7 @@
 import { ranges } from "@common/validation";
 import Box from "@domain/Box";
 import Typography from "@domain/Typography";
-import React from "react";
+import React, { useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import InputAdornment from "../../domain/InputAdornment";
 import TextField from "../../domain/TextField";
@@ -31,6 +31,7 @@ const Input = ({
   showMaxChars = false,
   ...props
 }) => {
+  const [isFocused, setIsFocused] = useState(false);
   const maxCharacters = ranges[name]?.max ?? -1;
 
   return (
@@ -46,15 +47,18 @@ const Input = ({
         ...(maxCharacters && { maxlength: maxCharacters }),
       }}
       maxRows={12}
-      {...(showMaxChars && {
-        helperText: (
-          <HelperText
-            helperText={props.helperText}
-            value={value}
-            maxCharacters={maxCharacters}
-          />
-        ),
-      })}
+      {...(showMaxChars &&
+        isFocused && {
+          helperText: (
+            <HelperText
+              helperText={props.helperText}
+              value={value}
+              maxCharacters={maxCharacters}
+            />
+          ),
+        })}
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
       name={name}
       value={value}
       margin={margin}
