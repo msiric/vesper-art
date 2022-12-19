@@ -24,6 +24,9 @@ export const trimAllSpaces = (value) =>
     ? value.replace(/^\s+|\s+$/g, "").replace(/\s+/g, " ")
     : value;
 
+export const trimMultiLineBreaks = (value) =>
+  typeof value === "string" ? value.replace(/[\r\n]{2,}/g, "\n").trim() : value;
+
 export const formatDate = (date, form = "dd/MM/yy HH:mm") => {
   return date ? format(new Date(date), form) : "Invalid date";
 };

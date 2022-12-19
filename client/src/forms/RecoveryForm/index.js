@@ -2,10 +2,11 @@ import { Box } from "@material-ui/core";
 import React from "react";
 import TextInput from "../../controls/TextInput/index";
 
-const RecoveryForm = ({ errors, loading }) => {
+const RecoveryForm = ({ getValues, errors, loading }) => {
   return (
     <Box>
       <TextInput
+        value={getValues("userUsername")}
         name="userUsername"
         type="text"
         label="Username"
@@ -13,6 +14,7 @@ const RecoveryForm = ({ errors, loading }) => {
         loading={loading}
       />
       <TextInput
+        value={getValues("userPassword")}
         name="userPassword"
         type="password"
         label="Password"
@@ -20,6 +22,7 @@ const RecoveryForm = ({ errors, loading }) => {
         loading={loading}
       />
       <TextInput
+        value={getValues("userEmail")}
         name="userEmail"
         type="text"
         label="New email"

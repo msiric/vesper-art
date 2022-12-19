@@ -1,3 +1,4 @@
+import DynamicText from "@components/DynamicText";
 import IncrementCounter from "@components/IncrementCounter";
 import LikeButton from "@components/LikeButton";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -157,7 +158,11 @@ const CommentCard = ({
                       })
                   )}
                 >
-                  <CommentForm errors={errors} loading={loading} />
+                  <CommentForm
+                    getValues={getValues}
+                    errors={errors}
+                    loading={loading}
+                  />
                   <Box className={classes.actions}>
                     <AsyncButton
                       type="submit"
@@ -184,10 +189,14 @@ const CommentCard = ({
               </FormProvider>
             ) : (
               <Box className={classes.details}>
-                <Typography loading={loading} className={classes.content}>
+                <DynamicText
+                  loading={loading}
+                  className={classes.content}
+                  preWrap
+                >
                   {comment?.content ||
                     "Fetching artwork's comment content details"}
-                </Typography>
+                </DynamicText>
                 <Box className={classes.subtitle}>
                   <Box className={classes.info}>
                     <Typography

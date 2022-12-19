@@ -8,7 +8,7 @@ import { useUserSettings } from "../../contexts/local/userSettings";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
-import EditPasswordForm from "../../forms/PasswordForm/index";
+import PasswordForm from "../../forms/PasswordForm/index";
 import { isFormDisabled } from "../../utils/helpers";
 import settingsSecurityStyles from "./styles";
 
@@ -43,7 +43,11 @@ const SettingsSecurity = ({ handleLogout }) => {
       <FormProvider control={control}>
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
           <CardContent>
-            <EditPasswordForm errors={errors} loading={loading} />
+            <PasswordForm
+              getValues={getValues}
+              errors={errors}
+              loading={loading}
+            />
           </CardContent>
           <CardActions className={classes.actions}>
             <AsyncButton

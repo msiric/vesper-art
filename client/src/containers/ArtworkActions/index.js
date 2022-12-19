@@ -47,6 +47,7 @@ const ArtworkActions = () => {
           <ShareButton
             link={`/artwork/${artwork.id}`}
             type="artwork"
+            color="secondary"
             labeled
             loading={loading}
           />

@@ -65,6 +65,8 @@ const profileCardStyles = makeStyles(() => ({
   },
   description: {
     wordBreak: "break-word",
+    textAlign: "center",
+    width: "100%",
   },
 }));
 

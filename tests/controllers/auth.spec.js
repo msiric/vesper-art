@@ -166,7 +166,7 @@ describe("Auth tests", () => {
         .post("/auth/signup")
         .send({
           userName: "Test User",
-          userUsername: new Array(ranges.username.min).join("a"),
+          userUsername: new Array(ranges.userUsername.min).join("a"),
           userEmail: "test@test.com",
           userPassword: "User1Password",
           userConfirm: "User1Password",
@@ -182,7 +182,7 @@ describe("Auth tests", () => {
         .post("/auth/signup")
         .send({
           userName: "Test User",
-          userUsername: new Array(ranges.username.max + 2).join("a"),
+          userUsername: new Array(ranges.userUsername.max + 2).join("a"),
           userEmail: "test@test.com",
           userPassword: "User1Password",
           userConfirm: "User1Password",
@@ -262,8 +262,8 @@ describe("Auth tests", () => {
           userName: "Test User",
           userUsername: "testuser",
           userEmail: "test@test.com",
-          userPassword: new Array(ranges.password.min).join("a"),
-          userConfirm: new Array(ranges.password.min).join("a"),
+          userPassword: new Array(ranges.userPassword.min).join("a"),
+          userConfirm: new Array(ranges.userPassword.min).join("a"),
         });
       expect(res.body.message).toEqual(
         validationErrors.userPasswordMin.message
@@ -278,8 +278,8 @@ describe("Auth tests", () => {
           userName: "Test User",
           userUsername: "testuser",
           userEmail: "test@test.com",
-          userPassword: new Array(ranges.password.max + 2).join("a"),
-          userConfirm: new Array(ranges.password.max + 2).join("a"),
+          userPassword: new Array(ranges.userPassword.max + 2).join("a"),
+          userConfirm: new Array(ranges.userPassword.max + 2).join("a"),
         });
       expect(res.body.message).toEqual(
         validationErrors.userPasswordMax.message
@@ -291,7 +291,7 @@ describe("Auth tests", () => {
       const res = await request(app)
         .post("/auth/signup")
         .send({
-          userName: new Array(ranges.fullName.max + 2).join("a"),
+          userName: new Array(ranges.userName.max + 2).join("a"),
           userUsername: "testuser",
           userEmail: "test@test.com",
           userPassword: "User1Password",
@@ -684,8 +684,8 @@ describe("Auth tests", () => {
           `/auth/reset_password/user/${validResetUser.id}/token/${invalidUsers.validReset.randomBytes}`
         )
         .send({
-          userPassword: new Array(ranges.password.min).join("a"),
-          userConfirm: new Array(ranges.password.min).join("a"),
+          userPassword: new Array(ranges.userPassword.min).join("a"),
+          userConfirm: new Array(ranges.userPassword.min).join("a"),
         });
       expect(res.body.message).toEqual(
         validationErrors.userPasswordMin.message
@@ -699,8 +699,8 @@ describe("Auth tests", () => {
           `/auth/reset_password/user/${validResetUser.id}/token/${invalidUsers.validReset.randomBytes}`
         )
         .send({
-          userPassword: new Array(ranges.password.max + 2).join("a"),
-          userConfirm: new Array(ranges.password.max + 2).join("a"),
+          userPassword: new Array(ranges.userPassword.max + 2).join("a"),
+          userConfirm: new Array(ranges.userPassword.max + 2).join("a"),
         });
       expect(res.body.message).toEqual(
         validationErrors.userPasswordMax.message
@@ -772,7 +772,7 @@ describe("Auth tests", () => {
       const res = await request(app)
         .post("/auth/resend_token")
         .send({
-          userEmail: `${new Array(ranges.email.max).join("a")}@test.com`,
+          userEmail: `${new Array(ranges.userEmail.max).join("a")}@test.com`,
         });
       expect(res.body.message).toEqual(validationErrors.userEmailMax.message);
       expect(res.statusCode).toEqual(validationErrors.userEmailMax.status);
@@ -861,7 +861,7 @@ describe("Auth tests", () => {
       const res = await request(app)
         .post("/auth/update_email")
         .send({
-          userEmail: `${new Array(ranges.email.max).join("a")}@test.com`,
+          userEmail: `${new Array(ranges.userEmail.max).join("a")}@test.com`,
           userUsername: validUsers.seller.username,
           userPassword: validUsers.seller.password,
         });
@@ -874,7 +874,7 @@ describe("Auth tests", () => {
         .post("/auth/update_email")
         .send({
           userEmail: validUsers.seller.email,
-          userUsername: new Array(ranges.username.min).join("a"),
+          userUsername: new Array(ranges.userUsername.min).join("a"),
           userPassword: validUsers.seller.password,
         });
       expect(res.body.message).toEqual(
@@ -888,7 +888,7 @@ describe("Auth tests", () => {
         .post("/auth/update_email")
         .send({
           userEmail: validUsers.seller.email,
-          userUsername: new Array(ranges.username.max + 2).join("a"),
+          userUsername: new Array(ranges.userUsername.max + 2).join("a"),
           userPassword: validUsers.seller.password,
         });
       expect(res.body.message).toEqual(
@@ -931,7 +931,7 @@ describe("Auth tests", () => {
         .send({
           userEmail: validUsers.seller.email,
           userUsername: validUsers.seller.username,
-          userPassword: new Array(ranges.password.min).join("a"),
+          userPassword: new Array(ranges.userPassword.min).join("a"),
         });
       expect(res.body.message).toEqual(
         validationErrors.userPasswordMin.message
@@ -945,7 +945,7 @@ describe("Auth tests", () => {
         .send({
           userEmail: validUsers.seller.email,
           userUsername: validUsers.seller.username,
-          userPassword: new Array(ranges.password.max + 2).join("a"),
+          userPassword: new Array(ranges.userPassword.max + 2).join("a"),
         });
       expect(res.body.message).toEqual(
         validationErrors.userPasswordMax.message

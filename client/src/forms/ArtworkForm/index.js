@@ -61,6 +61,7 @@ const ArtworkForm = ({
       )}
       <Box>
         <TextInput
+          value={getValues("artworkTitle")}
           name="artworkTitle"
           type="text"
           label="Artwork title"
@@ -198,6 +199,7 @@ const ArtworkForm = ({
           label="Artwork description"
           errors={errors}
           multiline
+          showMaxChars
           loading={loading}
         />
         {/* <TagInput

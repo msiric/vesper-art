@@ -25,12 +25,13 @@ const verifierFormStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-const VerifierForm = ({ errors, loading }) => {
+const VerifierForm = ({ getValues, errors, loading }) => {
   const classes = verifierFormStyles();
 
   return (
     <Box>
       <TextInput
+        value={getValues("licenseFingerprint")}
         name="licenseFingerprint"
         type="text"
         label="License fingerprint"
@@ -39,6 +40,7 @@ const VerifierForm = ({ errors, loading }) => {
       />
       <Grid className={classes.container}>
         <TextInput
+          value={getValues("assigneeIdentifier")}
           className={classes.assignee}
           name="assigneeIdentifier"
           type="text"
@@ -47,6 +49,7 @@ const VerifierForm = ({ errors, loading }) => {
           loading={loading}
         />
         <TextInput
+          value={getValues("assignorIdentifier")}
           className={classes.assignor}
           name="assignorIdentifier"
           type="text"

@@ -1,3 +1,4 @@
+import DynamicText from "@components/DynamicText";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import ImageWrapper from "../../components/ImageWrapper/index";
@@ -38,11 +39,11 @@ const OrderPreview = () => {
             : "Fetching artwork title"}
         </Typography>
 
-        <Typography variant="body2" loading={loading}>
+        <DynamicText variant="body2" loading={loading} preWrap>
           {!loading
             ? version.description || "No description"
             : "Fetching artwork description containing detailed artwork information"}
-        </Typography>
+        </DynamicText>
       </Box>
     </Card>
   );

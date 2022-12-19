@@ -13,8 +13,8 @@ const artworkPreviewStyles = makeStyles((muiTheme) => ({
   imageWrapper: {
     display: "flex",
     justifyContent: "center",
-    height: "100%",
     maxHeight: 700,
+    flexGrow: 1,
   },
   imageDetails: {
     display: "flex",

@@ -2,10 +2,11 @@ import { Box } from "@material-ui/core";
 import React from "react";
 import TextInput from "../../controls/TextInput/index";
 
-const ResetPasswordForm = ({ errors, loading }) => {
+const ResetForm = ({ getValues, errors, loading }) => {
   return (
     <Box>
       <TextInput
+        value={getValues("userPassword")}
         name="userPassword"
         type="password"
         label="Enter new password"
@@ -13,6 +14,7 @@ const ResetPasswordForm = ({ errors, loading }) => {
         loading={loading}
       />
       <TextInput
+        value={getValues("userConfirm")}
         name="userConfirm"
         type="password"
         label="Confirm password"
@@ -23,4 +25,4 @@ const ResetPasswordForm = ({ errors, loading }) => {
   );
 };
 
-export default ResetPasswordForm;
+export default ResetForm;

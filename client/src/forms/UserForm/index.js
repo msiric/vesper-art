@@ -8,7 +8,7 @@ import ImageInput from "../../controls/ImageInput/index";
 import TextInput from "../../controls/TextInput/index";
 import TextField from "../../domain/TextField";
 
-const EditUserForm = ({
+const UserForm = ({
   preview,
   errors,
   getValues,
@@ -71,10 +71,12 @@ const EditUserForm = ({
           loading={loading}
         />
         <TextInput
+          value={getValues("userDescription")}
           name="userDescription"
           type="text"
           label="About"
           multiline
+          showMaxChars
           errors={errors}
           loading={loading}
         />
@@ -92,4 +94,4 @@ const EditUserForm = ({
   );
 };
 
-export default EditUserForm;
+export default UserForm;

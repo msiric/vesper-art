@@ -76,7 +76,7 @@ const UpdateEmail = () => {
         </Typography>
         <FormProvider control={control}>
           <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
-            <RecoveryForm errors={errors} />
+            <RecoveryForm getValues={getValues} errors={errors} />
             <AsyncButton
               type="submit"
               fullWidth

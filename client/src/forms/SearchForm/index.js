@@ -64,6 +64,7 @@ const SearchForm = ({ handleToggle, getValues, setValue, loading }) => {
         }}
       />
       <TextInput
+        value={getValues("searchType")}
         name="searchType"
         type="hidden"
         className={classes.searchType}
