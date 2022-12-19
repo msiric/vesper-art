@@ -40,7 +40,7 @@ const PricingCard = ({
 
   return (
     <Card className={classes.container}>
-      <CardContent className={classes.content}>
+      <CardContent>
         <Box
           className={`${classes.dataWrapper} ${!!price && classes.extraMargin}`}
         >

@@ -7,9 +7,6 @@ const pricingCardStyles = makeStyles(() => ({
     boxShadow: "none",
     padding: "0 12px 12px",
   },
-  content: {
-    padding: "0 32px",
-  },
   dataWrapper: {
     display: "flex",
     justifyContent: "center",
@@ -29,7 +26,8 @@ const pricingCardStyles = makeStyles(() => ({
     flexDirection: "column",
   },
   heading: {
-    margin: 8,
+    margin: "8px 0",
+    textAlign: "center",
   },
   actionsWrapper: {
     display: "flex",
