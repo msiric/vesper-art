@@ -1,4 +1,5 @@
 import { makeStyles } from "@material-ui/core/styles";
+import { artepunktTheme } from "@styles/theme";
 
 const swipeCardStyles = makeStyles(() => ({
   container: {
@@ -22,6 +23,17 @@ const swipeCardStyles = makeStyles(() => ({
   },
   bar: {
     display: "flex",
+    overflow: "hidden",
+    borderTopLeftRadius: artepunktTheme.shape.borderRadius,
+    borderTopRightRadius: artepunktTheme.shape.borderRadius,
+
+    "& button:first-child": {
+      borderTopLeftRadius: artepunktTheme.shape.borderRadius,
+    },
+
+    "& button:last-child": {
+      borderTopRightRadius: artepunktTheme.shape.borderRadius,
+    },
   },
   wrapper: {
     display: "flex",

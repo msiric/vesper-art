@@ -13,6 +13,7 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
     position: "relative",
     minHeight: 160,
     maxHeight: 600,
+    zIndex: 2,
   },
   containerHover: {
     "&:hover": {
@@ -30,6 +31,7 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
     },
   },
   imageContainer: {
+    zIndex: 1,
     height: "100%",
     width: "100%",
     transition: "opacity 0.5s, filter 0.5s",
