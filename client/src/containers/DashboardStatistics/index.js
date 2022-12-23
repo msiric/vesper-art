@@ -18,10 +18,10 @@ const DashboardStatistics = ({ layout }) => {
   const cards = [
     {
       data:
-        display.type === "purchases"
+        display === "purchases"
           ? aggregateStats.favorites
           : aggregateStats.rating || "/",
-      label: display.type === "purchases" ? "Favorites" : "Rating",
+      label: display === "purchases" ? "Favorites" : "Rating",
       currency: false,
     },
     {
@@ -41,7 +41,7 @@ const DashboardStatistics = ({ layout }) => {
   useEffect(() => {
     fetchAggregateStats({ userId, display });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, display.type]);
+  }, [userId, display]);
 
   return (
     <Grid container spacing={2} className={classes.container}>

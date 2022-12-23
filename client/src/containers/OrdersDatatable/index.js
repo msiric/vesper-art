@@ -144,9 +144,9 @@ const renderData = (orders, display, loading) =>
 const OrdersDatatable = () => {
   const userId = useUserStore((state) => state.id);
 
-  const orders = useUserOrders((state) => state.orders.data);
-  const loading = useUserOrders((state) => state.orders.loading);
   const display = useUserOrders((state) => state.display);
+  const orders = useUserOrders((state) => state[display].data);
+  const loading = useUserOrders((state) => state[display].loading);
   const fetchOrders = useUserOrders((state) => state.fetchOrders);
 
   const { width } = useWindowDimensions();

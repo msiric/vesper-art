@@ -5,7 +5,10 @@ import DropdownItems from "../../components/DropdownItems/index";
 import MainHeading from "../../components/MainHeading/index";
 import SubHeading from "../../components/SubHeading/index";
 import { useUserStore } from "../../contexts/global/user";
-import { useUserStats } from "../../contexts/local/userStats";
+import {
+  SUPPORTED_STATS_DISPLAYS,
+  useUserStats,
+} from "../../contexts/local/userStats";
 import Grid from "../../domain/Grid";
 import dashboardToolbarStyles from "./styles";
 
@@ -18,11 +21,6 @@ const DashboardToolbar = () => {
   const changeSelection = useUserStats((state) => state.changeSelection);
   const redirectDashboard = useUserStats((state) => state.redirectDashboard);
   const redirecting = useUserStats((state) => state.redirecting);
-
-  const menuItems = [
-    { value: "purchases", text: "Purchases" },
-    { value: "sales", text: "Sales" },
-  ];
 
   const classes = dashboardToolbarStyles();
 
@@ -43,13 +41,13 @@ const DashboardToolbar = () => {
         )}
       </Grid>
       <Grid item className={classes.wrapper}>
-        <SubHeading text="Total stats" />
+        <SubHeading text="Aggregate data" />
         <DropdownItems
-          value={display.type}
+          value={display}
           onChange={(e) => changeSelection({ selection: e.target.value })}
           label="Display"
           loading={loading}
-          items={menuItems}
+          items={SUPPORTED_STATS_DISPLAYS}
         />
       </Grid>
     </Grid>

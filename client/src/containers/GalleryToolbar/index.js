@@ -2,7 +2,10 @@ import React, { useEffect } from "react";
 import DropdownItems from "../../components/DropdownItems/index";
 import MainHeading from "../../components/MainHeading/index";
 import { useUserStore } from "../../contexts/global/user";
-import { useUserGallery } from "../../contexts/local/userGallery";
+import {
+  SUPPORTED_GALLERY_DISPLAYS,
+  useUserGallery,
+} from "../../contexts/local/userGallery";
 import Box from "../../domain/Box";
 import galleryToolbarStyles from "./styles";
 
@@ -15,11 +18,6 @@ const GalleryToolbar = ({ formatArtwork, location }) => {
   const fetchUser = useUserGallery((state) => state.fetchUser);
   const changeSelection = useUserGallery((state) => state.changeSelection);
 
-  const menuItems = [
-    { value: "purchases", text: "Purchases" },
-    { value: "artwork", text: "Artwork" },
-  ];
-
   const classes = galleryToolbarStyles();
 
   useEffect(() => {
@@ -31,7 +29,7 @@ const GalleryToolbar = ({ formatArtwork, location }) => {
     <Box className={classes.container}>
       <MainHeading text="Gallery" />
       <DropdownItems
-        items={menuItems}
+        items={SUPPORTED_GALLERY_DISPLAYS}
         loading={loading}
         label="Display"
         onChange={(e) => changeSelection({ selection: e.target.value })}
