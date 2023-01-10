@@ -30,8 +30,8 @@ const DashboardStatistics = ({ layout }) => {
       currency: false,
     },
     {
-      data: aggregateStats[display.label],
-      label: display.label,
+      data: aggregateStats[display],
+      label: display === "purchases" ? "Spent" : "Earned",
       currency: true,
     },
   ];

@@ -2,6 +2,7 @@ import create from "zustand";
 import { getOwnership, getUploads } from "../../services/user";
 import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 
+export const DEFAULT_GALLERY_DISPLAY = "purchases";
 export const SUPPORTED_GALLERY_DISPLAYS = [
   { value: "purchases", text: "Purchases" },
   { value: "artwork", text: "Artwork" },
@@ -35,11 +36,7 @@ export const initialState = {
     },
   },
   elements: [],
-  display: "purchases",
-  // display: {
-  //   type: "purchases",
-  //   label: "spent",
-  // },
+  display: DEFAULT_GALLERY_DISPLAY,
 };
 
 const initState = () => ({ ...initialState });

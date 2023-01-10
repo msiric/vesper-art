@@ -1,8 +1,10 @@
+import { useQueryParam } from "@hooks/useQueryParam";
 import React, { useEffect } from "react";
 import DropdownItems from "../../components/DropdownItems/index";
 import MainHeading from "../../components/MainHeading/index";
 import { useUserStore } from "../../contexts/global/user";
 import {
+  DEFAULT_GALLERY_DISPLAY,
   SUPPORTED_GALLERY_DISPLAYS,
   useUserGallery,
 } from "../../contexts/local/userGallery";
@@ -17,6 +19,14 @@ const GalleryToolbar = ({ formatArtwork, location }) => {
   const loading = useUserGallery((state) => state[display].loading);
   const fetchUser = useUserGallery((state) => state.fetchUser);
   const changeSelection = useUserGallery((state) => state.changeSelection);
+
+  useQueryParam(
+    "display",
+    display,
+    DEFAULT_GALLERY_DISPLAY,
+    SUPPORTED_GALLERY_DISPLAYS.map((item) => item.value),
+    (value) => changeSelection({ selection: value })
+  );
 
   const classes = galleryToolbarStyles();
 

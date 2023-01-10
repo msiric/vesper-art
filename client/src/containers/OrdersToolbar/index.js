@@ -1,23 +1,26 @@
-import { useQueryState } from "@hooks/useUrlQueryParams";
+import { useQueryParam } from "@hooks/useQueryParam";
 import React from "react";
 import DropdownItems from "../../components/DropdownItems";
 import {
+  DEFAULT_ORDERS_DISPLAY,
   SUPPORTED_ORDERS_DISPLAYS,
   useUserOrders,
 } from "../../contexts/local/userOrders";
 import Grid from "../../domain/Grid";
 import ordersToolbarStyles from "./styles";
 
-const OrderToolbar = () => {
+const OrdersToolbar = () => {
   const display = useUserOrders((state) => state.display);
   const loading = useUserOrders((state) => state[display].loading);
   const changeSelection = useUserOrders((state) => state.changeSelection);
-  // const [queryParams, setQueryParams] = useQueryParams({
-  //   display,
-  // });
-  const [queryParams] = useQueryState({
+
+  useQueryParam(
+    "display",
     display,
-  });
+    DEFAULT_ORDERS_DISPLAY,
+    SUPPORTED_ORDERS_DISPLAYS.map((item) => item.value),
+    (value) => changeSelection({ selection: value })
+  );
 
   const classes = ordersToolbarStyles();
 
@@ -36,4 +39,4 @@ const OrderToolbar = () => {
   );
 };
 
-export default OrderToolbar;
+export default OrdersToolbar;

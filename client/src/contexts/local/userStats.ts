@@ -4,6 +4,7 @@ import { getDashboard } from "../../services/stripe";
 import { getSelection, getStatistics } from "../../services/user";
 import { resolveAsyncError } from "../../utils/helpers";
 
+export const DEFAULT_STATS_DISPLAY = "purchases";
 export const SUPPORTED_STATS_DISPLAYS = [
   { value: "purchases", text: "Purchases" },
   { value: "sales", text: "Sales" },
@@ -27,7 +28,7 @@ export const initialState = {
     loading: true,
     error: { retry: false, redirect: false, message: "" },
   },
-  display: "purchases",
+  display: DEFAULT_STATS_DISPLAY,
   redirecting: false,
   range: [new Date(subDays(new Date(), 7)), new Date()],
 };

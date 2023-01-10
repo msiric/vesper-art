@@ -1,3 +1,4 @@
+import { useQueryParam } from "@hooks/useQueryParam";
 import { Add as AddIcon } from "@material-ui/icons";
 import MUIDataTable from "mui-datatables";
 import React, { useEffect, useState } from "react";
@@ -5,6 +6,9 @@ import { useHistory } from "react-router-dom";
 import IconButton from "../../domain/IconButton";
 import Tooltip from "../../domain/Tooltip";
 import EmptySection from "../EmptySection/index";
+
+const ROWS_PER_PAGE = 10;
+const DEFAULT_PAGE = 0;
 
 const CustomToolbar = ({ addOptions }) => {
   const history = useHistory();
@@ -38,15 +42,25 @@ const DataTable = ({
   selectable,
   hoverable,
   searchable,
+  page,
   pagination,
   addOptions,
   height,
   className,
 }) => {
+  const [currentPage, setCurrentPage] = useState(page ?? DEFAULT_PAGE);
   const [displayedData, setDisplayedData] = useState([null]);
   const [responsive, setResponsive] = useState("simple");
   const [tableBodyHeight] = useState("100%");
   const [tableBodyMaxHeight] = useState("");
+
+  const allowedPages = Array.from(
+    Array(Math.ceil(data.length / ROWS_PER_PAGE)).keys()
+  );
+
+  useQueryParam("page", currentPage, DEFAULT_PAGE, allowedPages, (value) =>
+    setCurrentPage(parseInt(value))
+  );
 
   const history = useHistory();
 
@@ -63,6 +77,7 @@ const DataTable = ({
     selectableRows: !loading && selectable,
     rowHover: !loading && hoverable,
     search: !loading && searchable,
+    page: currentPage,
     pagination,
     responsive,
     tableBodyHeight,
@@ -73,6 +88,7 @@ const DataTable = ({
     onTableChange: (_, data) =>
       data.displayData.length !== displayedData.length &&
       setDisplayedData(data.displayData),
+    onChangePage: (page) => setCurrentPage(page),
     textLabels: {
       body: {
         noMatch: !loading && <EmptySection label={label} height={height} />,

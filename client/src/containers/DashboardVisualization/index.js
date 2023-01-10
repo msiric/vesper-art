@@ -48,8 +48,8 @@ const DashboardVisualization = () => {
 
   const cards = [
     {
-      data: selectedStats[display.label],
-      label: display.label,
+      data: selectedStats[display],
+      label: display === "purchases" ? "Spent" : "Earned",
       currency: true,
     },
     {

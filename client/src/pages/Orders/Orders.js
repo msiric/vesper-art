@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { useHistory } from "react-router-dom";
 import OrdersDatatable from "../../containers/OrdersDatatable/index";
 import OrdersToolbar from "../../containers/OrdersToolbar/index";
 import { useUserOrders } from "../../contexts/local/userOrders";
@@ -16,8 +15,6 @@ const Orders = () => {
   const resetOrders = useUserOrders((state) => state.resetOrders);
 
   const globalClasses = globalStyles();
-
-  const history = useHistory();
 
   const reinitializeState = () => {
     resetOrders();

@@ -2,6 +2,7 @@ import create from "zustand";
 import { getOrders } from "../../services/orders";
 import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 
+export const DEFAULT_ORDERS_DISPLAY = "purchases";
 export const SUPPORTED_ORDERS_DISPLAYS = [
   { value: "purchases", text: "Purchases" },
   { value: "sales", text: "Sales" },
@@ -24,7 +25,7 @@ export const initialState = {
     limit: 10,
     error: { retry: false, redirect: false, message: "" },
   },
-  display: "purchases",
+  display: DEFAULT_ORDERS_DISPLAY,
 };
 
 const initState = () => ({ ...initialState });
@@ -70,7 +71,7 @@ const initActions = (set, get) => ({
       }));
     }
   },
-  changeSelection: ({ selection = SUPPORTED_ORDERS_DISPLAYS[0] }) => {
+  changeSelection: ({ selection }) => {
     set(() => ({
       ...initialState,
       display: selection,
