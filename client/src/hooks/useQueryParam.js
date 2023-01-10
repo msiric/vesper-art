@@ -14,10 +14,10 @@ export const useQueryParam = (
     const urlValue = queryParams.get(paramName);
     if (urlValue !== value) {
       const isValidParameter =
-        urlValue !== null && supportedValues.some((item) => item == value); // no strict equality (===) to make the conversion from/to string/integer
+        urlValue !== null && supportedValues.some((item) => item == urlValue); // no strict equality (===) to make the conversion from/to string/integer
       setValue(isValidParameter ? urlValue : initialValue);
     }
-  }, []);
+  }, [JSON.stringify(supportedValues)]);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
