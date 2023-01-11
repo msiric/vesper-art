@@ -4,6 +4,12 @@ import { getDashboard } from "../../services/stripe";
 import { getSelection, getStatistics } from "../../services/user";
 import { resolveAsyncError } from "../../utils/helpers";
 
+export const DEFAULT_STATS_DISPLAY = "purchases";
+export const SUPPORTED_STATS_DISPLAYS = [
+  { value: "purchases", text: "Purchases" },
+  { value: "sales", text: "Sales" },
+];
+
 export const initialState = {
   graphData: [
     {
@@ -22,22 +28,20 @@ export const initialState = {
     loading: true,
     error: { retry: false, redirect: false, message: "" },
   },
-  display: {
-    type: "purchases",
-    label: "spent",
-  },
+  display: DEFAULT_STATS_DISPLAY,
   redirecting: false,
   range: [new Date(subDays(new Date(), 7)), new Date()],
 };
 
 const initState = () => ({ ...initialState });
 
-const initActions = (set) => ({
-  fetchAggregateStats: async ({ userId, display }) => {
+const initActions = (set, get) => ({
+  fetchAggregateStats: async ({ userId }) => {
     try {
+      const display = get().display;
       const { data } = await getStatistics.request({
         userId,
-        display: display.type,
+        display,
       });
       const aggregateStats = {
         rating:
@@ -46,9 +50,9 @@ const initActions = (set) => ({
               data.reviews.length
             : 0,
         favorites: data.favorites ? data.favorites.length : 0,
-        orders: data[display.type].length,
-        [display.label]: data[display.type].length
-          ? data[display.type].reduce((a, b) => a + b[display.label], 0)
+        orders: data[display].length,
+        [display]: data[display].length
+          ? data[display].reduce((a, b) => a + b[display], 0)
           : 0,
       };
       set((state) => ({
@@ -75,13 +79,13 @@ const initActions = (set) => ({
     try {
       const { data } = await getSelection.request({
         userId,
-        displayType: display.type,
+        displayType: display,
         start: dateFrom,
         end: dateTo,
       });
       const selectedStats = {
-        [display.label]: data.statistics.length
-          ? data.statistics.reduce((a, b) => a + b[display.label], 0)
+        [display]: data.statistics.length
+          ? data.statistics.reduce((a, b) => a + b[display], 0)
           : 0,
         licenses: {
           personal: 0,
@@ -156,21 +160,9 @@ const initActions = (set) => ({
   },
   changeSelection: ({ selection }) => {
     set((state) => ({
-      ...state,
-      aggregateStats: {
-        data: [],
-        loading: true,
-        error: { ...initialState.aggregateStats.error },
-      },
-      selectedStats: {
-        data: { licenses: {} },
-        loading: true,
-        error: { ...initialState.selectedStats.error },
-      },
-      display: {
-        type: selection,
-        label: selection === "purchases" ? "spent" : "earned",
-      },
+      ...initialState,
+      display: selection,
+      range: state.range,
     }));
   },
   changeRange: ({ range }) => {
@@ -209,7 +201,7 @@ const initActions = (set) => ({
   },
 });
 
-export const useUserStats = create((set) => ({
+export const useUserStats = create((set, get) => ({
   ...initState(),
-  ...initActions(set),
+  ...initActions(set, get),
 }));

@@ -1,8 +1,13 @@
+import { useQueryParam } from "@hooks/useQueryParam";
 import React, { useEffect } from "react";
 import DropdownItems from "../../components/DropdownItems/index";
 import MainHeading from "../../components/MainHeading/index";
 import { useUserStore } from "../../contexts/global/user";
-import { useUserGallery } from "../../contexts/local/userGallery";
+import {
+  DEFAULT_GALLERY_DISPLAY,
+  SUPPORTED_GALLERY_DISPLAYS,
+  useUserGallery,
+} from "../../contexts/local/userGallery";
 import Box from "../../domain/Box";
 import galleryToolbarStyles from "./styles";
 
@@ -15,10 +20,13 @@ const GalleryToolbar = ({ formatArtwork, location }) => {
   const fetchUser = useUserGallery((state) => state.fetchUser);
   const changeSelection = useUserGallery((state) => state.changeSelection);
 
-  const menuItems = [
-    { value: "purchases", text: "Purchases" },
-    { value: "artwork", text: "Artwork" },
-  ];
+  useQueryParam(
+    "display",
+    display,
+    DEFAULT_GALLERY_DISPLAY,
+    SUPPORTED_GALLERY_DISPLAYS.map((item) => item.value),
+    (value) => changeSelection({ selection: value })
+  );
 
   const classes = galleryToolbarStyles();
 
@@ -31,7 +39,7 @@ const GalleryToolbar = ({ formatArtwork, location }) => {
     <Box className={classes.container}>
       <MainHeading text="Gallery" />
       <DropdownItems
-        items={menuItems}
+        items={SUPPORTED_GALLERY_DISPLAYS}
         loading={loading}
         label="Display"
         onChange={(e) => changeSelection({ selection: e.target.value })}

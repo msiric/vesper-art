@@ -2,6 +2,12 @@ import create from "zustand";
 import { getOwnership, getUploads } from "../../services/user";
 import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 
+export const DEFAULT_GALLERY_DISPLAY = "purchases";
+export const SUPPORTED_GALLERY_DISPLAYS = [
+  { value: "purchases", text: "Purchases" },
+  { value: "artwork", text: "Artwork" },
+];
+
 export const initialState = {
   artwork: {
     data: {},
@@ -30,11 +36,7 @@ export const initialState = {
     },
   },
   elements: [],
-  display: "purchases",
-  // display: {
-  //   type: "purchases",
-  //   label: "spent",
-  // },
+  display: DEFAULT_GALLERY_DISPLAY,
 };
 
 const initState = () => ({ ...initialState });
@@ -129,7 +131,7 @@ const initActions = (set, get) => ({
       }));
     }
   },
-  changeSelection: ({ selection }) => {
+  changeSelection: ({ selection = SUPPORTED_GALLERY_DISPLAYS[0] }) => {
     set(() => ({
       ...initialState,
       display: selection,

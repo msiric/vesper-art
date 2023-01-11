@@ -15,7 +15,7 @@ const VisualizationToolbar = () => {
   return (
     <Box className={classes.container}>
       <Typography variant="h6" className={classes.heading}>
-        Selected stats
+        Sampled data
       </Typography>
       <RangeInput
         fromLabel="From"

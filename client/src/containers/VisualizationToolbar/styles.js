@@ -12,7 +12,6 @@ const visualizationToolbarStyles = makeStyles((muiTheme) => ({
     },
   },
   heading: {
-    textTransform: "capitalize",
     [muiTheme.breakpoints.down("xs")]: {
       marginBottom: artepunktTheme.margin.headingLg,
     },

@@ -8,9 +8,10 @@ import globalStyles from "../../styles/global";
 import { containsErrors, renderError } from "../../utils/helpers";
 
 const Orders = () => {
-  const retry = useUserOrders((state) => state.orders.error.retry);
-  const redirect = useUserOrders((state) => state.orders.error.redirect);
-  const message = useUserOrders((state) => state.orders.error.message);
+  const display = useUserOrders((state) => state.display);
+  const retry = useUserOrders((state) => state[display].error.retry);
+  const redirect = useUserOrders((state) => state[display].error.redirect);
+  const message = useUserOrders((state) => state[display].error.message);
   const resetOrders = useUserOrders((state) => state.resetOrders);
 
   const globalClasses = globalStyles();

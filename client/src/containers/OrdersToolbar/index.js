@@ -1,18 +1,26 @@
+import { useQueryParam } from "@hooks/useQueryParam";
 import React from "react";
 import DropdownItems from "../../components/DropdownItems";
-import { useUserOrders } from "../../contexts/local/userOrders";
+import {
+  DEFAULT_ORDERS_DISPLAY,
+  SUPPORTED_ORDERS_DISPLAYS,
+  useUserOrders,
+} from "../../contexts/local/userOrders";
 import Grid from "../../domain/Grid";
 import ordersToolbarStyles from "./styles";
 
-const OrderToolbar = () => {
+const OrdersToolbar = () => {
   const display = useUserOrders((state) => state.display);
-  const loading = useUserOrders((state) => state.orders.loading);
+  const loading = useUserOrders((state) => state[display].loading);
   const changeSelection = useUserOrders((state) => state.changeSelection);
 
-  const menuItems = [
-    { value: "purchases", text: "Purchases" },
-    { value: "sales", text: "Sales" },
-  ];
+  useQueryParam(
+    "display",
+    display,
+    DEFAULT_ORDERS_DISPLAY,
+    SUPPORTED_ORDERS_DISPLAYS.map((item) => item.value),
+    (value) => changeSelection({ selection: value })
+  );
 
   const classes = ordersToolbarStyles();
 
@@ -24,11 +32,11 @@ const OrderToolbar = () => {
           onChange={(e) => changeSelection({ selection: e.target.value })}
           label="Display"
           loading={loading}
-          items={menuItems}
+          items={SUPPORTED_ORDERS_DISPLAYS}
         />
       </Grid>
     </Grid>
   );
 };
 
-export default OrderToolbar;
+export default OrdersToolbar;

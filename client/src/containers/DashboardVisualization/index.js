@@ -48,8 +48,8 @@ const DashboardVisualization = () => {
 
   const cards = [
     {
-      data: selectedStats[display.label],
-      label: display.label,
+      data: selectedStats[display],
+      label: display === "purchases" ? "Spent" : "Earned",
       currency: true,
     },
     {
@@ -71,7 +71,7 @@ const DashboardVisualization = () => {
       fetchSelectedData({ userId, display, dateFrom, dateTo });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, range, display.type]);
+  }, [userId, range, display]);
 
   return (
     <Grid container spacing={2}>
