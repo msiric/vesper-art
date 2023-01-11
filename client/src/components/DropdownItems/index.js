@@ -1,6 +1,7 @@
 import React from "react";
 import MenuItem from "../../domain/MenuItem";
 import TextField from "../../domain/TextField";
+import dropdownItemsStyles from "./styles";
 
 const DropdownItems = ({
   label,
@@ -11,6 +12,8 @@ const DropdownItems = ({
   margin = "dense",
   ...props
 }) => {
+  const classes = dropdownItemsStyles();
+
   return (
     <TextField
       variant={variant}
@@ -19,6 +22,7 @@ const DropdownItems = ({
       label={label}
       select
       loading={loading}
+      className={classes.dropdown}
       {...props}
     >
       {items.map((item, index) => (
