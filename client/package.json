@@ -49,9 +49,9 @@
     "zustand": "^3.3.1"
   },
   "scripts": {
-    "start": "cross-env SKIP_PREFLIGHT_CHECK=true react-app-rewired --max_old_space_size=4096 start",
-    "build": "cross-env SKIP_PREFLIGHT_CHECK=true DISABLE_ESLINT_PLUGIN=true TSC_COMPILE_ON_ERROR=true GENERATE_SOURCEMAP=false react-app-rewired --max_old_space_size=4096 build",
-    "build:legacy": "cross-env NODE_OPTIONS=--openssl-legacy-provider cross-env SKIP_PREFLIGHT_CHECK=true DISABLE_ESLINT_PLUGIN=true TSC_COMPILE_ON_ERROR=true GENERATE_SOURCEMAP=false react-app-rewired --max_old_space_size=4096 build",
+    "start": "cross-env SKIP_PREFLIGHT_CHECK=true react-app-rewired --optimize_for_size --max_old_space_size=460 start",
+    "build": "cross-env SKIP_PREFLIGHT_CHECK=true DISABLE_ESLINT_PLUGIN=true TSC_COMPILE_ON_ERROR=true GENERATE_SOURCEMAP=false react-app-rewired --optimize_for_size --max_old_space_size=460 build",
+    "build:legacy": "cross-env NODE_OPTIONS=--openssl-legacy-provider cross-env SKIP_PREFLIGHT_CHECK=true DISABLE_ESLINT_PLUGIN=true TSC_COMPILE_ON_ERROR=true GENERATE_SOURCEMAP=false react-app-rewired --optimize_for_size --max_old_space_size=460 build",
     "test": "cross-env SKIP_PREFLIGHT_CHECK=true react-app-rewired test",
     "eject": "react-app-rewired eject",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx}",
