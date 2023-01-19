@@ -16,6 +16,7 @@
     "dev": "npx kill-port 3000 && npx kill-port 5000 && concurrently --kill-others \"yarn run transpile:watch\" \"yarn run server:dev\" \"yarn run client\" \"yarn run webhook\"",
     "prod": "cd client && yarn install && yarn build:legacy && cd .. && yarn run transpile && cross-env NODE_ENV=production node ./dist/bin/www",
     "staging": "cd client && yarn install && yarn build:legacy && cd .. && yarn run transpile && cross-env NODE_ENV=staging node ./dist/bin/www",
+    "agnostic": "cd client && yarn install && yarn build:legacy && cd .. && yarn run transpile && node ./dist/bin/www",
     "webhook": "stripe listen --forward-to localhost:5000/webhook/events",
     "alias": "tsc-alias",
     "transpile": "tsc && yarn run alias",
