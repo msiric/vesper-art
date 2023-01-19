@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - 'master'
+env:
+  NODE_ENV: staging
 jobs:
   deploy:
       name: Deploy staging
@@ -17,5 +19,4 @@ jobs:
         - name: Deploy
           run: railway up
           env:
-            NODE_ENV: staging
             RAILWAY_TOKEN: ${{ secrets.RAILWAY_STAGING_TOKEN }}
