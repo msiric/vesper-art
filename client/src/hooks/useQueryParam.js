@@ -13,10 +13,12 @@ export const useQueryParam = (
     const queryParams = new URLSearchParams(window.location.search);
     const urlValue = queryParams.get(paramName);
     if (urlValue !== value) {
+      /* eslint eqeqeq: 0 */
       const isValidParameter =
         urlValue !== null && supportedValues.some((item) => item == urlValue); // no strict equality (===) to make the conversion from/to string/integer
       setValue(isValidParameter ? urlValue : initialValue);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(supportedValues)]);
 
   useEffect(() => {
