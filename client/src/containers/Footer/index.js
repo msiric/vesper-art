@@ -29,7 +29,8 @@ const Footer = () => {
 
   const handleEmailClick = (e) => {
     e.preventDefault();
-    const email = `info@${window.location.hostname}`;
+    const hostname = window.location.hostname.replace("www.", "");
+    const email = `info@${hostname}`;
     window.location.href = `mailto:${email}`;
   };
 
