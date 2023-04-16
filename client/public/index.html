@@ -55,6 +55,22 @@
     <meta name="twitter:image" content="%PUBLIC_URL%/logo.png" />
     <meta name="twitter:image:alt" content="Vesper" />
   </head>
+
+  <!-- Google tag (gtag.js) -->
+  <script
+    async
+    src="https://www.googletagmanager.com/gtag/js?id=G-DBGMNCXJK3"
+  ></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-DBGMNCXJK3");
+  </script>
+
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
