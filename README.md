@@ -25,12 +25,12 @@ Official website: https://vesperart.co </br></br>
 
 ## Features :gift:
 
-- **Custom authentication**: To ensure full user privacy, custom authentication is in place, without OAuth options, that supports auto-refreshing access tokens
+- **Custom authentication**: To ensure complete user privacy, custom authentication is implemented, without OAuth options, that supports auto-refreshing access tokens
 - **Artist/collector profile creation**: Users can set up unified profiles to both showcase and collect work on the platform
 - **Artwork management**: Artists have control over how their artwork is displayed and interacted with
 - **Licensing control**: Artists can define the types of licenses available for each piece of their artwork, including free, personal, and/or commercial licenses
 - **Artwork pricing**: Artists can set their own prices for their artwork licenses
-- **Notifications**: Users receive real-time updates  whenever there is relevant information concerning them
+- **Notifications**: Users receive real-time updates whenever there is relevant information concerning them
 - **Dashboard**: Users can track their progress and sales/purchases through their dashboard
 - **Secure payment processing**: Stripe is used for all transactions, ensuring secure processing, fee management and delivery of funds
 - **Artwork interaction**: Collectors can browse and explore various artworks from different artists and favorite, comment on, and purchase/download their work
