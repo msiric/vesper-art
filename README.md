@@ -20,7 +20,8 @@ Official website: https://vesperart.co </br></br>
 
 ---
 ## Quick demo :clapper:
-![Demo](https://github.com/msiric/vesper-demo/assets/26199969/bec6a758-326a-4631-a7b8-34951fc243da)
+![Demo](https://github.com/msiric/vesper-art/assets/26199969/8a981c5a-c0a1-4510-a847-71ec95dcf8c0)
+
 
 ## Features :gift:
 
