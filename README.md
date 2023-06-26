@@ -62,8 +62,9 @@ To run the application locally, create a `.env.development` file using the `.env
 
 ### 4. Run the application
 
-To run the application, VS Code's run tasks are used: Terminal -> Run task -> Run *name of task* (e.g. Run dev)
-To enable payments, make sure to [set up Stripe](https://stripe.com/docs/stripe-cli) and logging in before running the app. 
+To run the application, VS Code's run tasks are used: Terminal -> Run task -> Run *name of task* (e.g. Run dev).
+To enable payments, make sure to [set up Stripe](https://stripe.com/docs/stripe-cli) and logging in before running the app.
+Additionally, ensure [Fly CLI](https://fly.io/docs/flyctl/) is installed locally to proxy the requests.
 
 ### 5. Run the tests
 
