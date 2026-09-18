@@ -1,30 +1,10 @@
-import dotenv from "dotenv";
-import path from "path";
-
-// current dir
-// const __curdir = path.dirname(new URL(import.meta.url).pathname);
-
-// root dir
-const __rootdir = path.resolve();
-
-dotenv.config({
-  path: path.resolve(__rootdir, `.env.${process.env.NODE_ENV || "local"}`),
-  override: true,
-});
-
-export const ENV_OPTIONS = {
-  STAGING: "staging",
-  TESTING: "testing",
-  DEVELOPMENT: "development",
-  PRODUCTION: "production",
-  SEEDING: "seeding",
-};
-
-export const environment = process.env.NODE_ENV;
+import "dotenv/config";
+import { environment, ENV_OPTIONS } from "../common/environment";
+export { environment, ENV_OPTIONS } from "../common/environment";
 
 export const domain = {
-  client: process.env.CLIENT_URI || "http://localhost:3000",
-  server: process.env.SERVER_URI || "http://localhost:5000",
+  client: process.env.CLIENT_URI || "http://127.0.0.1:5175",
+  server: process.env.SERVER_URI || "http://127.0.0.1:5075",
 };
 
 export const postgres = {
@@ -61,9 +41,9 @@ export const aws = {
 
 export const tokens = {
   accessToken: process.env.ACCESS_TOKEN_SECRET,
-  accessExpiry: process.env.ACCESS_TOKEN_EXPIRY,
+  accessExpiry: process.env.ACCESS_TOKEN_EXPIRY || "15m",
   refreshToken: process.env.REFRESH_TOKEN_SECRET,
-  refreshExpiry: process.env.REFRESH_TOKEN_EXPIRY,
+  refreshExpiry: process.env.REFRESH_TOKEN_EXPIRY || "24h",
 };
 
 export const uuid = {

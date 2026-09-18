@@ -19,13 +19,13 @@ export class Like extends BaseEntity {
   @Generated("increment")
   serial: number;
 
-  @ManyToOne(() => User, (user) => user.likes)
+  @ManyToOne(() => User, (user) => user.likes, { onDelete: 'CASCADE' })
   owner: User;
 
   @Column()
   ownerId: string;
 
-  @ManyToOne(() => Comment, (comment) => comment.likes)
+  @ManyToOne(() => Comment, (comment) => comment.likes, { onDelete: 'CASCADE' })
   comment: Comment;
 
   @Column()

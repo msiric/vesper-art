@@ -22,8 +22,4 @@ export const socialLinks = {
   reddit: "https://www.reddit.com/r/vesperart/",
 };
 
-// $TODO Set node_env to production appropriately when deploying
-export const stripePublishableKey =
-  process.env.NODE_ENV === "production"
-    ? ""
-    : "pk_test_xi0qpLTPs3WI8YPUfTyeeyzt00tNwou20z";
+export const stripePublishableKey = '';
