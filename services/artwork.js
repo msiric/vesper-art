@@ -1,3 +1,4 @@
+import { hydrateArtworkCounts } from '../utils/database';
 import { Like } from "@entities/Like";
 import { View } from "@entities/View";
 import { upload } from "../common/constants";
@@ -82,8 +83,6 @@ export const fetchActiveArtworks = async ({ cursor, limit, connection }) => {
     .createQueryBuilder("artwork");
   const foundArtwork = await queryBuilder
     .leftJoinAndSelect("artwork.current", "version")
-    .loadRelationCountAndMap("artwork.favorites", "artwork.favorites")
-    .loadRelationCountAndMap("artwork.comments", "artwork.comments")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("artwork.owner", "owner")
     .select([
@@ -109,7 +108,7 @@ export const fetchActiveArtworks = async ({ cursor, limit, connection }) => {
     .orderBy("artwork.serial", "DESC")
     .limit(limit)
     .getMany();
-  return foundArtwork;
+  return hydrateArtworkCounts(foundArtwork, connection, false);
 };
 
 export const fetchVersionDetails = async ({
@@ -662,8 +661,6 @@ export const fetchUserArtwork = async ({
     .createQueryBuilder("artwork");
   const foundArtwork = await queryBuilder
     .leftJoinAndSelect("artwork.current", "version")
-    .loadRelationCountAndMap("artwork.favorites", "artwork.favorites")
-    .loadRelationCountAndMap("artwork.comments", "artwork.comments")
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("version.cover", "cover")
     .select([
@@ -684,7 +681,7 @@ export const fetchUserArtwork = async ({
     .orderBy("artwork.serial", "ASC")
     .limit(limit)
     .getMany();
-  return foundArtwork;
+  return hydrateArtworkCounts(foundArtwork, connection, false);
 };
 
 export const fetchUserUploadsWithMedia = async ({
@@ -787,8 +784,6 @@ export const fetchUserFavorites = async ({
     .createQueryBuilder("favorite");
   const foundFavorites = await queryBuilder
     .leftJoinAndSelect("favorite.artwork", "artwork")
-    .loadRelationCountAndMap("artwork.favorites", "artwork.favorites")
-    .loadRelationCountAndMap("artwork.comments", "artwork.comments")
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
@@ -811,7 +806,7 @@ export const fetchUserFavorites = async ({
     .orderBy("favorite.serial", "ASC")
     .limit(limit)
     .getMany();
-  return foundFavorites;
+  return hydrateArtworkCounts(foundFavorites, connection, true);
 };
 
 export const fetchUserMedia = async ({ userId, cursor, limit, connection }) => {

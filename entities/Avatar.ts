@@ -24,7 +24,7 @@ export class Avatar extends BaseEntity {
   @Generated("increment")
   serial: number;
 
-  @OneToOne(() => User)
+  @OneToOne(() => User, { onDelete: 'CASCADE' })
   owner: User;
 
   @Column()

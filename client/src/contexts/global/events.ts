@@ -311,6 +311,9 @@ const initActions = (set, get) => ({
       throw new Error(error);
     }
   },
+  invalidateNotifications: () => {
+    set(state => ({ notifications: { ...state.notifications, items: [], cursor: '', initialized: false, count: state.notifications.count + 1 } }));
+  },
   addNotification: ({ notification, cursor, count = 1 }) => {
     const { initialized } = get().notifications;
     if (initialized) {

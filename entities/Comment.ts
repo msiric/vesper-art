@@ -22,13 +22,13 @@ export class Comment extends BaseEntity {
   @Generated("increment")
   serial: number;
 
-  @ManyToOne(() => User, (user) => user.comments)
+  @ManyToOne(() => User, (user) => user.comments, { onDelete: 'CASCADE' })
   owner: User;
 
   @Column()
   ownerId: string;
 
-  @ManyToOne(() => Artwork, (artwork) => artwork.comments)
+  @ManyToOne(() => Artwork, (artwork) => artwork.comments, { onDelete: 'CASCADE' })
   artwork: Artwork;
 
   @Column()

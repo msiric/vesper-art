@@ -13,6 +13,7 @@ export const createAccessToken = ({ userData }) => {
     },
     tokens.accessToken,
     {
+      algorithm: "HS256",
       expiresIn: tokens.accessExpiry,
     }
   );
@@ -38,7 +39,7 @@ export const updateAccessToken = async ({ cookies, response, connection }) => {
     connection,
   });
 
-  if (!foundUser) {
+  if (!foundUser || !foundUser.active || !foundUser.demoExpiresAt || new Date(foundUser.demoExpiresAt) <= new Date()) {
     throw createError(...formatError(errors.forbiddenAccess));
   }
 
@@ -68,6 +69,7 @@ export const createRefreshToken = ({ userData }) => {
     { userId: userData.id, jwtVersion: userData.jwtVersion },
     tokens.refreshToken,
     {
+      algorithm: "HS256",
       expiresIn: tokens.refreshExpiry,
     }
   );
@@ -76,6 +78,9 @@ export const createRefreshToken = ({ userData }) => {
 export const sendRefreshToken = ({ response, refreshToken }) => {
   return response.cookie(cookieKeys.jid, refreshToken, {
     httpOnly: true,
-    path: auth.refreshEndpoint,
+    path: "/api/auth",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: refreshToken ? 24 * 60 * 60 * 1000 : 0,
   });
 };

@@ -142,7 +142,7 @@ export const restoreNotifications = {
 };
 export const postLogout = {
   request: async () =>
-    await ax.post("/auth/logout", {
+    await ax.post("/api/auth/logout", {
       headers: {
         credentials: "include",
       },

@@ -1,4 +1,3 @@
-import { admin } from "../config/secret";
 
 const general = {
   id: "",
@@ -678,10 +677,10 @@ export const entities = [
   {
     data: {
       id: "",
-      email: "garmonbozia05@gmail.com",
+      email: "sample-artist@example.invalid",
       fullName: "Artista",
-      name: admin.username,
-      password: admin.password,
+      name: "sample_artist",
+      password: "demo-login-disabled",
       avatarId: null,
       description: "Just vibin'",
       country: "HR",

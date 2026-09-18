@@ -12,6 +12,7 @@ export const sendEmail = async ({
   emailContent,
   emailAttachments,
 }) => {
+  if (process.env.DEMO_MODE === "true") return { simulated: true, accepted: [], message: "Email delivery is disabled in the demo." };
   try {
     const smtpTransport = nodemailer.createTransport({
       // smtp.zoho.com or smtp.zoho.eu for eu data server

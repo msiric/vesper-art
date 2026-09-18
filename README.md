@@ -1,5 +1,5 @@
 <p align="center">
-    <a href="https://vesperart.co" target="_blank">
+    <a href="https://vesper-art-demo.pages.dev" target="_blank">
         <img src="common/assets/logo.png" />
     </a>
 </p>
@@ -14,7 +14,7 @@
 
 Vesper is the first fully open-source art marketplace platform. The solution is based on React, Material UI, Express, PostgreSQL, Socket.io, AWS S3 and Stripe.
 
-Official website: https://vesperart.co </br></br>
+Official website: https://vesper-art-demo.pages.dev </br></br>
 [Learn more about the project](https://vesperart.co/about) </br>
 [How it works (for artists and collectors)](https://vesperart.co/how_it_works)
 
