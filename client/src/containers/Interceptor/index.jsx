@@ -102,6 +102,6 @@ export default function Interceptor() {
       {message && <div role="status" style={{marginTop:5,color:'#ffd49d'}}>{message}</div>}</div>
       <button disabled={busy} onClick={mode==='live' ? end : ()=>window.dispatchEvent(new Event('vesper-demo-start'))} style={{padding:'10px 16px',border:0,borderRadius:5,background:'#d68024',color:'#fff',cursor:'pointer',fontWeight:600}}>{busy?'Please wait…':mode==='live'?'End demo session':'Start live demo'}</button>
     </aside>
-    <App key={`${mode}:${userId || 'sample'}`} />
+    <App key={mode} />
   </>;
 }
