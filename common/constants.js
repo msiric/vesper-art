@@ -1,4 +1,4 @@
-import { environment, ENV_OPTIONS } from "../config/secret";
+import { environment, ENV_OPTIONS, demoMode } from "./environment";
 
 export const appName = "Vesper";
 
@@ -10,11 +10,11 @@ export const cookieKeys = {
 };
 
 export const featureFlags = {
-  stripe: environment !== ENV_OPTIONS.PRODUCTION,
-  payment: environment !== ENV_OPTIONS.PRODUCTION,
-  discount: environment !== ENV_OPTIONS.PRODUCTION,
-  dashboard: environment !== ENV_OPTIONS.PRODUCTION,
-  gif: environment !== ENV_OPTIONS.PRODUCTION,
+  stripe: !demoMode && environment !== ENV_OPTIONS.PRODUCTION,
+  payment: !demoMode && environment !== ENV_OPTIONS.PRODUCTION,
+  discount: !demoMode && environment !== ENV_OPTIONS.PRODUCTION,
+  dashboard: !demoMode && environment !== ENV_OPTIONS.PRODUCTION,
+  gif: !demoMode && environment !== ENV_OPTIONS.PRODUCTION,
 };
 
 export const unavailableMessage =
@@ -37,7 +37,7 @@ export const ALLOWED_AVATAR_RATIO = 1.5;
 export const upload = {
   artwork: {
     // 10 megabytes
-    fileSize: 10 * 1024 * 1024,
+    fileSize: (demoMode ? 2 : 10) * 1024 * 1024,
     fileDimensions: { height: 1024, width: 1024 },
     fileTransform: {
       width: TRANSFORMED_ARTWORK_WIDTH,
@@ -74,7 +74,7 @@ export const payment = featureFlags.stripe
   : {};
 
 export const auth = {
-  refreshEndpoint: "/auth/refresh_token",
+  refreshEndpoint: "/api/auth/refresh_token",
   networkMessage: "Network Error",
   loginMessage: "Forbidden",
 };

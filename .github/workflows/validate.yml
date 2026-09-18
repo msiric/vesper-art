@@ -1,74 +1,68 @@
-name: Validate deployment
+name: Validate isolated Vesper demo
 on:
   push:
-    branches:
-      - master
+    branches: [master]
   pull_request:
-env:
-  FLY_API_TOKEN: ${{ secrets.FLY_ACCESS_TOKEN }}
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: vesper-demo-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   validate-server:
     name: Validate Server
-    runs-on: ubuntu-latest
+    if: github.repository == 'msiric/vesper-art' && github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: vesper
+          POSTGRES_PASSWORD: disposable-ci-only
+          POSTGRES_DB: vesper_demo
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U vesper -d vesper_demo"
+          --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      NODE_ENV: test
+      DEMO_MODE: 'true'
+      CLIENT_URI: http://127.0.0.1:5175
+      PG_DB_URL: postgresql://vesper:disposable-ci-only@127.0.0.1:5432/vesper_demo
+      ACCESS_TOKEN_SECRET: ci-access-not-a-production-secret-123456789
+      REFRESH_TOKEN_SECRET: ci-refresh-not-a-production-secret-12345678
+      DEMO_PROXY_SECRET: ci-proxy-not-a-production-secret-1234567890
     steps:
-      - uses: actions/checkout@v3
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-      
-      - name: Use Node.js 16.x
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          node-version: '16.x'
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Create env file
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22.23.2'
+      - name: Install locked dependencies
         run: |
-          touch .env.testing
-          echo 'ACCESS_TOKEN_EXPIRY=${{ secrets.ACCESS_TOKEN_EXPIRY }}' >> .env.testing
-          echo 'ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }}' >> .env.testing
-          echo 'ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}' >> .env.testing
-          echo 'ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }}' >> .env.testing
-          echo 'CLIENT_URI=${{ secrets.CLIENT_TEST_URI }}' >> .env.testing
-          echo 'COOKIE_SECRET=${{ secrets.COOKIE_SECRET }}' >> .env.testing
-          echo 'MAILER_HOST=${{ secrets.MAILER_TEST_HOST }}' >> .env.testing
-          echo 'MAILER_MAIL=${{ secrets.MAILER_TEST_MAIL }}' >> .env.testing
-          echo 'MAILER_PASS=${{ secrets.MAILER_TEST_PASS }}' >> .env.testing
-          echo 'MAILER_SENDER=${{ secrets.MAILER_TEST_SENDER }}' >> .env.testing
-          echo 'REFRESH_TOKEN_EXPIRY=${{ secrets.REFRESH_TOKEN_EXPIRY }}' >> .env.testing
-          echo 'REFRESH_TOKEN_SECRET=${{ secrets.REFRESH_TOKEN_SECRET }}' >> .env.testing
-          echo 'S3_ID=${{ secrets.S3_ID }}' >> .env.testing
-          echo 'S3_SECRET=${{ secrets.S3_SECRET }}' >> .env.testing
-          echo 'S3_BUCKET=${{ secrets.S3_TEST_BUCKET }}' >> .env.testing
-          echo 'S3_REGION=${{ secrets.S3_TEST_REGION }}' >> .env.testing
-          echo 'SERVER_URI=${{ secrets.SERVER_TEST_URI }}' >> .env.testing
-          echo 'PG_DB_URL=${{ secrets.PG_TEST_DB }}' >> .env.testing
-
-      - name: Tests
+          npm ci
+          npm --prefix client ci
+      - name: Verify API, proxy, gallery races and migrations
         run: |
-          yarn run proxy:test & yarn run test
-
+          npm test
+          node scripts/migration-roundtrip.cjs
   validate-client:
     name: Validate Client
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: client
-    env:
-      CI: false
+    if: github.repository == 'msiric/vesper-art' && github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js 16.x
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          node-version: '16.x'
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Build
-        run: yarn run build
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22.23.2'
+      - name: Install and build frontend
+        run: |
+          npm ci
+          npm --prefix client ci
+          npm --prefix client run build

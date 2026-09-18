@@ -1,7 +1,7 @@
 import fs from "fs";
 import yaml from "js-yaml";
-import config from "ormconfig";
-import { createConnection, getConnection } from "typeorm";
+import { databaseOptions } from "../config/database";
+import { DataSource } from "typeorm";
 import { environment, ENV_OPTIONS } from "../config/secret";
 import { ArtworkVisibility } from "../entities/Artwork";
 import { OrderStatus } from "../entities/Order";
@@ -124,6 +124,7 @@ export const USER_SELECTION = {
     `${selector}.verified`,
   ],
   AUTH_INFO: (selector = DEFAULT_VALUES.USER) => [
+    `${selector}.demoExpiresAt`,
     `${selector}.password`,
     `${selector}.jwtVersion`,
   ],
@@ -278,22 +279,17 @@ export const FIXTURE_OPTIONS = {
   USER: "user",
 };
 
+let database;
 export const connectToDatabase = async () => {
-  try {
-    const connection = await createConnection({
-      ...config,
-    });
-    console.log("Connected to PostgreSQL");
-    return connection;
-  } catch (err) {
-    console.log("Could not connect to PostgreSQL: ", err);
-    throw err;
-  }
+  database = new DataSource(databaseOptions());
+  await database.initialize();
+  return database;
 };
-
-export const closeConnection = async (connection = null) => {
-  return connection ? await connection.close() : await getConnection().close();
+export const getConnection = () => {
+  if (!database?.isInitialized) throw new Error('Database is not ready');
+  return database;
 };
+export const closeConnection = async (connection = null) => (connection || getConnection()).destroy();
 
 export const startTransaction = async (connection = null) => {
   const queryRunner = connection
@@ -323,16 +319,14 @@ export const releaseTransaction = async (queryRunner) => {
   await queryRunner.release();
 };
 
-export const flushDatabase = async (connection = null) => {
-  return connection
-    ? await connection.synchronize(true)
-    : await getConnection().synchronize(true);
+export const flushDatabase = async () => {
+  throw new Error('Destructive reseeding is disabled; use explicit migrations on an isolated test database.');
 };
 
 export const loadFixture = async (name, connection) => {
   const items = [];
   try {
-    const file = yaml.safeLoad(
+    const file = yaml.load(
       fs.readFileSync(`./test/fixtures/${name}.yml`, "utf8")
     );
     items = file["fixtures"];
@@ -369,3 +363,17 @@ export const resolveSubQuery = (
         .where(`${alias}.id = :id`, { id: cursor })
         .getQuery()
     : threshold;
+
+// TypeORM 1 removed loadRelationCountAndMap. Fetch bounded counts in two
+// grouped queries, avoiding a multiplicative favorites × comments join.
+export async function hydrateArtworkCounts(items, connection, nested = false) {
+  const artwork = items.map(item => nested ? item.artwork : item).filter(Boolean);
+  if (!artwork.length) return items;
+  const ids = artwork.map(item => item.id);
+  for (const [table, field] of [['favorite','favorites'],['comment','comments']]) {
+    const rows = await connection.query(`SELECT "artworkId", COUNT(*)::int AS count FROM "${table}" WHERE "artworkId" = ANY($1::uuid[]) GROUP BY "artworkId"`, [ids]);
+    const counts = new Map(rows.map(row => [row.artworkId,row.count]));
+    artwork.forEach(item => { item[field] = counts.get(item.id) || 0; });
+  }
+  return items;
+}

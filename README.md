@@ -1,93 +1,35 @@
-<p align="center">
-    <a href="https://vesperart.co" target="_blank">
-        <img src="common/assets/logo.png" />
-    </a>
-</p>
+# Vesper
 
-</br>
+An art marketplace portfolio project by Mario Siric. It demonstrates browsing, artist profiles, favorites, comments, artwork uploads, collections, simulated orders and license-record verification.
 
-![Production](https://github.com/msiric/vesper-demo/actions/workflows/production.yml/badge.svg)
-![Staging](https://github.com/msiric/vesper-demo/actions/workflows/staging.yml/badge.svg)
-[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-blue.svg)](
-  https://conventionalcommits.org
-)
+The restored demo uses **fictional accounts and simulated transactions**. It does not collect money, send email, or grant real rights to artwork. **[Open the live demo](https://vesper-art-demo.pages.dev).** The former `vesperart.co` deployment is retired; ownership and operating instructions are in [DEPLOYMENT.md](DEPLOYMENT.md).
 
-Vesper is the first fully open-source art marketplace platform. The solution is based on React, Material UI, Express, PostgreSQL, Socket.io, AWS S3 and Stripe.
+## Explore
 
-Official website: https://vesperart.co </br></br>
-[Learn more about the project](https://vesperart.co/about) </br>
-[How it works (for artists and collectors)](https://vesperart.co/how_it_works)
+The bundled gallery contains 28 sample artworks and opens without waking the API. Start a live demo to create a temporary account and use the real Express/PostgreSQL workflows. Accounts expire after 24 hours; a later session creation prunes expired data. Uploads and comments can be visible to other visitors. Use non-sensitive test content only.
 
----
-## Quick demo :clapper:
-![Demo](https://github.com/msiric/vesper-art/assets/26199969/8a981c5a-c0a1-4510-a847-71ec95dcf8c0)
+Free-hosting limits: 50 active temporary accounts, 60 successful mutations per account, 2 MiB of stored images per account, bounded requests, and a maximum of 20 short-lived notification connections. New image uploads accept JPEG/PNG, at most 2 MB and 4 megapixels, and are resized/re-encoded. Payments, SMTP, external object storage and analytics writes are disabled.
 
+## Local development
 
-## Features :gift:
+Use Node 22.13+ in the Node 22 line and a separate PostgreSQL 16 database named `vesper_demo`.
 
-- **Custom authentication**: To ensure complete user privacy, custom authentication is implemented, without OAuth options, that supports auto-refreshing access tokens
-- **Artist/collector profile creation**: Users can set up unified profiles to both showcase and collect work on the platform
-- **Artwork management**: Artists have control over how their artwork is displayed and interacted with
-- **Licensing control**: Artists can define the types of licenses available for each piece of their artwork, including free, personal, and/or commercial licenses
-- **Artwork pricing**: Artists can set their own prices for their artwork licenses
-- **Notifications**: Users receive real-time updates whenever there is relevant information concerning them
-- **Dashboard**: Users can track their progress and sales/purchases through their dashboard
-- **Secure payment processing**: Stripe is used for all transactions, ensuring secure processing, fee management and delivery of funds
-- **Artwork interaction**: Collectors can browse and explore various artworks from different artists and favorite, comment on, and purchase/download their work
-- **Artwork collection**: Collectors can admire their collection in a gallery view, complete with a slideshow feature
-- **License verification**: A robust system is in place for users to verify the authenticity of every purchased/downloaded artwork
-- **Multi-device usage**: Collectors can download their purchased artworks on multiple devices without DRM restrictions
-- **License management**: Detailed information about every license can be accessed and verified using the platform's verifier system
-- And [much more](https://vesperart.co/how_it_works)
+1. Copy `.env.example` to `.env`. Set the local database URL and generate three independent secrets of at least 32 random characters.
+2. Run `npm ci` and `npm --prefix client ci`.
+3. Run `npm run build && npm run migrate`.
+4. Run `npm start` and `npm --prefix client start` in separate terminals.
+5. Open http://127.0.0.1:5175 (API port 5075).
 
-  
-## Installation :hammer_and_wrench:
+`npm test` runs real PostgreSQL integration tests and Pages proxy checks, using only a local demo database. `node scripts/migration-roundtrip.cjs` creates and removes its own local test database to verify migration up/down/up. `npm run build:client` builds the frontend. Schema synchronization and the old destructive fixture runner are disabled.
 
-### 1. Clone the repository
+## Hosting
 
-```bash
-git clone https://github.com/msiric/vesper-demo
-```
+Cloudflare Pages hosts the React/Vite frontend and bundled sample images. A same-origin Pages Function forwards live API requests to a Render Free service. Neon Free provides a separate PostgreSQL database, including bounded temporary image storage. Socket.IO uses HTTP polling with authenticated, three-minute connections that close when the page is hidden.
 
-### 2. Install dependencies
+The older Material UI interface is retained. CRA, obsolete server dependencies, broken S3 links and production payment/email requirements have been replaced for the public demo. The original project also explored Stripe Connect, commercial licensing and sales dashboards; those real-commerce integrations are intentionally disabled here.
 
-```bash
-yarn && cd client && yarn && cd ..
-```
+## Original walkthrough
 
-### 3. Manage .env files
+![Original demo](https://github.com/msiric/vesper-art/assets/26199969/8a981c5a-c0a1-4510-a847-71ec95dcf8c0)
 
-The application uses five different environments: development, production, staging, seeding and testing.
-To run the application locally, create a `.env.development` file using the `.env.example` file as a reference with your own configuration.
-
-### 4. Run the application
-
-To run the application, VS Code's run tasks are used: Terminal -> Run task -> Run *name of task* (e.g. Run dev).
-To enable payments, make sure to [set up Stripe](https://stripe.com/docs/stripe-cli) and logging in before running the app.
-Additionally, ensure [Fly CLI](https://fly.io/docs/flyctl/) is installed locally to proxy the requests.
-
-### 5. Run the tests
-
-To run the E2E tests on the test DB:
-```bash
-yarn test
-```
-There are additional options specified in the `package.json` file that allow for file watching, test coverage and fresh DB wipe with test assets being uploaded to S3 for a clean slate test run.
-
-### 6. Seed the DB
-
-```bash
-yarn seed:dev-db OR yarn seed:test-db
-```
-Again, additional options are available for finer control such as: `seed-test-db-entities` and `seed:test-db-s3`
-
-### 6. Deployment
-
-Deployments are automatically taken care of using GitHub actions. 
-On every pull request merge, the app is deployed to the staging environment and on every GitHub release, the app is deployed to production.
-
-## Contribution :busts_in_silhouette:
-
-Issues and PRs are welcomed.
-
-### Like what you see? Give the repo a star! :star:
+ISC license.

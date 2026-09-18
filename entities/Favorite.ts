@@ -19,13 +19,13 @@ export class Favorite extends BaseEntity {
   @Generated("increment")
   serial: number;
 
-  @ManyToOne(() => User, (user) => user.favorites)
+  @ManyToOne(() => User, (user) => user.favorites, { onDelete: 'CASCADE' })
   owner: User;
 
   @Column()
   ownerId: string;
 
-  @ManyToOne(() => Artwork, (artwork) => artwork.favorites)
+  @ManyToOne(() => Artwork, (artwork) => artwork.favorites, { onDelete: 'CASCADE' })
   artwork: Artwork;
 
   @Column()

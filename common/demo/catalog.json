@@ -1,0 +1,1349 @@
+{
+  "data": {
+    "id": "b8cee45d-97aa-4015-824c-954d45b8829d",
+    "email": "sample-artist@example.invalid",
+    "fullName": "Sample Artist",
+    "name": "sample_artist",
+    "password": "demo-login-disabled",
+    "avatarId": "baeefdcb-b918-4b7e-b617-01838e96b6d0",
+    "description": "Fictional artist for the Vesper portfolio demo.",
+    "country": "HR",
+    "displayFavorites": true,
+    "resetToken": "",
+    "jwtVersion": 0,
+    "stripeId": "",
+    "verificationToken": "",
+    "verified": true,
+    "active": true,
+    "generated": true
+  },
+  "avatar": {
+    "data": {
+      "id": "baeefdcb-b918-4b7e-b617-01838e96b6d0",
+      "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+      "source": "/demo-assets/avatars/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636386.png",
+      "orientation": "portrait",
+      "dominant": "#B9B9B9",
+      "height": "1280",
+      "width": "898"
+    }
+  },
+  "artwork": [
+    {
+      "data": {
+        "id": "3d8cd2bd-e9ce-4c7c-86ac-2f47eb2ba647",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "1e57d9b4-22b1-46eb-8717-2b572fdc2c5c",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "1e57d9b4-22b1-46eb-8717-2b572fdc2c5c",
+          "artworkId": "3d8cd2bd-e9ce-4c7c-86ac-2f47eb2ba647",
+          "title": "Black Tree of Harmony",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "6e36f07c-b832-4fde-8c57-1e5290deb39b",
+          "mediaId": "455c966a-7e8d-4cea-a238-f5bec57bd7cb",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "455c966a-7e8d-4cea-a238-f5bec57bd7cb",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636387.jpg",
+            "orientation": "square",
+            "dominant": "#8FA891",
+            "height": "1920",
+            "width": "1920"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "6e36f07c-b832-4fde-8c57-1e5290deb39b",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636387.jpg",
+            "orientation": "square",
+            "dominant": "#8FA891",
+            "height": "640",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "c7ba22cf-a37b-4979-a87f-0416614908bf",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "c24f63fe-a6e0-4b19-b944-4cd1579e0f12",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "c24f63fe-a6e0-4b19-b944-4cd1579e0f12",
+          "artworkId": "c7ba22cf-a37b-4979-a87f-0416614908bf",
+          "title": "the connection",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "612e2deb-62cc-43ba-a22f-13225df0afe3",
+          "mediaId": "48f52d98-74c0-4a21-a8c5-a0054bad4a0f",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "48f52d98-74c0-4a21-a8c5-a0054bad4a0f",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636388.jpg",
+            "orientation": "square",
+            "dominant": "#DAD9DB",
+            "height": "1920",
+            "width": "1920"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "612e2deb-62cc-43ba-a22f-13225df0afe3",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636388.jpg",
+            "orientation": "square",
+            "dominant": "#DAD9DB",
+            "height": "640",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "dc8f63c6-178b-4b8c-9190-cf87f619cc15",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "40bcb96e-c15d-4384-b705-44c66ee4cdeb",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "40bcb96e-c15d-4384-b705-44c66ee4cdeb",
+          "artworkId": "dc8f63c6-178b-4b8c-9190-cf87f619cc15",
+          "title": "Triumph",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "d01aceab-84dc-4998-801f-06b905e13c79",
+          "mediaId": "bdf985fe-395b-4d8b-a4d3-0058bdda17f2",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "bdf985fe-395b-4d8b-a4d3-0058bdda17f2",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636389.png",
+            "orientation": "square",
+            "dominant": "#E37324",
+            "height": "1920",
+            "width": "1920"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "d01aceab-84dc-4998-801f-06b905e13c79",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636389.png",
+            "orientation": "square",
+            "dominant": "#E37324",
+            "height": "640",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "3ce8e079-8f49-4bb9-8719-bb2078c049b4",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "c67ee32e-6711-49d3-a1b9-1712b8d23dca",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "c67ee32e-6711-49d3-a1b9-1712b8d23dca",
+          "artworkId": "3ce8e079-8f49-4bb9-8719-bb2078c049b4",
+          "title": "The Man Who Deceived the Gods",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "cebcff14-1f4f-42c9-ad1d-2cc8f5269b73",
+          "mediaId": "7c304ccc-4e8d-49c7-95d9-3739cb79b02b",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "7c304ccc-4e8d-49c7-95d9-3739cb79b02b",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636390.png",
+            "orientation": "landscape",
+            "dominant": "#040404",
+            "height": "1352",
+            "width": "1920"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "cebcff14-1f4f-42c9-ad1d-2cc8f5269b73",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636390.png",
+            "orientation": "landscape",
+            "dominant": "#040404",
+            "height": "451",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "5a01ca29-3283-4c47-92ab-cc7f4c68a199",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "9c194915-896e-4125-923a-713b79a81934",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "9c194915-896e-4125-923a-713b79a81934",
+          "artworkId": "5a01ca29-3283-4c47-92ab-cc7f4c68a199",
+          "title": "Wildflower",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "fce3e5c1-db81-4b0e-af61-c4d934e36ad7",
+          "mediaId": "b201ae49-2fb5-47b6-98f9-892d0556f04b",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "b201ae49-2fb5-47b6-98f9-892d0556f04b",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636391.jpg",
+            "orientation": "portrait",
+            "dominant": "#C9A08B",
+            "height": "1920",
+            "width": "1491"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "fce3e5c1-db81-4b0e-af61-c4d934e36ad7",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636391.jpg",
+            "orientation": "portrait",
+            "dominant": "#C9A08B",
+            "height": "824",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "411652af-5527-4ee8-9fef-3d39658c8325",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "79caf8d9-a952-45d3-a67c-49c1c93a3e3f",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "79caf8d9-a952-45d3-a67c-49c1c93a3e3f",
+          "artworkId": "411652af-5527-4ee8-9fef-3d39658c8325",
+          "title": "nightmare",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "53a8a293-13c9-4f55-a801-0e88a63f73e8",
+          "mediaId": "2e79a464-735c-401a-9d5c-f88c8d68f25a",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "2e79a464-735c-401a-9d5c-f88c8d68f25a",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636392.jpg",
+            "orientation": "landscape",
+            "dominant": "#21616B",
+            "height": "1175",
+            "width": "2000"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "53a8a293-13c9-4f55-a801-0e88a63f73e8",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636392.jpg",
+            "orientation": "landscape",
+            "dominant": "#21616B",
+            "height": "376",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "7764915d-cafb-41af-89ba-1af19afab5d0",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "3e6541f1-f5c2-4bf1-a8fd-cc21fda73ff6",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "3e6541f1-f5c2-4bf1-a8fd-cc21fda73ff6",
+          "artworkId": "7764915d-cafb-41af-89ba-1af19afab5d0",
+          "title": "Hellhound",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "f4f351ee-888b-41ef-881c-0b7d8296519a",
+          "mediaId": "e1423965-0290-4f49-b6df-440ba808910d",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "e1423965-0290-4f49-b6df-440ba808910d",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636393.png",
+            "orientation": "portrait",
+            "dominant": "#ADDCDE",
+            "height": "1920",
+            "width": "1761"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "f4f351ee-888b-41ef-881c-0b7d8296519a",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636393.png",
+            "orientation": "portrait",
+            "dominant": "#ADDCDE",
+            "height": "698",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "95068307-ae00-4a1e-a0f6-cf35dd8e4ee2",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "86215789-c4c4-4d7d-bef9-0a00d0bb9ed4",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "86215789-c4c4-4d7d-bef9-0a00d0bb9ed4",
+          "artworkId": "95068307-ae00-4a1e-a0f6-cf35dd8e4ee2",
+          "title": "A Magical Night",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "7e99e2dd-2e62-40b5-a2ff-eb1fbeff741d",
+          "mediaId": "47de7c30-bb65-40b2-bbee-b3c917db3e12",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "47de7c30-bb65-40b2-bbee-b3c917db3e12",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636394.jpg",
+            "orientation": "landscape",
+            "dominant": "#27221D",
+            "height": "1496",
+            "width": "1920"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "7e99e2dd-2e62-40b5-a2ff-eb1fbeff741d",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636394.jpg",
+            "orientation": "landscape",
+            "dominant": "#27221D",
+            "height": "499",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "790c0af8-7b8f-4308-a59a-4009778867d8",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "68f50108-dc9a-4e42-8541-af12545486aa",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "68f50108-dc9a-4e42-8541-af12545486aa",
+          "artworkId": "790c0af8-7b8f-4308-a59a-4009778867d8",
+          "title": "Selfie",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "d71fae9b-4af8-49ad-800f-f83bd0b07316",
+          "mediaId": "489779e6-7969-46eb-b452-e010eb106440",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "489779e6-7969-46eb-b452-e010eb106440",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636395.png",
+            "orientation": "square",
+            "dominant": "#E3C3DB",
+            "height": "1920",
+            "width": "1920"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "d71fae9b-4af8-49ad-800f-f83bd0b07316",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636395.png",
+            "orientation": "square",
+            "dominant": "#E3C3DB",
+            "height": "640",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "59006726-fbb7-43f4-b608-cb3b063845ed",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "b61f811c-9dd0-41a7-bbb2-4a5da6f1fc2e",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "b61f811c-9dd0-41a7-bbb2-4a5da6f1fc2e",
+          "artworkId": "59006726-fbb7-43f4-b608-cb3b063845ed",
+          "title": "PROGRESSION",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "6dbe2a54-b09f-46af-adf3-2e544a2b4f48",
+          "mediaId": "c4cc43f7-e7aa-4033-be52-db38004e8a71",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "c4cc43f7-e7aa-4033-be52-db38004e8a71",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636396.jpg",
+            "orientation": "square",
+            "dominant": "#0C060C",
+            "height": "1920",
+            "width": "1920"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "6dbe2a54-b09f-46af-adf3-2e544a2b4f48",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636396.jpg",
+            "orientation": "square",
+            "dominant": "#0C060C",
+            "height": "640",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "53a6be70-7b00-4091-9227-07f9f7c5ac07",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "5a1e6df9-f032-4da3-91a4-9b18e4f4ecba",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "5a1e6df9-f032-4da3-91a4-9b18e4f4ecba",
+          "artworkId": "53a6be70-7b00-4091-9227-07f9f7c5ac07",
+          "title": "modern home",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "74139ee3-110d-4510-be07-7c50f1b34dec",
+          "mediaId": "92f84b27-0954-4b15-a515-f3b4467fa55b",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "92f84b27-0954-4b15-a515-f3b4467fa55b",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636397.jpg",
+            "orientation": "landscape",
+            "dominant": "#CFCFD2",
+            "height": "1860",
+            "width": "3300"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "74139ee3-110d-4510-be07-7c50f1b34dec",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636397.jpg",
+            "orientation": "landscape",
+            "dominant": "#CFCFD2",
+            "height": "361",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "4c27c324-0c06-41ec-88dd-0375a04a87a1",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "611ebf72-f604-4438-94cf-db5feae71832",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "611ebf72-f604-4438-94cf-db5feae71832",
+          "artworkId": "4c27c324-0c06-41ec-88dd-0375a04a87a1",
+          "title": "GEISHA",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "af21f97a-5e69-4670-ada1-8ba341429c10",
+          "mediaId": "98b0f6cb-78ce-401e-ac06-e2bf692ff395",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "98b0f6cb-78ce-401e-ac06-e2bf692ff395",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636398.png",
+            "orientation": "portrait",
+            "dominant": "#040404",
+            "height": "1920",
+            "width": "1389"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "af21f97a-5e69-4670-ada1-8ba341429c10",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636398.png",
+            "orientation": "portrait",
+            "dominant": "#040404",
+            "height": "885",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "959eb8e6-9f98-41d5-9253-07afc31f01b6",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "36e83d51-5afd-4f3c-a282-53332998d8a8",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "36e83d51-5afd-4f3c-a282-53332998d8a8",
+          "artworkId": "959eb8e6-9f98-41d5-9253-07afc31f01b6",
+          "title": "moonlight howl",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "b111084e-6fdc-480a-b918-6e52a8f24bbe",
+          "mediaId": "67b50e33-fb9d-4c0e-952d-ba395f734561",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "67b50e33-fb9d-4c0e-952d-ba395f734561",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636399.jpg",
+            "orientation": "landscape",
+            "dominant": "#083B82",
+            "height": "2763",
+            "width": "4919"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "b111084e-6fdc-480a-b918-6e52a8f24bbe",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636399.jpg",
+            "orientation": "landscape",
+            "dominant": "#083B82",
+            "height": "359",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "c25d5252-066e-42b6-bf40-294d9a9c881f",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "2cc4dc1a-9982-4f76-851f-542079fb15de",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "2cc4dc1a-9982-4f76-851f-542079fb15de",
+          "artworkId": "c25d5252-066e-42b6-bf40-294d9a9c881f",
+          "title": "amalgamation",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "5c62da89-ad6e-4a4c-8af7-69aeb74a736b",
+          "mediaId": "c28c63bc-36a7-4cf1-b483-b33af8670541",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "c28c63bc-36a7-4cf1-b483-b33af8670541",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636400.jpg",
+            "orientation": "portrait",
+            "dominant": "#E5DAD2",
+            "height": "1920",
+            "width": "1360"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "5c62da89-ad6e-4a4c-8af7-69aeb74a736b",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636400.jpg",
+            "orientation": "portrait",
+            "dominant": "#E5DAD2",
+            "height": "904",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "cdfef4d0-ae1a-45cf-ac89-780bd230596a",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "ddde2b7d-99c9-4b3d-b1c1-85c3a6ce3207",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "ddde2b7d-99c9-4b3d-b1c1-85c3a6ce3207",
+          "artworkId": "cdfef4d0-ae1a-45cf-ac89-780bd230596a",
+          "title": "Halloween",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "24d0fab3-13d5-4f38-b150-612f7f5cb429",
+          "mediaId": "e825a317-7342-40b0-8557-981d02627053",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "e825a317-7342-40b0-8557-981d02627053",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636401.jpg",
+            "orientation": "square",
+            "dominant": "#261E1C",
+            "height": "1920",
+            "width": "1920"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "24d0fab3-13d5-4f38-b150-612f7f5cb429",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636401.jpg",
+            "orientation": "square",
+            "dominant": "#261E1C",
+            "height": "640",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "6c8eceba-a4b5-4be5-86ba-a7055a536cd7",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "e1bd2af2-4e39-424e-9e84-068c6666757d",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "e1bd2af2-4e39-424e-9e84-068c6666757d",
+          "artworkId": "6c8eceba-a4b5-4be5-86ba-a7055a536cd7",
+          "title": "Good catch",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "46117f9f-9355-4504-adea-078d9f2ca479",
+          "mediaId": "e6d7aa27-a26b-4735-bb43-69673af295d4",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "e6d7aa27-a26b-4735-bb43-69673af295d4",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636402.png",
+            "orientation": "portrait",
+            "dominant": "#227593",
+            "height": "1920",
+            "width": "1281"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "46117f9f-9355-4504-adea-078d9f2ca479",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636402.png",
+            "orientation": "portrait",
+            "dominant": "#227593",
+            "height": "959",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "79243fb0-31ee-4f35-8cf9-2e8dbc13d6d6",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "31bd730f-a4ff-45c4-9bba-fbcbb5ec1033",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "31bd730f-a4ff-45c4-9bba-fbcbb5ec1033",
+          "artworkId": "79243fb0-31ee-4f35-8cf9-2e8dbc13d6d6",
+          "title": "moonhole",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "02df27d1-af8a-4f89-b82e-697c5c21576b",
+          "mediaId": "161e2060-d617-42bb-ade3-6ac4efde548b",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "161e2060-d617-42bb-ade3-6ac4efde548b",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636403.jpg",
+            "orientation": "square",
+            "dominant": "#040505",
+            "height": "1920",
+            "width": "1920"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "02df27d1-af8a-4f89-b82e-697c5c21576b",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636403.jpg",
+            "orientation": "square",
+            "dominant": "#040505",
+            "height": "640",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "2e7b09a1-9c56-427f-8acc-6c1e47badeb9",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "30f6e310-1a69-4b92-83a8-8c57df688398",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "30f6e310-1a69-4b92-83a8-8c57df688398",
+          "artworkId": "2e7b09a1-9c56-427f-8acc-6c1e47badeb9",
+          "title": "Sunset",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "8a6e3615-cd12-4972-9ff0-497096875bc0",
+          "mediaId": "62c7bd5d-3801-4201-873f-4c904a82a866",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "62c7bd5d-3801-4201-873f-4c904a82a866",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636404.jpg",
+            "orientation": "portrait",
+            "dominant": "#FB6904",
+            "height": "1920",
+            "width": "1357"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "8a6e3615-cd12-4972-9ff0-497096875bc0",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636404.jpg",
+            "orientation": "portrait",
+            "dominant": "#FB6904",
+            "height": "906",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "7db54547-e3c7-4c32-8d91-f0fc3883cf4d",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "ac1808b4-1a3f-4a60-b422-56ea42bc59bd",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "ac1808b4-1a3f-4a60-b422-56ea42bc59bd",
+          "artworkId": "7db54547-e3c7-4c32-8d91-f0fc3883cf4d",
+          "title": "Beacon of Light",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "84ec58b7-b195-4517-84b4-a5b6a1d52be5",
+          "mediaId": "c2feb3c2-421d-47e9-80dc-96e7ef275e80",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "c2feb3c2-421d-47e9-80dc-96e7ef275e80",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636405.jpg",
+            "orientation": "landscape",
+            "dominant": "#2B323A",
+            "height": "1875",
+            "width": "3000"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "84ec58b7-b195-4517-84b4-a5b6a1d52be5",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636405.jpg",
+            "orientation": "landscape",
+            "dominant": "#2B323A",
+            "height": "400",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "61072ddf-2f16-4f01-884d-07de4fa65fa8",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "2b47a770-d15d-4d8e-be7d-b05c1f24d120",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "2b47a770-d15d-4d8e-be7d-b05c1f24d120",
+          "artworkId": "61072ddf-2f16-4f01-884d-07de4fa65fa8",
+          "title": "MYSTIC NIGHT",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "1a3cefd4-e2b2-45a0-9147-02a9f85a14db",
+          "mediaId": "492e2591-5361-4c3c-90f3-9d262d1125c9",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "492e2591-5361-4c3c-90f3-9d262d1125c9",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636406.jpg",
+            "orientation": "portrait",
+            "dominant": "#494E58",
+            "height": "1920",
+            "width": "1381"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "1a3cefd4-e2b2-45a0-9147-02a9f85a14db",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636406.jpg",
+            "orientation": "portrait",
+            "dominant": "#494E58",
+            "height": "890",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "d26611dd-2072-48f9-80a6-4075aeb93279",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "b41292a4-4da0-4ffb-b153-77ff4d25e018",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "b41292a4-4da0-4ffb-b153-77ff4d25e018",
+          "artworkId": "d26611dd-2072-48f9-80a6-4075aeb93279",
+          "title": "monke",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "7cb2c03d-35f2-4f8c-9638-f6d4e97d0936",
+          "mediaId": "384327aa-8d4c-4372-ae87-b8720ee26b5c",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "384327aa-8d4c-4372-ae87-b8720ee26b5c",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636407.png",
+            "orientation": "landscape",
+            "dominant": "#367CBA",
+            "height": "1887",
+            "width": "1920"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "7cb2c03d-35f2-4f8c-9638-f6d4e97d0936",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636407.png",
+            "orientation": "landscape",
+            "dominant": "#367CBA",
+            "height": "629",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "80dfc5ae-f72f-439a-b353-5358dfcd7378",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "3cf3a632-b278-4822-a2df-4a993c861079",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "3cf3a632-b278-4822-a2df-4a993c861079",
+          "artworkId": "80dfc5ae-f72f-439a-b353-5358dfcd7378",
+          "title": "Daydreaming",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "e8511db9-2d8b-49ea-81fb-e793cdbbd013",
+          "mediaId": "613800e0-2253-4a7c-9eef-5222b08ee499",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "613800e0-2253-4a7c-9eef-5222b08ee499",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636408.jpg",
+            "orientation": "landscape",
+            "dominant": "#040404",
+            "height": "1224",
+            "width": "1920"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "e8511db9-2d8b-49ea-81fb-e793cdbbd013",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636408.jpg",
+            "orientation": "landscape",
+            "dominant": "#040404",
+            "height": "408",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "eab7487b-a654-4942-824f-5c972e2084af",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "88635576-881d-4757-a112-f24d77d07914",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "88635576-881d-4757-a112-f24d77d07914",
+          "artworkId": "eab7487b-a654-4942-824f-5c972e2084af",
+          "title": "Colourful",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "1d1e2485-1686-4192-a90e-41656f3bb081",
+          "mediaId": "0e0843ee-c608-4fd3-bd70-50532fce37f9",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "0e0843ee-c608-4fd3-bd70-50532fce37f9",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636409.jpg",
+            "orientation": "portrait",
+            "dominant": "#3A3939",
+            "height": "1920",
+            "width": "1535"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "1d1e2485-1686-4192-a90e-41656f3bb081",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636409.jpg",
+            "orientation": "portrait",
+            "dominant": "#3A3939",
+            "height": "801",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "4ff06eeb-93a5-4054-8d13-4be2e8ef4d12",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "f8769551-a7f4-47dc-a70e-1bc8c330028c",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "f8769551-a7f4-47dc-a70e-1bc8c330028c",
+          "artworkId": "4ff06eeb-93a5-4054-8d13-4be2e8ef4d12",
+          "title": "Independence",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "7a631d7b-f6c3-45b6-bd32-d1a448349ed5",
+          "mediaId": "cf31009e-f40c-49fe-8da3-5f3cfa2ac413",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "cf31009e-f40c-49fe-8da3-5f3cfa2ac413",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636410.png",
+            "orientation": "portrait",
+            "dominant": "#F53839",
+            "height": "1920",
+            "width": "1435"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "7a631d7b-f6c3-45b6-bd32-d1a448349ed5",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636410.png",
+            "orientation": "portrait",
+            "dominant": "#F53839",
+            "height": "856",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "945b4746-8b8f-4d4c-8fbd-144578c4ac6f",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "c9c66eb5-a93d-4380-bbb8-f60eb73d59e8",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "c9c66eb5-a93d-4380-bbb8-f60eb73d59e8",
+          "artworkId": "945b4746-8b8f-4d4c-8fbd-144578c4ac6f",
+          "title": "pspspspspspspspspspsps",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "3184c290-2371-49be-876f-d2b43e5273b1",
+          "mediaId": "4abe10e7-13df-43c7-ac2b-305de5d8618e",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "4abe10e7-13df-43c7-ac2b-305de5d8618e",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636411.jpg",
+            "orientation": "square",
+            "dominant": "#D6A34F",
+            "height": "1920",
+            "width": "1920"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "3184c290-2371-49be-876f-d2b43e5273b1",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636411.jpg",
+            "orientation": "square",
+            "dominant": "#D6A34F",
+            "height": "640",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "62c9057f-6521-4756-9f8e-8336307ea660",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "1921bfb5-c34e-48a7-b7c2-679d70f4902e",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "1921bfb5-c34e-48a7-b7c2-679d70f4902e",
+          "artworkId": "62c9057f-6521-4756-9f8e-8336307ea660",
+          "title": "Revelation",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "d8f7fe05-a159-4782-af92-e71c1f36e30f",
+          "mediaId": "ded66b64-1ece-4a64-81d5-43d614114fac",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "ded66b64-1ece-4a64-81d5-43d614114fac",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636412.jpg",
+            "orientation": "landscape",
+            "dominant": "#36154B",
+            "height": "2065",
+            "width": "3840"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "d8f7fe05-a159-4782-af92-e71c1f36e30f",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636412.jpg",
+            "orientation": "landscape",
+            "dominant": "#36154B",
+            "height": "344",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "9a03a1eb-ec63-4bb0-809d-c29156dbe251",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "808e0c35-7a1e-4bea-bc5c-7ea1ee7bfe8e",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "808e0c35-7a1e-4bea-bc5c-7ea1ee7bfe8e",
+          "artworkId": "9a03a1eb-ec63-4bb0-809d-c29156dbe251",
+          "title": "I want you",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "d27d59be-fd54-48d2-ba12-d2eb981d29d8",
+          "mediaId": "b6ff8fab-780e-464c-8e7e-b54352d6024f",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "b6ff8fab-780e-464c-8e7e-b54352d6024f",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636413.png",
+            "orientation": "portrait",
+            "dominant": "#FB3434",
+            "height": "1920",
+            "width": "1915"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "d27d59be-fd54-48d2-ba12-d2eb981d29d8",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636413.png",
+            "orientation": "portrait",
+            "dominant": "#FB3434",
+            "height": "642",
+            "width": "640"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "id": "a52bcbe2-c64f-4502-8fa9-f38e19a1a939",
+        "ownerId": "b8cee45d-97aa-4015-824c-954d45b8829d",
+        "currentId": "0ef4fecc-0d4d-486b-9062-2dfb7039f316",
+        "active": true,
+        "visibility": "visible",
+        "generated": true
+      },
+      "version": {
+        "data": {
+          "id": "0ef4fecc-0d4d-486b-9062-2dfb7039f316",
+          "artworkId": "a52bcbe2-c64f-4502-8fa9-f38e19a1a939",
+          "title": "swimming with the fishes",
+          "description": "",
+          "availability": "available",
+          "type": "free",
+          "license": "personal",
+          "use": "separate",
+          "personal": "0",
+          "commercial": "0",
+          "coverId": "b1483547-d00d-46d6-aa43-97d3e3fdc7f8",
+          "mediaId": "61767d53-6edc-4b96-bf86-4a134fe3bfd1",
+          "generated": true
+        },
+        "media": {
+          "data": {
+            "id": "61767d53-6edc-4b96-bf86-4a134fe3bfd1",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636414.png",
+            "orientation": "landscape",
+            "dominant": "#040404",
+            "height": "1224",
+            "width": "1920"
+          }
+        },
+        "cover": {
+          "data": {
+            "id": "b1483547-d00d-46d6-aa43-97d3e3fdc7f8",
+            "source": "/demo-assets/media/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636414.png",
+            "orientation": "landscape",
+            "dominant": "#040404",
+            "height": "408",
+            "width": "640"
+          }
+        }
+      }
+    }
+  ]
+}
