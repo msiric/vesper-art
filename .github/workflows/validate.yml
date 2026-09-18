@@ -63,5 +63,6 @@ jobs:
           node-version: '22.23.2'
       - name: Install and build frontend
         run: |
+          npm ci
           npm --prefix client ci
           npm --prefix client run build
