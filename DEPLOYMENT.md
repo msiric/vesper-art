@@ -14,7 +14,7 @@ Public HTTPS verification passed for distinct temporary accounts, ownership, fav
 
 ## Deploy
 
-Use `codex/restore-public-demo` and `render.yaml` in the exact new Render project above. Select **Free**, Frankfurt, auto-deploy Off, health check `/healthz`. Build `npm ci --include=dev && npm run build && npm prune --omit=dev`; start `npm start`. The startup runs explicit migrations and a repeatable catalog seed before accepting traffic. No disk, cron, managed Render database or background worker is needed.
+Use `master` and `render.yaml` in the exact new Render project above. Select **Free**, Frankfurt, auto-deploy Off, health check `/healthz`. Build `npm ci --include=dev && npm run build && npm prune --omit=dev`; start `npm start`. The startup runs explicit migrations and a repeatable catalog seed before accepting traffic. No disk, cron, managed Render database or background worker is needed.
 
 Set `DEMO_MODE=true`, `NODE_ENV=production`, `NODE_VERSION=22.23.2`, `CLIENT_URI=https://vesper-art-demo.pages.dev`, the isolated Neon connection string, its exact hostname in `DATABASE_HOST_EXPECTED`, and independent access/refresh/proxy secrets. The database guard rejects other names/hosts and verifies TLS. The endpoint is capped at 0.25 CU and suspends when idle.
 
@@ -42,7 +42,7 @@ CI uses an isolated disposable PostgreSQL service on a public standard GitHub ru
 
 ## Source and release branches
 
-The restoration is merged into GitHub `master`. Render currently follows the retained `codex/restore-public-demo` branch with auto-deploy Off; merging source does not deploy it. For a future backend release from the default branch, deliberately update the existing demo service's source branch and `render.yaml` to `master`, then manually deploy a tested commit. Do not create another service.
+The restoration is merged into GitHub `master`. The existing Render service and `render.yaml` now both select `master`; auto-deploy and PR previews remain Off. Manually deploy a tested commit from this branch. Merging source alone does not deploy it. The old restoration branch is retained for history, and no duplicate service is needed. The branch alignment changed the source selector, not the currently running API version.
 
 Pages uses Direct Upload and its production label is **`main`**, independently of the source checkout. Another `--branch` can create only a preview. Verify the root public URL and its asset names after upload. Markdown-only updates require no hosting deployment.
 
