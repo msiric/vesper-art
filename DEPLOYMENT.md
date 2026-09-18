@@ -1,11 +1,13 @@
 # Isolated portfolio deployment
 
-Status: implementation verified locally; public deployment in progress.
+Live demo: **https://vesper-art-demo.pages.dev** (verified 18 September 2026).
+
+Public HTTPS verification passed for distinct temporary accounts, ownership, favorites, comments, simulated receipts, collection, JPEG upload/download, authenticated polling, secure cookies, refresh, logout revocation and direct API rejection. The sample-to-live gallery race has a regression test and the deployed gallery contains unique artworks.
 
 | Resource | Parent | App resource |
 | --- | --- | --- |
 | Cloudflare Pages Free | `msiric-public-demos`, account `f8fd075624b85e729e46d15d374e59ed` | `vesper-art-demo` |
-| Render Free | `msiric-public-demos`, workspace `tea-damk99ajnfac73b07010` | project `prj-damk9v8u01pc73aj9l50`, Demo environment `evm-damk9v8u01pc73aj9l5g` |
+| Render Free | `msiric-public-demos`, workspace `tea-damk99ajnfac73b07010` | project `prj-damk9v8u01pc73aj9l50`, Demo environment `evm-damk9v8u01pc73aj9l5g`; service `srv-damnjj7f3r2c73al738g` |
 | Neon Free | `msiric-public-demos`, org `org-damp-glade-19263338` | project `morning-cherry-43523697`, database `vesper_demo`, PostgreSQL 16, Frankfurt |
 
 ## Deploy
@@ -30,4 +32,6 @@ Target recurring cost is $0 within free allowances. The three demos share Render
 
 Local verification: API integration tests cover ownership, uploads, quotas, simulated licensing, refresh/logout including exhausted accounts, expiry cleanup and schema drift. The migration roundtrip and Pages proxy tests pass. Browser checks cover sample and live artwork, favorites, comments and simulated order creation. Production audits reported zero known vulnerabilities in backend and frontend on 18 September 2026. Authenticated polling and logout disconnection were verified against the running API.
 
-Before advertising the live URL, verify the deployed sample/deep links, session start, comment/favorite, upload, simulated receipt, refresh/logout, polling, cookie security, CSP and direct Render API rejection. To roll back, redeploy a tested prior commit; never drop/reseed as a startup operation.
+After changing the deployment, recheck the sample/deep links, session start, comment/favorite, upload, simulated receipt, refresh/logout, polling, cookie security, CSP and direct Render API rejection. To roll back, redeploy a tested prior commit; never drop/reseed as a startup operation.
+
+CI uses an isolated disposable PostgreSQL service on a public standard GitHub runner, with no production secrets or cloud deployment permissions. The obsolete Railway staging/tag deployment workflows were removed so repository updates cannot redeploy the retired infrastructure. Hosting deployment remains manual.
