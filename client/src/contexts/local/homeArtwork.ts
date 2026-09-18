@@ -33,8 +33,12 @@ export const initialState = {
 
 const initState = () => ({ ...initialState });
 
-const initActions = (set, get) => ({
+const initActions = (set, get) => {
+  let generation = 0;
+  return ({
   fetchArtwork: async () => {
+    if (get().artwork.loading || get().artwork.fetching) return;
+    const requestGeneration = generation;
     try {
       set((state) => ({
         ...state,
@@ -52,6 +56,7 @@ const initActions = (set, get) => ({
         cursor: artwork.cursor,
         limit: artwork.limit,
       });
+      if (requestGeneration !== generation) return;
       set((state) => ({
         ...state,
         artwork: {
@@ -66,6 +71,7 @@ const initActions = (set, get) => ({
         },
       }));
     } catch (err) {
+      if (requestGeneration !== generation) return;
       set((state) => ({
         ...state,
         artwork: {
@@ -99,9 +105,11 @@ const initActions = (set, get) => ({
     }));
   },
   resetArtwork: () => {
+    generation += 1;
     set({ ...initialState });
   },
 });
+};
 
 export const useHomeArtwork = create((set, get) => ({
   ...initState(),

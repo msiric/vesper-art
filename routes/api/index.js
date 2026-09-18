@@ -26,7 +26,7 @@ router.use("/", checkout);
 router.use("/", search);
 
 router.use((req, res, next) => {
-  createError(statusCodes.internalError, errors.internalServerError.message);
+  next(createError(404, "Endpoint not found"));
 });
 
 router.use((err, req, res, next) => {

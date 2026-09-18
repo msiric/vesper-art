@@ -72,7 +72,7 @@ export const isValidUuid = (value) =>
   validateUuid(value) && validateVersion(value) === uuid.version;
 
 export const isPositiveInteger = (value) =>
-  value === "" || (parseInt(value) !== NaN && parseInt(value) > 0);
+  value === "" || (/^[1-9]\d*$/.test(String(value)) && Number(value) <= 40);
 
 export const isValidString = (value) => typeof value === "string";
 
@@ -85,13 +85,9 @@ export const isPastDate = (value) =>
     isAfter(new Date(value), new Date())); */
 
 export const sanitizePayload = (req, res, next) => {
-  try {
-    sanitizeParams(req, res, next);
-    sanitizeQuery(req, res, next);
-    sanitizeBody(req, res, next);
-  } catch (err) {
-    next(err);
-  }
+  sanitizeParams(req, res, next);
+  sanitizeQuery(req, res, next);
+  sanitizeBody(req, res, next);
 };
 
 export const sanitizeParams = (req, res, next) => {
@@ -101,7 +97,7 @@ export const sanitizeParams = (req, res, next) => {
 
 export const sanitizeQuery = (req, res, next) => {
   const isValid = sanitizeUrl(req.query, VALID_QUERIES);
-  if (isValid) req.query = sanitizeDates(sanitizeData(req.query));
+  if (isValid) req.query = { ...sanitizeDates(sanitizeData(req.query)), limit: Number(req.query.limit || 20) };
   else throw createError(...formatError(errors.routeQueryInvalid));
 };
 
@@ -288,22 +284,12 @@ export const formatTokenData = ({ user }) => {
   return { tokenPayload, userInfo };
 };
 
-export const verifyTokenValidity = (
-  publicToken,
-  privateToken,
-  shouldValidateExpiry = true
-) => {
+export const verifyTokenValidity = (publicToken, privateToken) => {
   try {
-    jwt.verify(publicToken, privateToken, {
-      ignoreExpiration: true,
-    });
+    return { data: jwt.verify(publicToken, privateToken, { algorithms: ['HS256'] }) };
   } catch (err) {
-    throw createError(...formatError(errors.forbiddenAccess));
+    throw createError(...formatError(err.name === 'TokenExpiredError' ? errors.notAuthenticated : errors.forbiddenAccess));
   }
-  const data = jwt.decode(publicToken);
-  if (shouldValidateExpiry && Date.now() >= data.exp * 1000)
-    throw createError(...formatError(errors.notAuthenticated));
-  return { data };
 };
 
 export const verifyVersionValidity = ({ data, foundUser, foundAccount }) => {

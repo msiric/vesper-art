@@ -22,13 +22,13 @@ export class View extends BaseEntity {
   @Column()
   ip: string;
 
-  @ManyToOne(() => User, (user) => user.views)
+  @ManyToOne(() => User, (user) => user.views, { onDelete: 'CASCADE' })
   owner: User;
 
   @Column({ nullable: true })
   ownerId: string;
 
-  @ManyToOne(() => Artwork, (artwork) => artwork.views)
+  @ManyToOne(() => Artwork, (artwork) => artwork.views, { onDelete: 'CASCADE' })
   artwork: Artwork;
 
   @Column()

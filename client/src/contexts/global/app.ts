@@ -12,13 +12,8 @@ const initState = () => ({
 });
 
 const initActions = (set, get) => ({
-  setApp: ({ loading, error, theme }) => {
-    set((state) => ({
-      ...state,
-      loading,
-      error,
-      theme,
-    }));
+  setApp: (updates) => {
+    set(updates);
   },
   resetApp: () => {
     set({ ...initialState });

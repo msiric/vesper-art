@@ -21,25 +21,25 @@ export class Review extends BaseEntity {
   @Generated("increment")
   serial: number;
 
-  @OneToOne(() => Order)
+  @OneToOne(() => Order, { onDelete: 'CASCADE' })
   order: Order;
 
   @Column()
   orderId: string;
 
-  @ManyToOne(() => Artwork, (artwork) => artwork.reviews)
+  @ManyToOne(() => Artwork, (artwork) => artwork.reviews, { onDelete: 'CASCADE' })
   artwork: Artwork;
 
   @Column()
   artworkId: string;
 
-  @ManyToOne(() => User, (user) => user.reviewsGiven)
+  @ManyToOne(() => User, (user) => user.reviewsGiven, { onDelete: 'CASCADE' })
   reviewer: User;
 
   @Column()
   reviewerId: string;
 
-  @ManyToOne(() => User, (user) => user.reviewsReceived)
+  @ManyToOne(() => User, (user) => user.reviewsReceived, { onDelete: 'CASCADE' })
   reviewee: User;
 
   @Column()

@@ -1,91 +1,19 @@
-#!/usr/bin/env node
+import 'dotenv/config';
+import http from 'node:http';
+import app from '../app';
+import socketApi from '../lib/socket';
+import { connectToDatabase } from '../utils/database';
+import { seedDemo } from '../utils/demo';
 
-/**
- * Module dependencies.
- */
-
-import debugLib from "debug";
-import http from "http";
-import app from "../app";
-import socketApi from "../lib/socket";
-
-const debug = debugLib("tst:server");
-const io = socketApi.io;
-
-/**
- * Get port from environment and store in Express.
- */
-
-const port = normalizePort(process.env.PORT || "5000");
-app.set("port", port);
-
-/**
- * Create HTTP server.
- */
-
-const server = http.Server(app);
-io.attach(server);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-
-server.listen(port, "0.0.0.0");
-server.on("error", onError);
-server.on("listening", onListening);
-
-/**
- * Normalize a port into a number, string, or false.
- */
-
-function normalizePort(val) {
-  const port = parseInt(val, 10);
-
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
-
-  if (port >= 0) {
-    // port number
-    return port;
-  }
-
-  return false;
-}
-
-/**
- * Event listener for HTTP server "error" event.
- */
-
-function onError(error) {
-  if (error.syscall !== "listen") {
-    throw error;
-  }
-
-  const bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
-
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case "EACCES":
-      console.error(bind + " requires elevated privileges");
-      process.exit(1);
-      break;
-    case "EADDRINUSE":
-      console.error(bind + " is already in use");
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
-}
-
-/**
- * Event listener for HTTP server "listening" event.
- */
-
-function onListening() {
-  const addr = server.address();
-  const bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
-  debug("Listening on " + bind);
-}
+(async () => {
+  const db = await connectToDatabase();
+  await db.runMigrations({transaction:'all'});
+  await seedDemo(db);
+  const server = http.createServer(app);
+  server.requestTimeout = 30000;
+  server.headersTimeout = 15000;
+  socketApi.io.attach(server);
+  server.listen(Number(process.env.PORT || 5075), '0.0.0.0', () => console.log('Vesper demo API is ready'));
+  const shutdown = () => { socketApi.io.close(); server.close(() => db.destroy().finally(() => process.exit(0))); setTimeout(() => process.exit(1),10000).unref(); };
+  process.once('SIGTERM',shutdown); process.once('SIGINT',shutdown);
+})().catch(error => { console.error('Vesper startup failed:', error.message); process.exitCode=1; });

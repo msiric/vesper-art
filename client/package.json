@@ -2,7 +2,6 @@
   "name": "client3",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:5000",
   "dependencies": {
     "@hookform/resolvers": "^1.0.1",
     "@material-ui/core": "^4.9.9",
@@ -12,51 +11,38 @@
     "@material-ui/system": "^4.9.14",
     "@stripe/react-stripe-js": "^1.1.2",
     "@stripe/stripe-js": "^1.5.0",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
     "animated-number-react": "^0.1.1",
-    "axios": "^0.19.2",
-    "cross-env": "^7.0.3",
+    "axios": "^1.12.2",
     "currency.js": "^1.2.2",
-    "customize-cra": "^1.0.0",
     "date-fns": "^2.14.0",
-    "install": "^0.13.0",
-    "js-cookie": "^3.0.1",
+    "js-cookie": "^3.0.8",
     "mui-datatables": "^3.3.1",
     "notistack": "^0.9.9",
     "number-abbreviate": "^2.0.0",
-    "query-string": "^6.13.5",
-    "react": "^16.13.1",
-    "react-app-rewired": "^2.1.6",
+    "query-string": "^9.5.1",
+    "react": "^17.0.2",
     "react-copy-to-clipboard": "^5.0.2",
-    "react-dom": "^16.13.1",
+    "react-dom": "^17.0.2",
     "react-hook-form": "^6.11.0",
     "react-infinite-scroll-component": "^5.0.4",
     "react-masonry-css": "^1.0.14",
     "react-number-format": "^4.4.1",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "3.4.1",
     "react-share": "^4.1.0",
     "react-swipeable-views": "^0.14.0",
     "react-topbar-progress-indicator": "^4.1.0",
     "react-tracked": "^1.4.2",
-    "recharts": "^1.8.5",
-    "simple-react-lightbox": "3.3.4-1",
-    "socket.io-client": "^2.3.0",
+    "recharts": "^3.10.1",
+    "simple-react-lightbox": "3.6.8",
+    "socket.io-client": "^4.8.3",
     "use-sound": "^1.0.2",
-    "yup": "^0.28.3",
+    "yup": "^0.29.3",
     "zustand": "^3.3.1"
   },
   "scripts": {
-    "start": "cross-env SKIP_PREFLIGHT_CHECK=true react-app-rewired --optimize_for_size start",
-    "build": "cross-env SKIP_PREFLIGHT_CHECK=true DISABLE_ESLINT_PLUGIN=true TSC_COMPILE_ON_ERROR=true GENERATE_SOURCEMAP=false react-app-rewired --optimize_for_size build",
-    "build:legacy": "cross-env NODE_OPTIONS=--openssl-legacy-provider cross-env SKIP_PREFLIGHT_CHECK=true DISABLE_ESLINT_PLUGIN=true TSC_COMPILE_ON_ERROR=true GENERATE_SOURCEMAP=false react-app-rewired --optimize_for_size build",
-    "test": "cross-env SKIP_PREFLIGHT_CHECK=true react-app-rewired test",
-    "eject": "react-app-rewired eject",
-    "format": "prettier --write src/**/*.{js,jsx,ts,tsx}",
-    "lint": "eslint . --ext .js,.ts,.jsx,.tsx",
-    "lint:fix": "eslint . --ext .js,.ts,.jsx,.tsx --fix"
+    "start": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1"
   },
   "browserslist": {
     "production": [
@@ -71,16 +57,19 @@
     ]
   },
   "devDependencies": {
-    "@types/jest": "^26.0.20",
-    "@types/node": "^14.14.25",
-    "@types/react": "^17.0.1",
-    "@types/react-dom": "^17.0.0",
-    "eslint": "^6.6.0",
-    "eslint-config-airbnb-typescript-prettier": "^4.1.0",
-    "eslint-plugin-jest": "^26.5.3",
-    "eslint-plugin-react": "^7.30.1",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "prettier": "^2.2.1",
-    "typescript": "^4.1.3"
+    "@types/react": "^17.0.89",
+    "@types/react-dom": "^17.0.26",
+    "@vitejs/plugin-react": "^6.1.1",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.0",
+    "vite-plugin-svgr": "^4.5.0"
+  },
+  "engines": {
+    "node": ">=22.13 <23"
+  },
+  "overrides": {
+    "lodash": "^4.18.1",
+    "js-cookie": "$js-cookie",
+    "d3-color": "^3.1.0"
   }
 }

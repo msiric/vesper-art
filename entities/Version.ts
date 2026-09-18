@@ -53,7 +53,7 @@ export class Version extends BaseEntity {
   @Generated("increment")
   serial: number;
 
-  @OneToOne(() => Artwork, (artwork) => artwork.current)
+  @OneToOne(() => Artwork, (artwork) => artwork.current, { onDelete: 'CASCADE' })
   artwork: Artwork;
 
   @Column()
@@ -67,7 +67,7 @@ export class Version extends BaseEntity {
   category: string;
 
   // $TODO Not implemented
-  @ManyToMany(() => Tag, (tag) => tag.id, { cascade: ["insert"] })
+  @ManyToMany(() => Tag, (tag) => tag.id, { onDelete: 'CASCADE', cascade: ["insert"] })
   @JoinTable()
   tags: Tag[];
 

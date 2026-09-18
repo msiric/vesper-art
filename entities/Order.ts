@@ -40,47 +40,47 @@ export class Order extends BaseEntity {
   @Generated("increment")
   serial: number;
 
-  @ManyToOne(() => User, (user) => user.purchases)
+  @ManyToOne(() => User, (user) => user.purchases, { onDelete: 'CASCADE' })
   buyer: User;
 
   @Column()
   buyerId: string;
 
-  @ManyToOne(() => User, (user) => user.sales)
+  @ManyToOne(() => User, (user) => user.sales, { onDelete: 'CASCADE' })
   seller: User;
 
   @Column()
   sellerId: string;
 
-  @ManyToOne(() => Artwork, (artwork) => artwork.orders)
+  @ManyToOne(() => Artwork, (artwork) => artwork.orders, { onDelete: 'CASCADE' })
   @JoinColumn()
   artwork: Artwork;
 
   @Column()
   artworkId: string;
 
-  @ManyToOne(() => Version, (version) => version.orders)
+  @ManyToOne(() => Version, (version) => version.orders, { onDelete: 'CASCADE' })
   @JoinColumn()
   version: Version;
 
   @Column()
   versionId: string;
 
-  @OneToOne(() => License)
+  @OneToOne(() => License, { onDelete: 'CASCADE' })
   @JoinColumn()
   license: License;
 
   @Column()
   licenseId: string;
 
-  @ManyToOne(() => Discount, (discount) => discount.orders)
+  @ManyToOne(() => Discount, (discount) => discount.orders, { onDelete: 'CASCADE' })
   @JoinColumn()
   discount: Discount;
 
   @Column({ nullable: true })
   discountId: string;
 
-  @OneToOne(() => Review)
+  @OneToOne(() => Review, { onDelete: 'CASCADE' })
   @JoinColumn()
   review: Review;
 
