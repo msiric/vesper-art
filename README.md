@@ -33,3 +33,9 @@ The older Material UI interface is retained. CRA, obsolete server dependencies, 
 ![Original demo](https://github.com/msiric/vesper-art/assets/26199969/8a981c5a-c0a1-4510-a847-71ec95dcf8c0)
 
 ISC license.
+
+## Hosting documentation
+
+- [Deploy and maintain this app](DEPLOYMENT.md).
+- [Portfolio ownership, costs, recovery and maintenance](https://github.com/msiric/feasible-route-mapping/blob/master/docs/PORTFOLIO_HOSTING.md).
+- [Host a future project for $0](https://github.com/msiric/feasible-route-mapping/blob/master/docs/FREE_DEMO_HOSTING.md) and [copy its deployment record template](https://github.com/msiric/feasible-route-mapping/blob/master/docs/PROJECT_HOSTING_TEMPLATE.md).
