@@ -1,3 +1,4 @@
+import { hydrateArtworkCounts } from '../utils/database';
 import { Artwork } from "../entities/Artwork";
 import { Review } from "../entities/Review";
 import { User } from "../entities/User";
@@ -22,8 +23,6 @@ export const fetchArtworkResults = async ({
     .getRepository(Artwork)
     .createQueryBuilder("artwork")
     .leftJoinAndSelect("artwork.current", "version")
-    .loadRelationCountAndMap("artwork.favorites", "artwork.favorites")
-    .loadRelationCountAndMap("artwork.comments", "artwork.comments")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("artwork.owner", "owner")
     .select([
@@ -43,7 +42,7 @@ export const fetchArtworkResults = async ({
     .orderBy("ts_rank(to_tsvector(version.title), to_tsquery(:query))", "DESC")
     .getMany();
 
-  return foundArtwork;
+  return hydrateArtworkCounts(foundArtwork, connection, false);
 };
 
 export const fetchUserResults = async ({

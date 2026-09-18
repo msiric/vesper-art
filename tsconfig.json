@@ -1,10 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2022",
     "module": "commonjs",
-    "lib": ["dom", "es6", "es2017", "esnext.asynciterable"],
+    "lib": [
+      "dom",
+      "es6",
+      "es2017",
+      "esnext.asynciterable"
+    ],
     "skipLibCheck": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "outDir": "./dist",
     "moduleResolution": "node",
     "removeComments": true,
@@ -24,22 +29,60 @@
     "baseUrl": ".",
     "allowJs": true,
     "paths": {
-      "@bin/*": ["bin/*"],
-      "@common/*": ["common/*"],
-      "@config/*": ["config/*"],
-      "@controllers/*": ["controllers/*"],
-      "@emails/*": ["emails/*"],
-      "@entities/*": ["entities/*"],
-      "@fixtures/*": ["fixtures/*"],
-      "@lib/*": ["lib/*"],
-      "@middleware/*": ["middleware/*"],
-      "@previews/*": ["previews/*"],
-      "@routes/*": ["routes/*"],
-      "@services/*": ["services/*"],
-      "@tests/*": ["tests/*"],
-      "@uploads/*": ["uploads/*"],
-      "@utils/*": ["utils/*"]
+      "@bin/*": [
+        "bin/*"
+      ],
+      "@common/*": [
+        "common/*"
+      ],
+      "@config/*": [
+        "config/*"
+      ],
+      "@controllers/*": [
+        "controllers/*"
+      ],
+      "@emails/*": [
+        "emails/*"
+      ],
+      "@entities/*": [
+        "entities/*"
+      ],
+      "@fixtures/*": [
+        "fixtures/*"
+      ],
+      "@lib/*": [
+        "lib/*"
+      ],
+      "@middleware/*": [
+        "middleware/*"
+      ],
+      "@previews/*": [
+        "previews/*"
+      ],
+      "@routes/*": [
+        "routes/*"
+      ],
+      "@services/*": [
+        "services/*"
+      ],
+      "@tests/*": [
+        "tests/*"
+      ],
+      "@uploads/*": [
+        "uploads/*"
+      ],
+      "@utils/*": [
+        "utils/*"
+      ]
     }
   },
-  "exclude": ["node_modules", "client", "dist"]
+  "exclude": [
+    "node_modules",
+    "client",
+    "dist",
+    "tests",
+    "demo-tests",
+    "functions",
+    "scripts/*.cjs"
+  ]
 }

@@ -1,123 +1,61 @@
-import compression from "compression";
-import cookieParser from "cookie-parser";
-import cookieSession from "cookie-session";
-import cors from "cors";
-import express from "express";
-import helmet from "helmet";
-import createError from "http-errors";
-import isBot from "isbot";
-import morgan from "morgan";
-import path from "path";
-import "reflect-metadata";
-import { featureFlags, statusCodes } from "./common/constants";
-import { cookie, domain, environment, ENV_OPTIONS } from "./config/secret";
-import { authRateLimiter, commonRateLimiter } from "./lib/limiter";
-import api from "./routes/api/index";
-import auth from "./routes/auth/index";
-import bot from "./routes/bot/index";
-import stripe from "./routes/stripe/index";
-import hooks from "./routes/webhooks/index";
-import { connectToDatabase } from "./utils/database";
-import { handleDelegatedError } from "./utils/helpers";
+import 'dotenv/config';
+import 'reflect-metadata';
+import compression from 'compression';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import express from 'express';
+import helmet from 'helmet';
+import createError from 'http-errors';
+import { clientOrigin, validateRuntime } from './config/runtime';
+import { demoGuard } from './middleware/demo-guard';
+import { requestHandler, isAuthenticated } from './middleware';
+import { createDemoSession } from './utils/demo';
+import { getConnection } from './utils/database';
+import { User } from './entities/User';
+import { DemoUpload } from './entities/DemoUpload';
+import { sendRefreshToken } from './utils/auth';
+import { postRefreshToken } from './controllers/auth';
+import { handleDelegatedError } from './utils/helpers';
+import api from './routes/api';
+import socketApi from './lib/socket';
 
+validateRuntime();
 const app = express();
-const dirname = path.resolve();
-
-(async () => {
-  app.use(
-    cors({
-      origin: domain.client,
-      credentials: true,
-    })
-  );
-
-  app.use(
-    express.json({
-      verify: (req, res, buf) => {
-        if (req.originalUrl.startsWith("/webhook"))
-          req.rawBody = buf.toString();
-      },
-    })
-  );
-
-  app.use(morgan("dev"));
-  app.use(express.urlencoded({ extended: false }));
-  app.use(cookieParser());
-  app.use(
-    cookieSession({
-      name: "session",
-      maxAge: 24 * 60 * 60 * 1000,
-      secret: cookie.secret,
-      keys: [
-        "aq`&DOC5'()%I=`hvk9cu^>A0VYg{B",
-        "Wx{IR%)Gqf%Skw5Od&?T6v!$l3lOTV",
-      ],
-    })
-  );
-
-  if (environment !== ENV_OPTIONS.TESTING) {
-    try {
-      await connectToDatabase();
-    } catch (err) {
-      console.log("DB error", err);
-    }
-  }
-
-  app.use(compression());
-  app.use(helmet({ contentSecurityPolicy: false }));
-  // app.use(
-  //   helmet.contentSecurityPolicy({
-  //     directives: {
-  //       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-  //       "script-src": [
-  //         "'self'",
-  //         "'unsafe-inline'",
-  //         "https://vesperart-dev.herokuapp.com/",
-  //       ],
-  //       "img-src": [
-  //         "'self'",
-  //         `https://${process.env.S3_BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com/`,
-  //       ],
-  //     },
-  //   })
-  // );
-
-  // FEATURE FLAG - stripe
-  featureFlags.stripe && app.use("/webhook", hooks);
-
-  app.use(express.json({ type: "application/json" }));
-
-  app.use("/auth", authRateLimiter, auth);
-  app.use("/api", commonRateLimiter, api);
-  app.use("/bot", commonRateLimiter, bot);
-  // FEATURE FLAG - stripe
-  featureFlags.stripe && app.use("/stripe", stripe);
-
-  app.use(express.static(path.join(dirname, "client/build")));
-  app.use(express.static(path.join(dirname, "public")));
-
-  app.use(async (req, res, next) => {
-    try {
-      if (isBot(req.get("user-agent"))) {
-        req.url = `/bot${req.url}`;
-        app.handle(req, res);
-      } else {
-        res.sendFile(path.join(dirname, "client/build", "index.html"));
-      }
-    } catch (err) {
-      // do nothing
-    }
-  });
-
-  app.use((req, res, next) => {
-    createError(statusCodes.internalError, "An error occurred");
-  });
-
-  app.use((err, req, res, next) => {
-    const error = handleDelegatedError({ err });
-    res.status(error.status);
-    res.json({ ...error });
-  });
-})();
-
+app.disable('x-powered-by');
+app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: {policy:'same-site'} }));
+app.get('/healthz', (_, res) => res.json({ status: 'ok', demo: true }));
+app.use('/api', demoGuard);
+app.use(cors({ origin: clientOrigin, credentials: true }));
+app.use(express.json({ limit: '16kb' }));
+app.use(express.urlencoded({ extended: false, limit: '16kb', parameterLimit: 50 }));
+app.use(cookieParser());
+app.use(compression());
+app.post('/api/demo/session', requestHandler(createDemoSession, true, (_, res) => ({ response: res })));
+app.post('/api/auth/refresh_token', requestHandler(postRefreshToken, true, (req, res) => ({ cookies: req.cookies, response: res })));
+app.post('/api/auth/logout', isAuthenticated, requestHandler(async ({ userId, response, connection }) => {
+  await connection.getRepository(User).increment({ id: userId }, 'jwtVersion', 1);
+  sendRefreshToken({ response, refreshToken: '' });
+  socketApi.disconnectUser(userId);
+  return { accessToken: '', user: '' };
+}, true, (_, res) => ({ response: res })));
+app.use('/api/auth', (_, res) => res.status(403).json({ message: 'Use Start live demo; real accounts and email are disabled.', expose: true }));
+app.get('/api/demo/assets/:id', async (req, res, next) => {
+  try {
+    if (!/^[\da-f-]{36}$/.test(req.params.id)) throw createError(404, 'Image not found');
+    const file = await getConnection().getRepository(DemoUpload).createQueryBuilder('file').addSelect('file.content').innerJoin('file.owner','owner').where('file.id = :id AND owner.demoExpiresAt > NOW()', {id:req.params.id}).getOne();
+    if (!file) throw createError(404, 'Temporary image expired');
+    res.type(file.mimeType).set('Cache-Control','private, max-age=300').send(file.content);
+  } catch (error) { next(error); }
+});
+// View analytics are unnecessary personal-data collection and unbounded writes for a portfolio demo.
+app.post('/api/artwork/:id/analytics', (_, res) => res.json({ message: 'Demo view tracking disabled' }));
+app.use('/api/users/:id/email', (_,res) => res.status(403).json({message:'Demo accounts use fictional email addresses.',expose:true}));
+app.use('/api/users/:id/password', (_,res) => res.status(403).json({message:'Demo accounts do not have passwords.',expose:true}));
+app.use('/api', api);
+app.use((_,res) => res.status(404).json({message:'Endpoint not found'}));
+app.use((error,req,res,next) => {
+  if (res.headersSent) return next(error);
+  const result = handleDelegatedError({err:error});
+  res.status(result.status).json(result);
+});
 export default app;

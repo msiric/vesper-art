@@ -25,7 +25,7 @@ export class Notification extends BaseEntity {
   @Generated("increment")
   serial: number;
 
-  @ManyToOne(() => User, (user) => user.notifications)
+  @ManyToOne(() => User, (user) => user.notifications, { onDelete: 'CASCADE' })
   receiver: User;
 
   @Column()

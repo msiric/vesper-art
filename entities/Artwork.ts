@@ -34,13 +34,13 @@ export class Artwork extends BaseEntity {
   @Generated("increment")
   serial: number;
 
-  @ManyToOne(() => User, (user) => user.artwork)
+  @ManyToOne(() => User, (user) => user.artwork, { onDelete: 'CASCADE' })
   owner: User;
 
   @Column()
   ownerId: string;
 
-  @OneToOne(() => Version)
+  @OneToOne(() => Version, { onDelete: 'SET NULL' })
   @JoinColumn()
   current: Version;
 

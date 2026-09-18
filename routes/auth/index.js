@@ -10,7 +10,7 @@ const router = express.Router();
 router.use("/", auth);
 
 router.use((req, res, next) => {
-  createError(statusCodes.internalError, errors.internalServerError.message);
+  next(createError(404, "Endpoint not found"));
 });
 
 router.use((err, req, res, next) => {

@@ -25,7 +25,7 @@ export class Ticket extends BaseEntity {
   @Generated("increment")
   serial: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   owner: User;
 
   @Column()

@@ -1,7 +1,7 @@
 import { updateBotMetatags } from "@utils/bot";
 import express from "express";
 import path from "path";
-import { getConnection } from "typeorm";
+import { getConnection } from "../../../utils/database";
 import { getUserProfile } from "../../../controllers/user";
 
 const dirname = path.resolve();
