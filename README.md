@@ -2,7 +2,7 @@
 
 An art marketplace portfolio project by Mario Siric. It demonstrates browsing, artist profiles, favorites, comments, artwork uploads, collections, simulated orders and license-record verification.
 
-The restored demo uses **fictional accounts and simulated transactions**. It does not collect money, send email, or grant real rights to artwork. The former `vesperart.co` deployment is retired; current deployment status is in [DEPLOYMENT.md](DEPLOYMENT.md).
+The restored demo uses **fictional accounts and simulated transactions**. It does not collect money, send email, or grant real rights to artwork. **[Open the live demo](https://vesper-art-demo.pages.dev).** The former `vesperart.co` deployment is retired; ownership and operating instructions are in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Explore
 
