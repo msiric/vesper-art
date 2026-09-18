@@ -103,6 +103,6 @@ export default function Interceptor() {
       </div>
       {mode==='live' && <button disabled={busy} onClick={end} style={{padding:'8px 14px',border:0,borderRadius:5,background:'#d68024',color:'#fff',cursor:'pointer',fontWeight:600}}>{busy?'Please wait…':'End session'}</button>}
     </aside>
-    <App key={`${mode}:${userId || 'sample'}`} />
+    <App key={mode} />
   </>;
 }
