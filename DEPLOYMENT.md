@@ -1,5 +1,7 @@
 # Isolated portfolio deployment
 
+Shared references: [portfolio operations](https://github.com/msiric/feasible-route-mapping/blob/master/docs/PORTFOLIO_HOSTING.md), [future-project playbook](https://github.com/msiric/feasible-route-mapping/blob/master/docs/FREE_DEMO_HOSTING.md), [deployment record template](https://github.com/msiric/feasible-route-mapping/blob/master/docs/PROJECT_HOSTING_TEMPLATE.md).
+
 Live demo: **https://vesper-art-demo.pages.dev** (verified 18 September 2026).
 
 Public HTTPS verification passed for distinct temporary accounts, ownership, favorites, comments, simulated receipts, collection, JPEG upload/download, authenticated polling, secure cookies, refresh, logout revocation and direct API rejection. The sample-to-live gallery race has a regression test and the deployed gallery contains unique artworks.
@@ -16,13 +18,15 @@ Use `codex/restore-public-demo` and `render.yaml` in the exact new Render projec
 
 Set `DEMO_MODE=true`, `NODE_ENV=production`, `NODE_VERSION=22.23.2`, `CLIENT_URI=https://vesper-art-demo.pages.dev`, the isolated Neon connection string, its exact hostname in `DATABASE_HOST_EXPECTED`, and independent access/refresh/proxy secrets. The database guard rejects other names/hosts and verifies TLS. The endpoint is capped at 0.25 CU and suspends when idle.
 
-Build the frontend with `npm --prefix client ci && npm run build:client`. Set Pages secrets `API_ORIGIN` to the new Render HTTPS origin and `DEMO_PROXY_SECRET` to the same generated value as Render. Deploy from the repository root with:
+Build the frontend with **both root and client dependencies installed**: `npm ci && npm --prefix client ci && npm run build:client`. Shared `common/` modules import root packages such as `currency.js`; a client-only install is insufficient on a clean checkout. Set Pages secrets `API_ORIGIN` to the new Render HTTPS origin and `DEMO_PROXY_SECRET` to the same generated value as Render. Deploy from the repository root with:
 
 ```sh
-CLOUDFLARE_ACCOUNT_ID=f8fd075624b85e729e46d15d374e59ed wrangler pages deploy client/build --project-name vesper-art-demo --branch main
+export CLOUDFLARE_ACCOUNT_ID=f8fd075624b85e729e46d15d374e59ed
+export XDG_CONFIG_HOME='<absolute-path-to-isolated-demo-cli-profile>'
+wrangler pages deploy client/build --project-name vesper-art-demo --branch main
 ```
 
-Always explicitly set that account environment variable; Pages rejects `account_id` in Wrangler config. Keep any task-specific OAuth configuration separate from existing global credentials. Never put secrets in `VITE_` variables, source control or frontend code. Changing Pages secrets requires a redeployment.
+Replace the profile placeholder with the existing private demo CLI directory, authenticate there, and verify the account before publishing. Always explicitly set both environment variables; Pages rejects `account_id` in Wrangler config. Keep any task-specific OAuth configuration separate from existing global credentials. Never put secrets in `VITE_` variables, source control or frontend code. Changing Pages secrets requires a redeployment.
 
 Only `/api/*` invokes Functions. Proxy requests authenticate with a shared secret; writes require the exact frontend Origin. Multipart bodies are bounded even without Content-Length. Polling uses the same proxy; no WebSocket upgrade or keep-alive job is required. Health checks do not access the database. Static sample browsing does not wake Render or Neon.
 
@@ -35,3 +39,11 @@ Local verification: API integration tests cover ownership, uploads, quotas, simu
 After changing the deployment, recheck the sample/deep links, session start, comment/favorite, upload, simulated receipt, refresh/logout, polling, cookie security, CSP and direct Render API rejection. To roll back, redeploy a tested prior commit; never drop/reseed as a startup operation.
 
 CI uses an isolated disposable PostgreSQL service on a public standard GitHub runner, with no production secrets or cloud deployment permissions. The obsolete Railway staging/tag deployment workflows were removed so repository updates cannot redeploy the retired infrastructure. Hosting deployment remains manual.
+
+## Source and release branches
+
+The restoration is merged into GitHub `master`. Render currently follows the retained `codex/restore-public-demo` branch with auto-deploy Off; merging source does not deploy it. For a future backend release from the default branch, deliberately update the existing demo service's source branch and `render.yaml` to `master`, then manually deploy a tested commit. Do not create another service.
+
+Pages uses Direct Upload and its production label is **`main`**, independently of the source checkout. Another `--branch` can create only a preview. Verify the root public URL and its asset names after upload. Markdown-only updates require no hosting deployment.
+
+Verified production on 18 September 2026: Pages `21f3d413`, API commit `494132e6af53546bd029c39b5aa359e2746aa1f7`. Later source commits include the gallery fix, tests and documentation; the corrected gallery is included in that Pages production build.
