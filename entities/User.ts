@@ -43,7 +43,7 @@ export class User extends BaseEntity {
   @Column()
   password: string;
 
-  @OneToOne(() => Avatar, (avatar) => avatar.owner, {
+  @OneToOne(() => Avatar, (avatar) => avatar.owner, { onDelete: 'SET NULL',
     eager: true,
   })
   @JoinColumn()
@@ -129,6 +129,12 @@ export class User extends BaseEntity {
 
   @OneToMany(() => View, (view) => view.owner)
   views: View[];
+
+  @Column({ type: "timestamptz", nullable: true })
+  demoExpiresAt: Date | null;
+
+  @Column({ default: 0 })
+  demoWrites: number;
 
   @Column({ default: false })
   generated: boolean;

@@ -21,7 +21,7 @@ export class Intent extends BaseEntity {
   @Generated("increment")
   serial: number;
 
-  @ManyToOne(() => User, (user) => user.intents)
+  @ManyToOne(() => User, (user) => user.intents, { onDelete: 'CASCADE' })
   owner: User;
 
   @Column()
