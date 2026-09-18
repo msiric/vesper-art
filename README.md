@@ -6,8 +6,7 @@
 
 </br>
 
-![Production](https://github.com/msiric/vesper-demo/actions/workflows/production.yml/badge.svg)
-![Staging](https://github.com/msiric/vesper-demo/actions/workflows/staging.yml/badge.svg)
+[![Validation](https://github.com/msiric/vesper-art/actions/workflows/validate.yml/badge.svg?branch=master)](https://github.com/msiric/vesper-art/actions/workflows/validate.yml)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-blue.svg)](
   https://conventionalcommits.org
 )
@@ -15,8 +14,8 @@
 Vesper is the first fully open-source art marketplace platform. The solution is based on React, Material UI, Express, PostgreSQL, Socket.io, AWS S3 and Stripe.
 
 Official website: https://vesper-art-demo.pages.dev </br></br>
-[Learn more about the project](https://vesperart.co/about) </br>
-[How it works (for artists and collectors)](https://vesperart.co/how_it_works)
+[Learn more about the project](https://vesper-art-demo.pages.dev/about) </br>
+[How it works (for artists and collectors)](https://vesper-art-demo.pages.dev/how_it_works)
 
 ---
 ## Quick demo :clapper:
@@ -38,7 +37,7 @@ Official website: https://vesper-art-demo.pages.dev </br></br>
 - **License verification**: A robust system is in place for users to verify the authenticity of every purchased/downloaded artwork
 - **Multi-device usage**: Collectors can download their purchased artworks on multiple devices without DRM restrictions
 - **License management**: Detailed information about every license can be accessed and verified using the platform's verifier system
-- And [much more](https://vesperart.co/how_it_works)
+- And [much more](https://vesper-art-demo.pages.dev/how_it_works)
 
   
 ## Installation :hammer_and_wrench:
