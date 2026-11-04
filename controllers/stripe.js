@@ -83,7 +83,6 @@ export const receiveWebhookEvent = async ({ signature, body, connection }) => {
       }
       break;
     case "payment_intent.payment_failed":
-      throw createError(...formatError(errors.paymentNotProcessed));
     default:
       return formatResponse(responses.eventReceived);
   }
@@ -379,6 +378,31 @@ const UNIQUE_VIOLATION = "23505";
 const isIntentFulfilled = async ({ intentId, connection }) =>
   !isObjectEmpty(await fetchOrderByIntent({ intentId, connection }));
 
+const parseOrderData = async ({ intent, licenseId }) => {
+  try {
+    const orderData = JSON.parse(intent.metadata.orderData);
+    await licenseValidation
+      .concat(actorsValidation)
+      .concat(priceValidation)
+      .validate({ ...orderData.licenseData });
+    await orderValidation.concat(intentValidation).validate({
+      orderBuyer: orderData.buyerId,
+      orderSeller: orderData.sellerId,
+      orderArtwork: orderData.artworkId,
+      orderVersion: orderData.versionId,
+      orderDiscount: orderData.discountId,
+      orderLicense: licenseId,
+      orderSpent: orderData.spent,
+      orderEarned: orderData.earned,
+      orderFee: orderData.fee,
+      orderIntent: intent.id,
+    });
+    return orderData;
+  } catch {
+    return null;
+  }
+};
+
 const fulfillOrder = async ({
   intentId,
   orderData,
@@ -431,29 +455,19 @@ const processTransaction = async ({ intent, connection }) => {
   if (await isIntentFulfilled({ intentId, connection }))
     return formatResponse(responses.paymentProcessed);
 
+  const { licenseId, orderId, notificationId } = generateUuids({
+    licenseId: null,
+    orderId: null,
+    notificationId: null,
+  });
+  const orderData = await parseOrderData({ intent, licenseId });
+  if (!orderData || intent.amount_received !== orderData.spent) {
+    console.error("Refunding payment that cannot be fulfilled", intentId);
+    await issueStripeRefund({ intentId });
+    return formatResponse(responses.eventReceived);
+  }
+
   try {
-    const orderData = JSON.parse(intent.metadata.orderData);
-    await licenseValidation
-      .concat(actorsValidation)
-      .concat(priceValidation)
-      .validate(orderData.licenseData);
-    const { licenseId, orderId, notificationId } = generateUuids({
-      licenseId: null,
-      orderId: null,
-      notificationId: null,
-    });
-    await orderValidation.concat(intentValidation).validate({
-      orderBuyer: orderData.buyerId,
-      orderSeller: orderData.sellerId,
-      orderArtwork: orderData.artworkId,
-      orderVersion: orderData.versionId,
-      orderDiscount: orderData.discountId,
-      orderLicense: licenseId,
-      orderSpent: orderData.spent,
-      orderEarned: orderData.earned,
-      orderFee: orderData.fee,
-      orderIntent: intentId,
-    });
     // The savepoint lets us recover when a parallel delivery inserts the same order first.
     await connection.transaction((manager) =>
       fulfillOrder({
@@ -465,7 +479,6 @@ const processTransaction = async ({ intent, connection }) => {
         connection: manager,
       })
     );
-    return formatResponse(responses.paymentProcessed);
   } catch (err) {
     if (
       err.code === UNIQUE_VIOLATION &&
@@ -473,14 +486,7 @@ const processTransaction = async ({ intent, connection }) => {
     )
       return formatResponse(responses.paymentProcessed);
     console.error("Transaction failed", err);
-    const foundIntent = await retrieveStripeIntent({
-      intentId: intent.id,
-    });
-    if (!isObjectEmpty(foundIntent)) {
-      await issueStripeRefund({
-        chargeData: foundIntent.charges.data,
-      });
-    }
-    throw createError(...formatError(errors.orderNotProcessed));
+    throw err;
   }
+  return formatResponse(responses.paymentProcessed);
 };
