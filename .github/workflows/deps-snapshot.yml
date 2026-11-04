@@ -1,0 +1,26 @@
+name: Dependency snapshot
+on:
+  push:
+    branches: [ci/deps-snapshot]
+permissions:
+  contents: read
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install
+        run: npm ci
+      - name: Pack
+        run: tar -czf deps.tgz node_modules
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deps
+          path: deps.tgz
+          retention-days: 1
