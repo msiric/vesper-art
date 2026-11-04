@@ -111,159 +111,133 @@ export const managePaymentIntent = async ({
     selection: [...USER_SELECTION["LICENSE_INFO"]()],
     connection,
   });
-  if (!isObjectEmpty(foundUser)) {
-    const foundVersion = await fetchVersionDetails({
-      versionId,
-      selection: [
-        ...USER_SELECTION["LICENSE_INFO"]("owner"),
-        ...USER_SELECTION["STRIPE_INFO"]("owner"),
-      ],
+  if (isObjectEmpty(foundUser))
+    throw createError(...formatError(errors.userNotFound));
+
+  const foundVersion = await fetchVersionDetails({
+    versionId,
+    selection: [
+      ...USER_SELECTION["LICENSE_INFO"]("owner"),
+      ...USER_SELECTION["STRIPE_INFO"]("owner"),
+    ],
+    connection,
+  });
+  if (isObjectEmpty(foundVersion))
+    throw createError(...formatError(errors.artworkNotFound));
+  if (foundVersion.id !== foundVersion.artwork.currentId)
+    throw createError(...formatError(errors.artworkVersionObsolete));
+  if (foundVersion.artwork.owner.id === foundUser.id)
+    throw createError(...formatError(errors.artworkDownloadedByOwner));
+
+  // FEATURE FLAG - discount
+  const foundDiscount =
+    discountId && featureFlags.discount
+      ? await fetchDiscountById({ discountId, connection })
+      : {};
+  if (discountId && isObjectEmpty(foundDiscount))
+    throw createError(...formatError(errors.discountNotApplied));
+
+  const foundIntent = await fetchIntentByParents({
+    userId: foundUser.id,
+    versionId: foundVersion.id,
+    connection,
+  });
+  const verifiedIntent = !isObjectEmpty(foundIntent)
+    ? await retrieveStripeIntent({ intentId: foundIntent.id })
+    : {};
+  const shouldReinitialize =
+    isObjectEmpty(verifiedIntent) || !isIntentPending(verifiedIntent);
+  if (shouldReinitialize && !isObjectEmpty(foundDiscount))
+    throw createError(...formatError(errors.paymentNotProcessed));
+
+  const licenseData = formatLicenseValues({
+    ...(shouldReinitialize && {
+      licenseAssignee: foundUser.fullName,
+      licenseAssignor: foundVersion.artwork.owner.fullName,
+    }),
+    licenseUsage,
+    licenseCompany,
+    licenseType,
+  });
+  const validationSchema = shouldReinitialize
+    ? licenseValidation.concat(actorsValidation)
+    : licenseValidation;
+  await validationSchema.validate({ ...licenseData });
+
+  const availableLicenses = renderCommercialLicenses({ version: foundVersion });
+  if (!availableLicenses.some((item) => item.value === licenseType))
+    throw createError(...formatError(errors.artworkLicenseInvalid));
+
+  const foundOrders = await fetchArtworkOrders({
+    userId,
+    artworkId: foundVersion.artwork.id,
+    connection,
+  });
+  const licenseStatus = isLicenseValid({
+    data: licenseData,
+    orders: foundOrders,
+  });
+  if (!licenseStatus.valid)
+    throw createError(...formatError(errors[licenseStatus.state.identifier]));
+
+  const { buyerTotal, sellerTotal, platformTotal, licensePrice } =
+    calculateTotalCharge({
+      foundVersion,
+      foundDiscount,
+      licenseType: licenseData.licenseType,
+    });
+  const orderData = {
+    ...(shouldReinitialize && {
+      buyerId: foundUser.id,
+      sellerId: foundVersion.artwork.owner.id,
+      artworkId: foundVersion.artwork.id,
+      versionId: foundVersion.id,
+    }),
+    discountId: !isObjectEmpty(foundDiscount) ? foundDiscount.id : null,
+    spent: buyerTotal,
+    earned: sellerTotal,
+    fee: platformTotal,
+    licenseData: {
+      ...licenseData,
+      licensePrice,
+    },
+  };
+
+  if (!isObjectEmpty(verifiedIntent) && !isIntentPending(verifiedIntent)) {
+    await removeExistingIntent({
+      intentId: verifiedIntent.id,
       connection,
     });
-    if (!isObjectEmpty(foundVersion)) {
-      if (foundVersion.id === foundVersion.artwork.currentId) {
-        if (foundVersion.artwork.owner.id !== foundUser.id) {
-          // FEATURE FLAG - discount
-          const foundDiscount =
-            discountId && featureFlags.discount
-              ? await fetchDiscountById({ discountId, connection })
-              : {};
-          if (!(discountId && isObjectEmpty(foundDiscount))) {
-            const foundIntent = await fetchIntentByParents({
-              userId: foundUser.id,
-              versionId: foundVersion.id,
-              connection,
-            });
-            const verifiedIntent = !isObjectEmpty(foundIntent)
-              ? await retrieveStripeIntent({
-                  intentId: foundIntent.id,
-                })
-              : {};
-            const shouldReinitialize =
-              isObjectEmpty(verifiedIntent) || !isIntentPending(verifiedIntent);
-            if (!(shouldReinitialize && !isObjectEmpty(foundDiscount))) {
-              const licenseData = formatLicenseValues({
-                ...(shouldReinitialize && {
-                  licenseAssignee: foundUser.fullName,
-                }),
-                ...(shouldReinitialize && {
-                  licenseAssignor: foundVersion.artwork.owner.fullName,
-                }),
-                licenseUsage,
-                licenseCompany,
-                licenseType,
-              });
-              const validationSchema = shouldReinitialize
-                ? licenseValidation.concat(actorsValidation)
-                : licenseValidation;
-              await validationSchema.validate({
-                ...licenseData,
-              });
-              const availableLicenses = renderCommercialLicenses({
-                version: foundVersion,
-              });
-              if (
-                availableLicenses.some((item) => item.value === licenseType)
-              ) {
-                const foundOrders = await fetchArtworkOrders({
-                  userId,
-                  artworkId: foundVersion.artwork.id,
-                  connection,
-                });
-                const licenseStatus = isLicenseValid({
-                  data: licenseData,
-                  orders: foundOrders,
-                });
-                if (licenseStatus.valid) {
-                  const {
-                    buyerTotal,
-                    sellerTotal,
-                    platformTotal,
-                    licensePrice,
-                  } = calculateTotalCharge({
-                    foundVersion,
-                    foundDiscount,
-                    licenseType: licenseData.licenseType,
-                  });
-                  const orderData = {
-                    ...(shouldReinitialize && { buyerId: foundUser.id }),
-                    ...(shouldReinitialize && {
-                      sellerId: foundVersion.artwork.owner.id,
-                    }),
-                    ...(shouldReinitialize && {
-                      artworkId: foundVersion.artwork.id,
-                    }),
-                    ...(shouldReinitialize && {
-                      versionId: foundVersion.id,
-                    }),
-                    discountId: !isObjectEmpty(foundDiscount)
-                      ? foundDiscount.id
-                      : null,
-                    spent: buyerTotal,
-                    earned: sellerTotal,
-                    fee: platformTotal,
-                    licenseData: {
-                      ...licenseData,
-                      licensePrice,
-                    },
-                  };
-                  // remove succeeded/canceled intent
-                  if (
-                    !isObjectEmpty(verifiedIntent) &&
-                    !isIntentPending(verifiedIntent)
-                  ) {
-                    await removeExistingIntent({
-                      intentId: verifiedIntent.id,
-                      connection,
-                    });
-                  }
-                  const paymentIntent = shouldReinitialize
-                    ? await constructStripeIntent({
-                        intentMethod: "card",
-                        intentPaid: buyerTotal,
-                        intentSold: sellerTotal,
-                        intentCurrency: "usd",
-                        sellerId: foundVersion.artwork.owner.stripeId,
-                        orderData,
-                      })
-                    : await updateStripeIntent({
-                        intentAmount: buyerTotal,
-                        intentPaid: buyerTotal,
-                        intentSold: sellerTotal,
-                        intentData: verifiedIntent,
-                        orderData,
-                      });
-                  shouldReinitialize &&
-                    (await addNewIntent({
-                      intentId: paymentIntent.id,
-                      userId: foundUser.id,
-                      versionId: foundVersion.id,
-                      connection,
-                    }));
-                  return {
-                    intent: {
-                      id: paymentIntent.id,
-                      secret: paymentIntent.client_secret,
-                    },
-                  };
-                }
-                throw createError(
-                  ...formatError(errors[licenseStatus.state.identifier])
-                );
-              }
-              throw createError(...formatError(errors.artworkLicenseInvalid));
-            }
-            throw createError(...formatError(errors.paymentNotProcessed));
-          }
-          throw createError(...formatError(errors.discountNotApplied));
-        }
-        throw createError(...formatError(errors.artworkDownloadedByOwner));
-      }
-      throw createError(...formatError(errors.artworkVersionObsolete));
-    }
-    throw createError(...formatError(errors.artworkNotFound));
   }
-  throw createError(...formatError(errors.userNotFound));
+  const paymentIntent = shouldReinitialize
+    ? await constructStripeIntent({
+        intentMethod: "card",
+        intentPaid: buyerTotal,
+        intentSold: sellerTotal,
+        intentCurrency: "usd",
+        sellerId: foundVersion.artwork.owner.stripeId,
+        orderData,
+      })
+    : await updateStripeIntent({
+        intentPaid: buyerTotal,
+        intentSold: sellerTotal,
+        intentData: verifiedIntent,
+        orderData,
+      });
+  if (shouldReinitialize) {
+    await addNewIntent({
+      intentId: paymentIntent.id,
+      userId: foundUser.id,
+      versionId: foundVersion.id,
+      connection,
+    });
+  }
+  return {
+    intent: {
+      id: paymentIntent.id,
+      secret: paymentIntent.client_secret,
+    },
+  };
 };
 
 export const redirectToStripe = async ({ accountId, userId, connection }) => {
