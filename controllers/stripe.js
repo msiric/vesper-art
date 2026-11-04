@@ -18,7 +18,11 @@ import socketApi from "../lib/socket";
 import { fetchVersionDetails } from "../services/artwork";
 import { fetchDiscountById } from "../services/discount";
 import { addNewNotification } from "../services/notification";
-import { addNewOrder, fetchArtworkOrders } from "../services/order";
+import {
+  addNewOrder,
+  fetchArtworkOrders,
+  fetchOrderByIntent,
+} from "../services/order";
 import {
   constructLoginLink,
   constructRedirectLink,
@@ -370,19 +374,65 @@ export const createPayout = async ({ userId, connection }) => {
   throw createError(...formatError(errors.userNotFound));
 };
 
-// $TODO Not good
-// $TODO validacija svih ID-ova
-// $TODO validacija license i pricea
-// vjerojatno najbolje fetchat svaki od ID-ova i verifyat data-u
+const UNIQUE_VIOLATION = "23505";
+
+const isIntentFulfilled = async ({ intentId, connection }) =>
+  !isObjectEmpty(await fetchOrderByIntent({ intentId, connection }));
+
+const fulfillOrder = async ({
+  intentId,
+  orderData,
+  licenseId,
+  orderId,
+  notificationId,
+  connection,
+}) => {
+  await addNewLicense({
+    licenseId,
+    artworkId: orderData.artworkId,
+    licenseData: orderData.licenseData,
+    userId: orderData.buyerId,
+    sellerId: orderData.sellerId,
+    connection,
+  });
+  await addNewOrder({
+    orderId,
+    orderData: {
+      buyerId: orderData.buyerId,
+      sellerId: orderData.sellerId,
+      artworkId: orderData.artworkId,
+      versionId: orderData.versionId,
+      discountId: orderData.discountId,
+      licenseId,
+      reviewId: null,
+      spent: orderData.spent,
+      earned: orderData.earned,
+      fee: orderData.fee,
+      type: "commercial",
+      status: "completed",
+      intentId,
+    },
+    connection,
+  });
+  await removeExistingIntent({ intentId, connection });
+  await addNewNotification({
+    notificationId,
+    notificationLink: orderId,
+    notificationRef: "",
+    notificationType: "order",
+    notificationReceiver: orderData.sellerId,
+    connection,
+  });
+  socketApi.sendNotification(orderData.sellerId);
+};
+
 const processTransaction = async ({ intent, connection }) => {
+  const intentId = intent.id;
+  if (await isIntentFulfilled({ intentId, connection }))
+    return formatResponse(responses.paymentProcessed);
+
   try {
     const orderData = JSON.parse(intent.metadata.orderData);
-    const buyerId = orderData.buyerId;
-    const sellerId = orderData.sellerId;
-    const artworkId = orderData.artworkId;
-    const versionId = orderData.versionId;
-    const discountId = orderData.discountId;
-    const intentId = intent.id;
     await licenseValidation
       .concat(actorsValidation)
       .concat(priceValidation)
@@ -392,63 +442,36 @@ const processTransaction = async ({ intent, connection }) => {
       orderId: null,
       notificationId: null,
     });
-    await addNewLicense({
-      licenseId,
-      artworkId,
-      licenseData: orderData.licenseData,
-      userId: buyerId,
-      sellerId,
-      connection,
-    });
     await orderValidation.concat(intentValidation).validate({
-      orderBuyer: buyerId,
-      orderSeller: sellerId,
-      orderArtwork: artworkId,
-      orderVersion: versionId,
-      orderDiscount: discountId,
+      orderBuyer: orderData.buyerId,
+      orderSeller: orderData.sellerId,
+      orderArtwork: orderData.artworkId,
+      orderVersion: orderData.versionId,
+      orderDiscount: orderData.discountId,
       orderLicense: licenseId,
       orderSpent: orderData.spent,
       orderEarned: orderData.earned,
       orderFee: orderData.fee,
       orderIntent: intentId,
     });
-    const orderObject = {
-      buyerId,
-      sellerId,
-      artworkId,
-      versionId,
-      discountId,
-      licenseId,
-      reviewId: null,
-      spent: orderData.spent,
-      earned: orderData.earned,
-      fee: orderData.fee,
-      type: "commercial",
-      status: "completed",
-      intentId,
-    };
-    await addNewOrder({
-      orderId,
-      orderData: orderObject,
-      connection,
-    });
-    await removeExistingIntent({
-      intentId,
-      connection,
-    });
-    // new start
-    await addNewNotification({
-      notificationId,
-      notificationLink: orderId,
-      notificationRef: "",
-      notificationType: "order",
-      notificationReceiver: sellerId,
-      connection,
-    });
-    socketApi.sendNotification(sellerId, orderId);
-    // new end
+    // The savepoint lets us recover when a parallel delivery inserts the same order first.
+    await connection.transaction((manager) =>
+      fulfillOrder({
+        intentId,
+        orderData,
+        licenseId,
+        orderId,
+        notificationId,
+        connection: manager,
+      })
+    );
     return formatResponse(responses.paymentProcessed);
   } catch (err) {
+    if (
+      err.code === UNIQUE_VIOLATION &&
+      (await isIntentFulfilled({ intentId, connection }))
+    )
+      return formatResponse(responses.paymentProcessed);
     console.error("Transaction failed", err);
     const foundIntent = await retrieveStripeIntent({
       intentId: intent.id,

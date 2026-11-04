@@ -33,6 +33,16 @@ export const fetchOrderByVersion = async ({
   return foundOrder;
 };
 
+export const fetchOrderByIntent = async ({ intentId, connection }) => {
+  const foundOrder = await connection
+    .getRepository(Order)
+    .createQueryBuilder("order")
+    .select([...ORDER_SELECTION["ESSENTIAL_INFO"]()])
+    .where("order.intentId = :intentId", { intentId })
+    .getOne();
+  return foundOrder;
+};
+
 export const fetchOrderDetails = async ({ userId, orderId, connection }) => {
   const foundOrder = await connection
     .getRepository(Order)
