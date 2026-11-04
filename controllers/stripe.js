@@ -67,13 +67,11 @@ export const receiveWebhookEvent = async ({ signature, body, connection }) => {
       secret,
     });
   } catch (err) {
-    console.log("$TEST CHECKOUT event error", err.message);
     throw createError(...formatError(dynamicError(err.message)));
   }
 
   switch (event.type) {
     case "payment_intent.succeeded":
-      console.log("$TEST CHECKOUT Payment success", event.type);
       // FEATURE FLAG - payment
       if (featureFlags.payment) {
         const intent = event.data.object;
@@ -81,10 +79,8 @@ export const receiveWebhookEvent = async ({ signature, body, connection }) => {
       }
       break;
     case "payment_intent.payment_failed":
-      console.log("$TEST CHECKOUT Failed payment", event.type);
       throw createError(...formatError(errors.paymentNotProcessed));
     default:
-      console.log("$TEST CHECKOUT Unknown event", event.type);
       return formatResponse(responses.eventReceived);
   }
 };
@@ -178,7 +174,6 @@ export const managePaymentIntent = async ({
                   data: licenseData,
                   orders: foundOrders,
                 });
-                console.log("license status", licenseStatus);
                 if (licenseStatus.valid) {
                   const {
                     buyerTotal,
@@ -407,7 +402,6 @@ export const createPayout = async ({ userId, connection }) => {
 // vjerojatno najbolje fetchat svaki od ID-ova i verifyat data-u
 const processTransaction = async ({ intent, connection }) => {
   try {
-    console.log("PROCESS TRANSACTION STARTED");
     const orderData = JSON.parse(intent.metadata.orderData);
     const buyerId = orderData.buyerId;
     const sellerId = orderData.sellerId;
@@ -415,27 +409,16 @@ const processTransaction = async ({ intent, connection }) => {
     const versionId = orderData.versionId;
     const discountId = orderData.discountId;
     const intentId = intent.id;
-    console.log("IDS DECODED");
-    console.log("ORDER DATA", orderData);
-    const {
-      licenseAssignee,
-      licenseAssignor,
-      licenseUsage,
-      licenseCompany,
-      licenseType,
-      licensePrice,
-    } = orderData.licenseData;
     await licenseValidation
       .concat(actorsValidation)
       .concat(priceValidation)
       .validate(orderData.licenseData);
-    console.log("LICENSE VALIDATED");
     const { licenseId, orderId, notificationId } = generateUuids({
       licenseId: null,
       orderId: null,
       notificationId: null,
     });
-    const savedLicense = await addNewLicense({
+    await addNewLicense({
       licenseId,
       artworkId,
       licenseData: orderData.licenseData,
@@ -443,7 +426,6 @@ const processTransaction = async ({ intent, connection }) => {
       sellerId,
       connection,
     });
-    console.log("LICENSE SAVED");
     await orderValidation.concat(intentValidation).validate({
       orderBuyer: buyerId,
       orderSeller: sellerId,
@@ -456,7 +438,6 @@ const processTransaction = async ({ intent, connection }) => {
       orderFee: orderData.fee,
       orderIntent: intentId,
     });
-    console.log("ORDER VALIDATED");
     const orderObject = {
       buyerId,
       sellerId,
@@ -472,17 +453,15 @@ const processTransaction = async ({ intent, connection }) => {
       status: "completed",
       intentId,
     };
-    const savedOrder = await addNewOrder({
+    await addNewOrder({
       orderId,
       orderData: orderObject,
       connection,
     });
-    console.log("ORDER SAVED");
     await removeExistingIntent({
       intentId,
       connection,
     });
-    console.log("INTENT DELETED");
     // new start
     await addNewNotification({
       notificationId,
@@ -494,10 +473,9 @@ const processTransaction = async ({ intent, connection }) => {
     });
     socketApi.sendNotification(sellerId, orderId);
     // new end
-    console.log("ORDER PROCESSED (END)");
     return formatResponse(responses.paymentProcessed);
   } catch (err) {
-    console.log("TRANSACTION FAILED", err);
+    console.error("Transaction failed", err);
     const foundIntent = await retrieveStripeIntent({
       intentId: intent.id,
     });

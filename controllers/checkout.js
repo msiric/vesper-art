@@ -130,7 +130,7 @@ export const postDownload = async ({
                 status: "completed",
                 intentId: null,
               };
-              const savedOrder = await addNewOrder({
+              await addNewOrder({
                 orderId,
                 orderData: orderObject,
                 connection,
