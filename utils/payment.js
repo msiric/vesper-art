@@ -25,8 +25,6 @@ export const calculateTotalCharge = ({
   const buyerTotal = currency(licensePrice).subtract(discount).add(buyerFee);
   const sellerTotal = currency(licensePrice).multiply(sellerFee);
   const platformTotal = currency(buyerTotal).subtract(sellerTotal);
-  const stripeFees = currency(1.03).add(2).add(0.3); // for internal use only
-  const total = currency(platformTotal).subtract(stripeFees); // for internal use only
 
   return {
     buyerTotal: buyerTotal.intValue,

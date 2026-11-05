@@ -6,6 +6,7 @@ import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import createError from 'http-errors';
+import { featureFlags } from './common/constants';
 import { clientOrigin, validateRuntime } from './config/runtime';
 import { demoGuard } from './middleware/demo-guard';
 import { requestHandler, isAuthenticated } from './middleware';
@@ -17,6 +18,7 @@ import { sendRefreshToken } from './utils/auth';
 import { postRefreshToken } from './controllers/auth';
 import { handleDelegatedError } from './utils/helpers';
 import api from './routes/api';
+import webhooks from './routes/webhooks';
 import socketApi from './lib/socket';
 
 validateRuntime();
@@ -24,6 +26,10 @@ const app = express();
 app.disable('x-powered-by');
 app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: {policy:'same-site'} }));
 app.get('/healthz', (_, res) => res.json({ status: 'ok', demo: true }));
+if (featureFlags.payment) {
+  // Stripe signature checks need the exact request bytes.
+  app.use('/webhook', express.json({ verify: (req, _, buffer) => { req.rawBody = buffer; } }), webhooks);
+}
 app.use('/api', demoGuard);
 app.use(cors({ origin: clientOrigin, credentials: true }));
 app.use(express.json({ limit: '16kb' }));

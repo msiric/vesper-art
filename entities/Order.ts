@@ -87,7 +87,7 @@ export class Order extends BaseEntity {
   @Column({ nullable: true })
   reviewId: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, unique: true })
   intentId: string;
 
   @Column()

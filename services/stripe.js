@@ -110,16 +110,20 @@ export const fetchStripeAccount = async ({ accountId }) => {
   return retrievedAccount;
 };
 
-export const issueStripeRefund = async ({ chargeData }) => {
-  if (chargeData.length) {
-    const refundedCharge = await stripe.refunds.create({
-      charge: chargeData[0].id,
-      reverse_transfer: true,
-      refund_application_fee: true,
-    });
-    return refundedCharge;
-  } else {
-    return {};
+export const issueStripeRefund = async ({ intentId }) => {
+  try {
+    const refund = await stripe.refunds.create(
+      {
+        payment_intent: intentId,
+        reverse_transfer: true,
+        refund_application_fee: true,
+      },
+      { idempotencyKey: `refund-${intentId}` }
+    );
+    return refund;
+  } catch (err) {
+    if (err.code === "charge_already_refunded") return null;
+    throw err;
   }
 };
 
